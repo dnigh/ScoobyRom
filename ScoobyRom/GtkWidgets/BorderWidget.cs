@@ -66,7 +66,7 @@ namespace GtkWidgets
 			// draw background fill before child widget so child appears on top
 			// use Cairo drawing API (Gtk+ uses it internally as well)
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-				cr.Color = this.color;
+				cr.SetSourceColor (this.color);
 				cr.Rectangle (this.Allocation.Left, this.Allocation.Top, this.Allocation.Width, this.Allocation.Height);
 				cr.Fill ();
 			}

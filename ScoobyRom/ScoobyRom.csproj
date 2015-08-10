@@ -2,8 +2,8 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{665B6941-8FFB-44F9-BA68-0E35B7445A92}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -22,7 +22,6 @@
     <ConsolePause>false</ConsolePause>
     <AssemblyOriginatorKeyFile>keypair.snk</AssemblyOriginatorKeyFile>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>defaultRom.rom</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
@@ -76,8 +75,7 @@
     <Reference Include="System.Configuration">
     </Reference>
     <Reference Include="Mono.Posix" />
-    <Reference Include="NPlot, Version=0.9.9.2, Culture=neutral, PublicKeyToken=4eda430eb4395eb1">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="NPlot">
       <HintPath>vendor\NPlot.dll</HintPath>
     </Reference>
   </ItemGroup>

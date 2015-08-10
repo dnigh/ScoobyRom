@@ -44,7 +44,6 @@ namespace ScoobyRom
 			// Widget ScoobyRom.StatisticsWindow
 			this.Name = "ScoobyRom.StatisticsWindow";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Statistics Window");
-			this.AllowShrink = true;
 			// Container child ScoobyRom.StatisticsWindow.Gtk.Container+ContainerChild
 			this.scrolledwindow1 = new global::Gtk.ScrolledWindow ();
 			this.scrolledwindow1.CanFocus = true;

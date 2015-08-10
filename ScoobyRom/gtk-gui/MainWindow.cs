@@ -144,7 +144,6 @@ public partial class MainWindow
 		this.Name = "MainWindow";
 		this.Title = global::Mono.Unix.Catalog.GetString ("ScoobyRom");
 		this.WindowPosition = ((global::Gtk.WindowPosition)(4));
-		this.AllowShrink = true;
 		// Container child MainWindow.Gtk.Container+ContainerChild
 		this.vbox1 = new global::Gtk.VBox ();
 		this.vbox1.Name = "vbox1";

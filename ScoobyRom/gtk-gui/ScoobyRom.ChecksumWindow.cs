@@ -29,7 +29,6 @@ namespace ScoobyRom
 			this.Name = "ScoobyRom.ChecksumWindow";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Checksum Window");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
-			this.AllowShrink = true;
 			// Container child ScoobyRom.ChecksumWindow.Gtk.Container+ContainerChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";

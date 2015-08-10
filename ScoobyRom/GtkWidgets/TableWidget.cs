@@ -139,8 +139,9 @@ namespace GtkWidgets
 
 				// ShadowType differences might be minimal
 				if (val >= this.valuesMax)
-					widget.Shadow = ShadowType.EtchedOut; else if (val <= this.valuesMin)
-					widget.Shadow = ShadowType.EtchedOut;
+					widget.ShadowType = ShadowType.EtchedOut;
+				else if (val <= this.valuesMin)
+					widget.ShadowType = ShadowType.EtchedIn;
 
 				widget.Color = CalcColor (val);
 				widget.Add (label);
