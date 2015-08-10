@@ -29,6 +29,7 @@ namespace ScoobyRom
 		Title,
 		UnitZ,
 		Type,
+		Location,
 		NameX,
 		UnitX,
 		NameY,
@@ -43,8 +44,7 @@ namespace ScoobyRom
 		Zmin,
 		Zavg,
 		Zmax,
-		ZPos,
-		Location,
+		ZPos,		
 		Description,
 		Obj
 	}

@@ -240,6 +240,8 @@ namespace Subaru.Tables
 				return ReadValuesInt8 (stream, range);
 			case TableType.Int16:
 				return ReadValuesInt16 (stream, range);
+			case TableType.UInt32:
+				return ReadValuesUInt32 (stream, range);
 			default:
 				ThrowInvalidTableType (tableType);
 				return null;
@@ -307,6 +309,18 @@ namespace Subaru.Tables
 			return array;
 		}
 
+		public static uint[] ReadValuesUInt32 (System.IO.Stream stream, Range range)
+		{
+			stream.Seek (range.Pos, System.IO.SeekOrigin.Begin);
+			int count = range.Size / 4;
+			uint[] array = new uint[count];
+
+			for (int i = 0; i < array.Length; i++) {
+				array [i] = (uint)stream.ReadInt32BigEndian ();
+			}
+			return array;
+		}
+
 		#endregion ReadValues
 
 		public static bool IsFloatValid (float value)
@@ -365,6 +379,8 @@ namespace Subaru.Tables
 				return ValuesFromTypeInt8 (array);
 			case TableType.Int16:
 				return ValuesFromTypeInt16 (array);
+			case TableType.UInt32:
+				return ValuesFromTypeUInt32 (array);
 			default:
 				ThrowInvalidTableType (tableType);
 				return null;
@@ -438,6 +454,22 @@ namespace Subaru.Tables
 		protected float[] ValuesFromTypeInt16 (Array array)
 		{
 			short[] src = (short[])array;
+			var floats = new float[src.Length];
+			if (hasMAC) {
+				for (int i = 0; i < floats.Length; i++) {
+					floats [i] = src [i] * multiplier + offset;
+				}
+			} else {
+				for (int i = 0; i < floats.Length; i++) {
+					floats [i] = src [i];
+				}
+			}
+			return floats;
+		}
+
+		protected float[] ValuesFromTypeUInt32 (Array array)
+		{
+			uint[] src = (uint[])array;
 			var floats = new float[src.Length];
 			if (hasMAC) {
 				for (int i = 0; i < floats.Length; i++) {

@@ -4,37 +4,69 @@
 public partial class MainWindow
 {
 	private global::Gtk.UIManager UIManager;
+	
 	private global::Gtk.Action FileAction;
+	
 	private global::Gtk.Action openAction;
+	
 	private global::Gtk.Action quitAction;
+	
 	private global::Gtk.Action ViewAction;
+	
 	private global::Gtk.Action HelpAction;
+	
 	private global::Gtk.Action aboutAction;
+	
 	private global::Gtk.Action saveAction;
+	
 	private global::Gtk.ToggleAction iconsAction;
+	
 	private global::Gtk.Action exportAsAction;
+	
 	private global::Gtk.Action exportAsRRAction;
+	
 	private global::Gtk.Action plotExternalAction;
+	
 	private global::Gtk.Action checksumWindowAction;
+	
 	private global::Gtk.Action statisticsWindowAction;
+	
 	private global::Gtk.Action PlotAction;
+	
 	private global::Gtk.Action createSVGFileAction;
+	
 	private global::Gtk.Action visualizationAction;
+	
 	private global::Gtk.Action DataAction;
+	
 	private global::Gtk.Action exportTableAsCSVAction;
+	
 	private global::Gtk.VBox vbox1;
+	
 	private global::Gtk.MenuBar menubar1;
+	
 	private global::Gtk.Notebook notebook1;
+	
 	private global::Gtk.VPaned vpaned2D;
+	
 	private global::Gtk.ScrolledWindow GtkScrolledWindowTV2D;
+	
 	private global::Gtk.TreeView treeview2D;
+	
 	private global::Gtk.Label label1;
+	
 	private global::Gtk.VPaned vpaned3D;
+	
 	private global::Gtk.ScrolledWindow ScrolledWindowTV3D;
+	
 	private global::Gtk.TreeView treeview3D;
+	
 	private global::Gtk.ScrolledWindow scrolledwindowTable3D;
+	
 	private global::Gtk.Label label2;
+	
 	private global::Gtk.Statusbar statusbar1;
+	
 	private global::Gtk.ProgressBar progressbar1;
 
 	protected virtual void Build ()

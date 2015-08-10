@@ -5,13 +5,21 @@ namespace ScoobyRom
 	public partial class ChecksumWindow
 	{
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.Frame frame1;
+		
 		private global::Gtk.Alignment GtkAlignment;
+		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
+		
 		private global::Gtk.TreeView treeviewCSums;
+		
 		private global::Gtk.Label GtkLabel;
+		
 		private global::Gtk.Table table1;
+		
 		private global::Gtk.Label labelCVN8;
+		
 		private global::Gtk.Label labelTitleCVN8;
 
 		protected virtual void Build ()

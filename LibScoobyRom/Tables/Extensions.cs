@@ -95,6 +95,7 @@ namespace Extensions
 		{
 			switch (tableType) {
 			case TableType.Float:
+			case TableType.UInt32:
 				return 4;
 			case TableType.UInt8:
 			case TableType.Int8:

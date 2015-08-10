@@ -39,6 +39,8 @@ namespace Subaru.Tables
 			tableTypeDict.Add (TableType.UInt16, "UInt16");
 			tableTypeDict.Add (TableType.Int8, "Int8");
 			tableTypeDict.Add (TableType.Int16, "Int16");
+
+			tableTypeDict.Add (TableType.UInt32, "UInt32");
 		}
 
 		public static string ToStr (this TableType tableType)

@@ -5,21 +5,37 @@ namespace ScoobyRom
 	public partial class StatisticsWindow
 	{
 		private global::Gtk.ScrolledWindow scrolledwindow1;
+		
 		private global::Gtk.Table table1;
+		
 		private global::Gtk.Button buttonRefresh;
+		
 		private global::Gtk.Label label2DAnnotated;
+		
 		private global::Gtk.Label label2DCol;
+		
 		private global::Gtk.Label label2DCountTotal;
+		
 		private global::Gtk.Label label2DFirstRecord;
+		
 		private global::Gtk.Label label2DLastRecord;
+		
 		private global::Gtk.Label label3DAnnotated;
+		
 		private global::Gtk.Label label3DCol;
+		
 		private global::Gtk.Label label3DCountTotal;
+		
 		private global::Gtk.Label label3DFirstRecord;
+		
 		private global::Gtk.Label label3DLastRecord;
+		
 		private global::Gtk.Label labelRowAnnotated;
+		
 		private global::Gtk.Label labelRowCountTotal;
+		
 		private global::Gtk.Label labelRowFirstRecord;
+		
 		private global::Gtk.Label labelRowLastRecord;
 
 		protected virtual void Build ()
