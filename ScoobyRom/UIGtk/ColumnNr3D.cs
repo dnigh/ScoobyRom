@@ -1,6 +1,6 @@
 // ColumnNr3D.cs: Enum holding columns for UI.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

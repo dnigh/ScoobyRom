@@ -1,6 +1,6 @@
 // RomRaiderEcuDefXml.cs: Export data in RomRaider ECu definition format.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

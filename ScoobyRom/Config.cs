@@ -1,6 +1,6 @@
 // Config.cs: Settings, parses app.config.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

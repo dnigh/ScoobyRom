@@ -1,6 +1,6 @@
 // AssemblyInfo.cs: Assembly metadata. Update version number in here.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *
@@ -37,7 +37,7 @@ using System.Runtime.CompilerServices;
 // The form "{Major}.{Minor}.*" will automatically update the build and revision,
 // and "{Major}.{Minor}.{Build}.*" will update just the revision.
 
-[assembly: AssemblyVersion("0.6.3.*")]
+[assembly: AssemblyVersion("0.6.4.*")]
 
 [assembly: System.CLSCompliant(false)]
 

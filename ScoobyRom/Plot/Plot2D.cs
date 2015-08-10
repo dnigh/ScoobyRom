@@ -1,6 +1,6 @@
 // Plot2D.cs: Draw line graph using NPlot interface. Does not depend on UI.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

@@ -1,6 +1,6 @@
 // ChecksumWindow.cs: Gtk.Window displaying ROM checksums and CVN.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

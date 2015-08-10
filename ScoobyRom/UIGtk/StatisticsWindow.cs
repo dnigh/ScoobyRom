@@ -1,6 +1,6 @@
 // StatisticsWindow.cs: Gtk.Window displaying some data properties.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

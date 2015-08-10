@@ -1,6 +1,6 @@
 // GnuPlot.cs: Launch and control gnuplot processes (external plot windows).
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

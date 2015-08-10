@@ -1,6 +1,6 @@
 // RomChecksumming.cs: Calculate checksums and related things.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

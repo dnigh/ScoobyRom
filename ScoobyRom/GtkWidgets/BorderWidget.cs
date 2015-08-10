@@ -1,6 +1,6 @@
 // BorderWidget.cs: Gtk# widget that draws a background color and hosts a child widget.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

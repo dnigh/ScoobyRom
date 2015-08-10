@@ -1,6 +1,6 @@
 // MainWindow.cs: Main application window user interface.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *
@@ -282,8 +282,8 @@ public partial class MainWindow : Gtk.Window
 		string appVersion = string.Format ("{0}.{1}.{2}", version.Major.ToString (), version.Minor.ToString (), version.Build.ToString ());
 
 		AboutDialog about = new AboutDialog { ProgramName = appName, Version = appVersion,
-			Copyright = "© 2011 SubaruDieselCrew",
-			Authors = new string[] { "subdiesel\thttp://subdiesel.wordpress.com",
+			Copyright = "© 2011-2015 SubaruDieselCrew",
+			Authors = new string[] { "subdiesel\thttp://subdiesel.wordpress.com/",
 				"\nThanks for any feedback!",
 				"\nEXTERNAL BINARY DEPENDENCIES:",
 				"Gtk#\thttp://mono-project.com/GtkSharp",

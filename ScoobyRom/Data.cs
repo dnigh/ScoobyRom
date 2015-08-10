@@ -1,6 +1,6 @@
 // Data.cs: Main model class, should be independent of UI.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

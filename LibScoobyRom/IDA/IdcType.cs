@@ -1,6 +1,6 @@
 // IdcType.cs: Enum containing type constants for IDC scripts.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

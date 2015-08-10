@@ -1,6 +1,6 @@
 // DataView3DModelGtk.cs: Gtk.TreeModel for UI.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

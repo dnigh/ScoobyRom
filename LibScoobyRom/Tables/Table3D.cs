@@ -1,6 +1,6 @@
 // Table3D.cs: Class for 3D table record and its data, Subaru ROM specific.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

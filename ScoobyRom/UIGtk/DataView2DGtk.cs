@@ -1,6 +1,6 @@
 // DataView2DGtk.cs: Gtk.TreeView based UI.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

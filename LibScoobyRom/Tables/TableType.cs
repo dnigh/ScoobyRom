@@ -1,6 +1,6 @@
 // TableType.cs: Table type enumeration, Subaru ROM specific.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *

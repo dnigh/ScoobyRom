@@ -1,6 +1,6 @@
 // TableWidget.cs: Builds a Gtk.Table showing table data values.
 
-/* Copyright (C) 2011 SubaruDieselCrew
+/* Copyright (C) 2011-2015 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *
