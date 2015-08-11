@@ -1,5 +1,27 @@
 # gnuplot TEMPLATE for Table3D
 
+# Copyright (C) 2011-2015 SubaruDieselCrew
+#
+# This file is part of ScoobyRom.
+#
+# ScoobyRom is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# ScoobyRom is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with ScoobyRom.  If not, see <http://www.gnu.org/licenses/>.
+
+
+# Note: page numbers in comments refer to official gnuplot documentation PDF from www.gnuplot.info
+# page numbers depend on version obviously, may be outdated
+# current version: gnuplot 5.0
+
 # command "test" is useful to check terminal specific colors, linetypes, capabilities...
 # test
 
@@ -10,10 +32,13 @@
 # load "this_template_file.plt"
 # --------
 
-# TERMINAL SPECIFIC !!! Must match currently used terminal!!!! Here: wxt
-# set term wxt font "Liberation Sans,14"
-# use default (platform specific) sans-serif font, font size 14
-set term wxt font "sans,14"
+set macros
+dataFile = "\"gnuplot_data.tmp\""
+terminal = "wxt"
+
+# TERMINAL SPECIFIC !!! Must match currently used terminal!!!!
+# p.33; use default (platform specific) sans-serif font, font size 14
+set term @terminal font "sans,14"
 
 # to allow inline text formatting. If fontname given it must follow '/'.
 set termoption enhanced
@@ -28,13 +53,12 @@ set colorbox back
 # set colorbox horiz user origin .1,.1 size .8,.04
 
 # define style id 100 for surface lines (polygon frame), linetype -1 always means solid black line
-set style line 100 lt -1 lc "black" linewidth 0.5
+set style line 100 linetype -1 linecolor "black" linewidth 0.5
 
-# coloring lines not working with pm3d ?? not really needed here anyway
-# set style line 100 palette
+set pm3d depthorder hidden3d
 
-# also draw lines, use own style 100
-set pm3d hidden3d 100
+# p.150: border: draw bounding lines, use own style
+set pm3d border linestyle 100
 
 # add contour lines; displayed on base, surface or both
 set contour surface
@@ -43,20 +67,12 @@ set contour surface
 set cntrparam bspline
 set cntrparam levels auto 10
 
-# default is like set clabel: multiple contour colors plus legend
-# however some colors don't separete well from surface fill
-#set clabel
-
 # one color only and no contour legend
-unset clabel
-
-# page 94: specifying contour linetypes etc. not possible?
-# "gnuplot will vary the linetype used for each contour level when clabel is set."
-# more contour format control requires writing contours into file and plot from there...
+#set cntrlabel onecolor
 
 
-# p.156: "By default splot draws the xy plane completely below the plotted data. The oﬀset between the lowest ztic and the xy plane can be changed by set xyplane."
-# p.151: xyplane; default: set xyplane relative 0.5
+# p.182: "By default splot draws the xy plane completely below the plotted data. The oﬀset between the lowest ztic and the xy plane can be changed by set xyplane."
+# p.178: xyplane; default: set xyplane relative 0.5
 # set xyplane at 20
 # should work for most/all 3d plots, little space so that lowest z-label does not collide with xy-label
 set xyplane relative 0.05
@@ -70,19 +86,25 @@ set xyplane relative 0.05
 # show default grid
 set grid
 
-# set view <rot_x>{,{<rot_z>}{,{<scale>}{,<scale_z>}}}
+# viewing angle
+# p.170; set view <rot_x>{,{<rot_z>}{,{<scale>}{,<scale_z>}}}
 # defaults to: set view 60, 30, 1, 1
 # <0 not allowed: rot_x [0:180], rot_z [0:360]
-set view 30,330
+viewDefault = "30,330"
+set view viewDefault
 
-# add useful key binding: press "home", sometimes labeled "pos1", key to get initial viewpoint
-bind Home "set view 30,330; refresh"
+# p.39; key bindings
+# press "home", sometimes labeled "pos1", key to reset viewing angle
+bind Home "set view viewDefault; refresh"
 
 # without specifying title, "<filename> binary" would appear above contour legend!
 # empty title avoids this
-# app generates binary data file "gnuplotBinary.bin" for each plot, basically a temporary file
+
+# p.83: "The default binary format is a float."
+# app generates a binary data file on each plot action, basically a temporary file containing coordinates
 # mark as "volatile" so a single temporary data file can be shared, replot would re-read and could show wrong data
-splot "gnuplot_data.tmp" binary volatile title "" with pm3d
+
+splot @dataFile binary volatile title "" with pm3d
 
 #set label 1 "Annotation Label" at screen 0.01,0.95 front left textcolor rgb "blue"
 
