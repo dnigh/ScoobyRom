@@ -22,6 +22,7 @@
     <ConsolePause>false</ConsolePause>
     <AssemblyOriginatorKeyFile>keypair.snk</AssemblyOriginatorKeyFile>
     <PlatformTarget>x86</PlatformTarget>
+    <Commandlineparameters>/home/martin/app/RomRaider/ecu_defs/diesel/2009_2010_Impreza_2.0_Diesel_6MT_EDM_JZ2F441A/2009_2010_Impreza_2.0_Diesel_6MT_EDM_JZ2F441A.bin</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
@@ -122,6 +123,7 @@
     <Compile Include="UIGtk\StatisticsWindow.cs" />
     <Compile Include="Plot\GnuPlot.cs" />
     <Compile Include="Plot\GnuPlotExceptions.cs" />
+    <Compile Include="Plot\PlotIconBase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

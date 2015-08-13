@@ -44,7 +44,7 @@ namespace ScoobyRom
 		protected CellRendererPixbuf cellRendererPixbuf;
 
 		// not worth taking enum, Gtk methods need int anyway
-		protected readonly Dictionary<TreeViewColumn, int> columnsDict = new Dictionary<TreeViewColumn, int> (10);
+		protected readonly Dictionary<TreeViewColumn, int> columnsDict = new Dictionary<TreeViewColumn, int> (25);
 		protected bool showIcons;
 
 		static DataViewBaseGtk ()

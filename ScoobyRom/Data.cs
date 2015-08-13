@@ -90,6 +90,8 @@ namespace ScoobyRom
 			romLoaded = false;
 			rom = new Subaru.File.Rom (path);
 
+			rom.FindMetadata ();
+
 			string xmlPath = PathWithNewExtension (path, ".xml");
 			bool xmlExists = System.IO.File.Exists (xmlPath);
 

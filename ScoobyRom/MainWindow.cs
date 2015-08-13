@@ -130,6 +130,7 @@ public partial class MainWindow : Gtk.Window
 
 		this.statusbar1.Push (0, "Analyzing file " + System.IO.Path.GetFileName (path));
 
+
 		#if LOAD_SYNC
 
 		LoadRomTask (path);

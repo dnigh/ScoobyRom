@@ -170,9 +170,9 @@ namespace Subaru.File
 			Table.PosMin = 8 * 1024;
 			Table.PosMax = (int)fs.Length - 1;
 
-			// default capacities suitable for SH7059 diesel ROMs
-			list2D = new List<Table2D> (800);
-			list3D = new List<Table3D> (1000);
+			// default capacities suitable for current SH7059 diesel ROMs
+			list2D = new List<Table2D> (1000);
+			list3D = new List<Table3D> (1200);
 
 			OnProgressChanged (0);
 			this.percentDoneLastReport = 0;
@@ -204,6 +204,58 @@ namespace Subaru.File
 				}
 			}
 			OnProgressChanged (100);
+		}
+
+		public void FindMetadata ()
+		{
+			const int Pos_SH7058_Diesel = 0x4000;
+			const int RomIDlongLength = 32;
+			const int CIDLength = 8;
+
+			int pos = 0;
+			switch (RomType) {
+			case RomType.SH7058:
+			case RomType.SH7059:
+				pos = Pos_SH7058_Diesel;
+				break;
+			default:
+				Console.WriteLine ("Unknown RomType");
+				return;
+			}
+
+
+			string romIDlong = ReadASCII (pos, RomIDlongLength).TrimEnd();
+			Console.WriteLine ("RomIDlong[{0}]: {1}", romIDlong.Length.ToString(), romIDlong);
+
+			string CID = romIDlong.Substring (romIDlong.Length - CIDLength);
+			Console.WriteLine ("CID: {0}", CID);
+
+			fs.Position = pos + RomIDlongLength;
+			int year = fs.ReadByte () + 2000;
+			int month = fs.ReadByte ();
+			int day = fs.ReadByte ();
+			DateTime romDate = new DateTime (year, month, day);
+			Console.WriteLine ("RomDate: {0}", romDate.ToString("yyyy-MM-dd"));
+
+			byte[] searchBytes = new byte[] { 0xA2, 0x10, 0x14 };
+			fs.Position = 0;
+			var ssmIDpos = Util.SearchBinary.FindBytes (fs, searchBytes);
+			Console.WriteLine ("Diesel SSMID pos: 0x{0:X}", ssmIDpos);
+
+			const int RomIDLength = 5;
+			byte[] romid = new byte[RomIDLength];
+			if (ssmIDpos.HasValue) {
+				fs.Position = ssmIDpos.Value + 3;
+				if (fs.Read (romid, 0, RomIDLength) == RomIDLength)
+					Console.WriteLine ("ROMID: {0}", romid.ToString());
+
+				const string DieselASCII = "2.0 DIESEL";
+				fs.Position = 0;
+				var stringPos = Util.SearchBinary.FindASCII (fs, DieselASCII);
+				Console.WriteLine ("{0} pos: 0x{1:X}", DieselASCII, stringPos);
+			}
+
+
 		}
 
 		#region IDisposable implementation
