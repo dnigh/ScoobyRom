@@ -26,14 +26,15 @@ using Gdk;
 namespace ScoobyRom
 {
 	/// <summary>
-	/// Creates NPlot ImagePlots without any annotation, useful for icons.
+	/// Common functionality for drawing icons using NPlot.
 	/// Methods are not thread safe!
 	/// </summary>
-	public class PlotIconBase
+	public abstract class PlotIconBase
 	{
 		protected const int MemoryStreamCapacity = 2048;
 		public const int DefaultWidth = 128;
 		public const int DefaultHeight = 128;
+		public const int Padding = 2;
 
 		// ImageFormat:
 		// Png uses transparent background; Bmp & Gif use black background; ImageFormat.Tiff adds unneeded Exif
@@ -43,7 +44,7 @@ namespace ScoobyRom
 
 		protected int width, height, padding;
 		protected System.Drawing.Rectangle bounds;
-		protected Gdk.Pixbuf missingDataPic;
+		protected Gdk.Pixbuf constDataIcon;
 
 		// reuse objects where possible to improve performance
 		protected readonly NPlot.PlotSurface2D plotSurface = new NPlot.PlotSurface2D ();
@@ -60,23 +61,23 @@ namespace ScoobyRom
 			this.bitmap_cache = new System.Drawing.Bitmap (width, height);
 
 			// black/transparent (depending on image format) frame
-			this.padding = 2;
+			this.padding = Padding;
 		}
 
-		// very useful since many Tables have const values.
-		public Gdk.Pixbuf GetNoDataPixBuf {
+		// reuse icon, very useful for performance as many tables have const values
+		public Gdk.Pixbuf ConstDataIcon {
 			get {
-				if (missingDataPic == null) {
+				if (constDataIcon == null) {
 					//					Gtk.Image image = new Gtk.Image ();
 					//					missingDataPic = image.RenderIcon (Gtk.Stock.MissingImage, Gtk.IconSize.SmallToolbar, null);
 					//					image.Dispose ();
 
 					// bits per sample must be 8!
-					missingDataPic = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, false, 8, width, height);
+					constDataIcon = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, false, 8, width, height);
 					// RGBA
-					missingDataPic.Fill (0xAAAAAAFF);
+					constDataIcon.Fill (0xAAAAAAFF);
 				}
-				return missingDataPic;
+				return constDataIcon;
 			}
 		}
 
@@ -105,8 +106,45 @@ namespace ScoobyRom
 			bitmap_cache.Save (memoryStream, imageFormat);
 
 			memoryStream.Position = 0;
-			// TODO create Pixbuf directly from bitmap if possible, avoiding MemoryStream
+			// TODO create Pixbuf directly from bitmap if possible, avoiding MemoryStream; no better solution found so far
 			return new Gdk.Pixbuf (memoryStream);
+
+			// return PixbufFromBitmap (bitmap_cache);
 		}
+
+		// working but sensitive to internal bitmap data formats
+		// speed not tested yet, probably not worth using this vs. SaveTo+LoadFrom MemoryStream method
+		// original source: http://mono.1490590.n4.nabble.com/Current-way-of-creating-a-Pixbuf-from-an-RGB-Array-td1545766.html
+//		public Gdk.Pixbuf PixbufFromBitmap (Bitmap bitmap)
+//		{
+//			int width = bitmap.Width;
+//			int height = bitmap.Height;
+//
+//			System.Drawing.Imaging.BitmapData bitmapData = bitmap.LockBits (new System.Drawing.Rectangle (0, 0, width, height), System.Drawing.Imaging.ImageLockMode.ReadOnly,
+//				                                               System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+//			System.IntPtr scan = bitmapData.Scan0;
+//			int size = width * height * 3;
+//			byte[] pixbufData = new byte[size];
+//
+//			unsafe {
+//				byte* p = (byte*)scan;
+//				for (int y = 0; y < height; y++) {
+//					for (int x = 0; x < width; x++) {
+//						int i = (y * width + x) * 3;
+//						pixbufData [i] = p [i + 2];
+//						pixbufData [i + 1] = p [i + 1];
+//						pixbufData [i + 2] = p [i];
+//					}
+//				}
+//
+//				// original: colors are wrong!
+////				for (int i = 0; i < size; i++)
+////					pixbufData [i] = p [i];
+//			}
+//
+//			Gdk.Pixbuf pixbuf = new Gdk.Pixbuf (pixbufData, false, 8, width, height, bitmapData.Stride);
+//			bitmap.UnlockBits (bitmapData);
+//			return pixbuf;
+//		}
 	}
 }

@@ -156,6 +156,9 @@ namespace Subaru.File
 		public static RomMetadata FromXML (XElement romidElement)
 		{
 			RomMetadata d = new RomMetadata ();
+			if (romidElement == null)
+				return d;
+
 			d.Xmlid = (string)romidElement.Element (RRX_xmlid);
 
 			XElement el;

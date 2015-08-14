@@ -39,6 +39,7 @@ namespace Util
 					for (int i = 1; i < target.Length; i++) {
 						if (stream.ReadByte () != target [i]) {
 							match = false;
+							stream.Seek (-i, SeekOrigin.Current);
 							break;
 						}
 					}

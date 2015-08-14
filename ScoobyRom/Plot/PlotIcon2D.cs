@@ -46,7 +46,7 @@ namespace ScoobyRom
 		public Gdk.Pixbuf CreateIcon2D (Subaru.Tables.Table2D table)
 		{
 			if (table.Ymin == table.Ymax)
-				return GetNoDataPixBuf;
+				return ConstDataIcon;
 
 			plotSurface.Clear ();
 			plotSurface.SmoothingMode = SmoothingMode;

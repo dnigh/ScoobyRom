@@ -62,13 +62,14 @@ namespace ScoobyRom
 					viewModel.RequestIcons ();
 					treeView.Sensitive = true;
 				} else {
-					// row sizes won't shrink automaticalle, only after updating column content !?
-					// no effect: treeView.SizeRequest ();
+					// row heights won't shrink automatically, only after editing any column content
+					// no effect: treeView.SizeRequest (); treeView.QueueResize ();
 					// there is no treeView.RowsAutosize ()
+
+					// HACK shrinking row heights - no better method found yet
+					treeView.Model = null;
+					treeView.Model = viewModel.TreeModel;
 				}
-				// HACK shrinking/increading row heights - no better method found yet
-				//	treeView.Model = null;
-				//	treeView.Model = this.treeStore;
 			}
 		}
 

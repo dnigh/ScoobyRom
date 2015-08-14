@@ -40,7 +40,7 @@ namespace ScoobyRom
 		public Gdk.Pixbuf CreateIcon3D (Subaru.Tables.Table3D table)
 		{
 			if (table.Zmin == table.Zmax)
-				return GetNoDataPixBuf;
+				return ConstDataIcon;
 
 			Plot3D.Draw (plotSurface, table);
 			return DrawAndConvert ();
