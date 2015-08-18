@@ -27,61 +27,19 @@ using Subaru.Tables;
 namespace ScoobyRom
 {
 	// sort of ViewModel in M-V-VM (Model-View-ViewModel pattern)
-	public sealed class DataView3DModelGtk
+	public sealed class DataView3DModelGtk : DataViewModelBaseGtk
 	{
-		const int iconWidth = 64;
-		const int iconHeight = 48;
-
-		readonly Data data;
-
-		// main TreeStore, most of the core data is being copied into this
-		ListStore store;
-
-		// draws icons
-		readonly PlotIcon3D plotIcon = new PlotIcon3D (iconWidth, iconHeight);
-
-		bool iconsCached;
-
-		public TreeModel TreeModel {
-			get { return this.store; }
-		}
-
-		private DataView3DModelGtk ()
+		public DataView3DModelGtk (Data data) : base (data, new PlotIcon3D (iconWidth, iconHeight))
 		{
-		}
-
-		public DataView3DModelGtk (Data data)
-		{
-			this.data = data;
-			InitStore ();
 			data.ItemsChanged3D += OnDataItemsChanged;
-		}
-
-		/// <summary>
-		/// Creates icons if not done already, otherwise returns immediatly.
-		/// Icon creation happens in background.
-		/// </summary>
-		public void RequestIcons ()
-		{
-			if (iconsCached)
-				return;
-			Task task = new Task (() => CreateAllIcons ());
-			task.ContinueWith(t => iconsCached = true);
-			task.Start();
-		}
-
-		void OnDataItemsChanged (object sender, EventArgs e)
-		{
-			this.store.Clear ();
-			PopulateData ();
 		}
 
 		public void ChangeTableType (Table3D table3D, TableType newType)
 		{
-			data.ChangeTableType(table3D, newType);
+			data.ChangeTableType (table3D, newType);
 		}
 
-		void InitStore ()
+		override protected void InitStore ()
 		{
 			// TODO avoid reflection
 			int count = ((ColumnNr3D[])Enum.GetValues (typeof(ColumnNr3D))).Length;
@@ -92,37 +50,37 @@ namespace ScoobyRom
 			// --> use int instead
 
 
-			types[(int)ColumnNr3D.Category] = typeof(string);
-			types[(int)ColumnNr3D.Toggle] = typeof(bool);
-			types[(int)ColumnNr3D.Icon] = typeof(Gdk.Pixbuf);
-			types[(int)ColumnNr3D.Title] = typeof(string);
-			types[(int)ColumnNr3D.Type] = typeof(int);
+			types [(int)ColumnNr3D.Category] = typeof(string);
+			types [(int)ColumnNr3D.Toggle] = typeof(bool);
+			types [(int)ColumnNr3D.Icon] = typeof(Gdk.Pixbuf);
+			types [(int)ColumnNr3D.Title] = typeof(string);
+			types [(int)ColumnNr3D.Type] = typeof(int);
 
-			types[(int)ColumnNr3D.NameX] = typeof(string);
-			types[(int)ColumnNr3D.NameY] = typeof(string);
+			types [(int)ColumnNr3D.NameX] = typeof(string);
+			types [(int)ColumnNr3D.NameY] = typeof(string);
 
-			types[(int)ColumnNr3D.UnitX] = typeof(string);
-			types[(int)ColumnNr3D.UnitY] = typeof(string);
-			types[(int)ColumnNr3D.UnitZ] = typeof(string);
+			types [(int)ColumnNr3D.UnitX] = typeof(string);
+			types [(int)ColumnNr3D.UnitY] = typeof(string);
+			types [(int)ColumnNr3D.UnitZ] = typeof(string);
 
-			types[(int)ColumnNr3D.CountX] = typeof(int);
-			types[(int)ColumnNr3D.CountY] = typeof(int);
-			types[(int)ColumnNr3D.CountZ] = typeof(int);
+			types [(int)ColumnNr3D.CountX] = typeof(int);
+			types [(int)ColumnNr3D.CountY] = typeof(int);
+			types [(int)ColumnNr3D.CountZ] = typeof(int);
 
-			types[(int)ColumnNr3D.Xmin] = typeof(float);
-			types[(int)ColumnNr3D.Xmax] = typeof(float);
-			types[(int)ColumnNr3D.Ymin] = typeof(float);
-			types[(int)ColumnNr3D.Ymax] = typeof(float);
-			types[(int)ColumnNr3D.Zmin] = typeof(float);
-			types[(int)ColumnNr3D.Zavg] = typeof(float);
-			types[(int)ColumnNr3D.Zmax] = typeof(float);
+			types [(int)ColumnNr3D.Xmin] = typeof(float);
+			types [(int)ColumnNr3D.Xmax] = typeof(float);
+			types [(int)ColumnNr3D.Ymin] = typeof(float);
+			types [(int)ColumnNr3D.Ymax] = typeof(float);
+			types [(int)ColumnNr3D.Zmin] = typeof(float);
+			types [(int)ColumnNr3D.Zavg] = typeof(float);
+			types [(int)ColumnNr3D.Zmax] = typeof(float);
 
-			types[(int)ColumnNr3D.ZPos] = typeof(int);
-			types[(int)ColumnNr3D.Location] = typeof(int);
+			types [(int)ColumnNr3D.ZPos] = typeof(int);
+			types [(int)ColumnNr3D.Location] = typeof(int);
 
-			types[(int)ColumnNr3D.Description] = typeof(string);
+			types [(int)ColumnNr3D.Description] = typeof(string);
 
-			types[(int)ColumnNr3D.Obj] = typeof(object);
+			types [(int)ColumnNr3D.Obj] = typeof(object);
 
 			store = new ListStore (types);
 
@@ -131,7 +89,7 @@ namespace ScoobyRom
 			store.RowChanged += HandleTreeStoreRowChanged;
 		}
 
-		void PopulateData ()
+		override protected void PopulateData ()
 		{
 			// performance, would get raised for each new row
 			store.RowChanged -= HandleTreeStoreRowChanged;
@@ -190,12 +148,12 @@ namespace ScoobyRom
 				CreateSetNewIcon (iter, table3D);
 		}
 
-		void CreateSetNewIcon(TreeIter iter, Table3D table3D)
+		void CreateSetNewIcon (TreeIter iter, Table3D table3D)
 		{
-			store.SetValue (iter, (int)ColumnNr3D.Icon, plotIcon.CreateIcon3D (table3D));
+			store.SetValue (iter, (int)ColumnNr3D.Icon, plotIcon.CreateIcon (table3D));
 		}
 
-		void UpdateModel (TreeIter iter)
+		protected override void UpdateModel (TreeIter iter)
 		{
 			Table3D table = store.GetValue (iter, (int)ColumnNr3D.Obj) as Table3D;
 			if (table == null)
@@ -210,43 +168,9 @@ namespace ScoobyRom
 			table.Description = (string)store.GetValue (iter, (int)ColumnNr3D.Description);
 		}
 
-		void CreateAllIcons ()
+		protected override void CreateAllIcons ()
 		{
-			TreeIter iter;
-			if (!store.GetIterFirst (out iter))
-				return;
-			do {
-				Table3D table3D = (Table3D)store.GetValue (iter, (int)ColumnNr3D.Obj);
-				Gdk.Pixbuf pixbuf = plotIcon.CreateIcon3D (table3D);
-
-				// update model reference in GUI Thread to make sure UI display is ok
-				Application.Invoke (delegate { store.SetValue (iter, (int)ColumnNr3D.Icon, pixbuf); });
-			} while (store.IterNext (ref iter));
-			plotIcon.CleanupTemp ();
+			CreateAllIcons ((int)ColumnNr3D.Obj, (int)ColumnNr3D.Icon);
 		}
-
-
-
-		#region TreeStore event handlers
-
-		// called for each changed column!
-		void HandleTreeStoreRowChanged (object o, RowChangedArgs args)
-		{
-			//Console.WriteLine ("TreeStoreRowChanged");
-			UpdateModel (args.Iter);
-		}
-
-		// not called when treeView.Reorderable = true !!!
-		// called when clicking column headers
-//		void HandleTreeStoreRowsReordered (object o, RowsReorderedArgs args)
-//		{
-//			Console.WriteLine ("TreeStore3D: RowsReordered");
-//		}
-
-		#endregion TreeStore event handlers
-
-
 	}
-
 }
-

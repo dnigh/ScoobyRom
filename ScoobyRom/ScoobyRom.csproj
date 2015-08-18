@@ -124,6 +124,7 @@
     <Compile Include="Plot\GnuPlot.cs" />
     <Compile Include="Plot\GnuPlotExceptions.cs" />
     <Compile Include="Plot\PlotIconBase.cs" />
+    <Compile Include="UIGtk\DataViewModelBaseGtk.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

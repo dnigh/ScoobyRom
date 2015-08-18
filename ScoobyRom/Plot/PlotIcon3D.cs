@@ -24,7 +24,7 @@ using NPlot;
 namespace ScoobyRom
 {
 	/// <summary>
-	/// Creates NPlot ImagePlots without any annotation, useful for icons.
+	/// Creates NPlot ImagePlots (heatmap) without any annotation, useful for icons.
 	/// Methods are not thread safe!
 	/// </summary>
 	public sealed class PlotIcon3D : PlotIconBase
@@ -37,8 +37,10 @@ namespace ScoobyRom
 		{
 		}
 
-		public Gdk.Pixbuf CreateIcon3D (Subaru.Tables.Table3D table)
+		public override Gdk.Pixbuf CreateIcon (Subaru.Tables.Table t)
 		{
+			Subaru.Tables.Table3D table = t as Subaru.Tables.Table3D;
+
 			if (table.Zmin == table.Zmax)
 				return ConstDataIcon;
 

@@ -29,7 +29,7 @@ namespace ScoobyRom
 		static readonly NPlotUtil.NPlotGradient gradient = new NPlotUtil.NPlotGradient ();
 
 		/// <summary>
-		/// Draws NPlot.ImagePlot.
+		/// Draws NPlot.ImagePlot (heatmap).
 		/// Does Clear(), axis are hidden.
 		/// Can be used for icons as well.
 		/// </summary>

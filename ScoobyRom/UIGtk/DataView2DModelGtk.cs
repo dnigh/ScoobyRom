@@ -27,61 +27,19 @@ using Subaru.Tables;
 namespace ScoobyRom
 {
 	// sort of ViewModel in M-V-VM (Model-View-ViewModel pattern)
-	public sealed class DataView2DModelGtk
+	public sealed class DataView2DModelGtk : DataViewModelBaseGtk
 	{
-		const int iconWidth = 64;
-		const int iconHeight = 48;
-
-		readonly Data data;
-
-		// main TreeStore, most of the core data is being copied into this
-		ListStore store;
-
-		// generates icons
-		readonly PlotIcon2D plotIcon = new PlotIcon2D (iconWidth, iconHeight);
-
-		bool iconsCached;
-
-		public TreeModel TreeModel {
-			get { return this.store; }
-		}
-
-		private DataView2DModelGtk ()
+		public DataView2DModelGtk (Data data) : base (data, new PlotIcon2D (iconWidth, iconHeight))
 		{
-		}
-
-		public DataView2DModelGtk (Data data)
-		{
-			this.data = data;
-			InitStore ();
 			data.ItemsChanged2D += OnDataItemsChanged;
-		}
-
-		/// <summary>
-		/// Creates icons if not done already, otherwise returns immediatly.
-		/// Icon creation happens in background.
-		/// </summary>
-		public void RequestIcons ()
-		{
-			if (iconsCached)
-				return;
-			Task task = new Task (() => CreateAllIcons ());
-			task.ContinueWith (t => iconsCached = true);
-			task.Start ();
-		}
-
-		void OnDataItemsChanged (object sender, EventArgs e)
-		{
-			this.store.Clear ();
-			PopulateData ();
 		}
 
 		public void ChangeTableType (Table2D table2D, TableType newType)
 		{
-			data.ChangeTableType(table2D, newType);
+			data.ChangeTableType (table2D, newType);
 		}
 
-		void InitStore ()
+		override protected void InitStore ()
 		{
 			// TODO avoid reflection
 			int count = ((ColumnNr2D[])Enum.GetValues (typeof(ColumnNr2D))).Length;
@@ -91,30 +49,30 @@ namespace ScoobyRom
 			// using enum in the store --> Gtk-WARNING **: Attempting to sort on invalid type GtkSharpValue
 			// --> use int instead
 
-			types[(int)ColumnNr2D.Category] = typeof(string);
-			types[(int)ColumnNr2D.Toggle] = typeof(bool);
-			types[(int)ColumnNr2D.Icon] = typeof(Gdk.Pixbuf);
-			types[(int)ColumnNr2D.Title] = typeof(string);
-			types[(int)ColumnNr2D.Type] = typeof(int);
-			types[(int)ColumnNr2D.UnitY] = typeof(string);
+			types [(int)ColumnNr2D.Category] = typeof(string);
+			types [(int)ColumnNr2D.Toggle] = typeof(bool);
+			types [(int)ColumnNr2D.Icon] = typeof(Gdk.Pixbuf);
+			types [(int)ColumnNr2D.Title] = typeof(string);
+			types [(int)ColumnNr2D.Type] = typeof(int);
+			types [(int)ColumnNr2D.UnitY] = typeof(string);
 
-			types[(int)ColumnNr2D.NameX] = typeof(string);
-			types[(int)ColumnNr2D.UnitX] = typeof(string);
+			types [(int)ColumnNr2D.NameX] = typeof(string);
+			types [(int)ColumnNr2D.UnitX] = typeof(string);
 
-			types[(int)ColumnNr2D.CountX] = typeof(int);
+			types [(int)ColumnNr2D.CountX] = typeof(int);
 
-			types[(int)ColumnNr2D.Xmin] = typeof(float);
-			types[(int)ColumnNr2D.Xmax] = typeof(float);
-			types[(int)ColumnNr2D.Ymin] = typeof(float);
-			types[(int)ColumnNr2D.Yavg] = typeof(float);
-			types[(int)ColumnNr2D.Ymax] = typeof(float);
+			types [(int)ColumnNr2D.Xmin] = typeof(float);
+			types [(int)ColumnNr2D.Xmax] = typeof(float);
+			types [(int)ColumnNr2D.Ymin] = typeof(float);
+			types [(int)ColumnNr2D.Yavg] = typeof(float);
+			types [(int)ColumnNr2D.Ymax] = typeof(float);
 
-			types[(int)ColumnNr2D.Location] = typeof(int);
-			types[(int)ColumnNr2D.YPos] = typeof(int);
+			types [(int)ColumnNr2D.Location] = typeof(int);
+			types [(int)ColumnNr2D.YPos] = typeof(int);
 
-			types[(int)ColumnNr2D.Description] = typeof(string);
+			types [(int)ColumnNr2D.Description] = typeof(string);
 
-			types[(int)ColumnNr2D.Obj] = typeof(object);
+			types [(int)ColumnNr2D.Obj] = typeof(object);
 
 			store = new ListStore (types);
 
@@ -123,7 +81,7 @@ namespace ScoobyRom
 			store.RowChanged += HandleTreeStoreRowChanged;
 		}
 
-		void PopulateData ()
+		override protected void PopulateData ()
 		{
 			// performance, would get raised for each new row
 			store.RowChanged -= HandleTreeStoreRowChanged;
@@ -176,10 +134,10 @@ namespace ScoobyRom
 
 		void CreateSetNewIcon (TreeIter iter, Table2D table2D)
 		{
-			store.SetValue (iter, (int)ColumnNr2D.Icon, plotIcon.CreateIcon2D (table2D));
+			store.SetValue (iter, (int)ColumnNr2D.Icon, plotIcon.CreateIcon (table2D));
 		}
 
-		void UpdateModel (TreeIter iter)
+		protected override void UpdateModel (TreeIter iter)
 		{
 			Table2D table = store.GetValue (iter, (int)ColumnNr2D.Obj) as Table2D;
 			if (table == null)
@@ -189,47 +147,12 @@ namespace ScoobyRom
 			table.UnitY = (string)store.GetValue (iter, (int)ColumnNr2D.UnitY);
 			table.NameX = (string)store.GetValue (iter, (int)ColumnNr2D.NameX);
 			table.UnitX = (string)store.GetValue (iter, (int)ColumnNr2D.UnitX);
-
 			table.Description = (string)store.GetValue (iter, (int)ColumnNr2D.Description);
 		}
 
-		void CreateAllIcons ()
+		protected override void CreateAllIcons ()
 		{
-			TreeIter iter;
-			if (!store.GetIterFirst (out iter))
-				return;
-			do {
-				Table2D table2D = (Table2D)store.GetValue (iter, (int)ColumnNr2D.Obj);
-				Gdk.Pixbuf pixbuf = plotIcon.CreateIcon2D (table2D);
-
-				// update model reference in GUI Thread to make sure UI display is ok
-				Application.Invoke (delegate { store.SetValue (iter, (int)ColumnNr2D.Icon, pixbuf); });
-			} while (store.IterNext (ref iter));
-			plotIcon.CleanupTemp ();
+			CreateAllIcons ((int)ColumnNr2D.Obj, (int)ColumnNr2D.Icon);
 		}
-
-
-
-		#region TreeStore event handlers
-
-		// called for each changed column!
-		void HandleTreeStoreRowChanged (object o, RowChangedArgs args)
-		{
-			//Console.WriteLine ("TreeStoreRowChanged");
-			UpdateModel (args.Iter);
-		}
-
-		// not called when treeView.Reorderable = true !!!
-		// called when clicking column headers
-//		void HandleTreeStoreRowsReordered (object o, RowsReorderedArgs args)
-//		{
-//			Console.WriteLine ("TreeStore2D: RowsReordered");
-//		}
-
-		#endregion TreeStore event handlers
-
-
 	}
-
 }
-

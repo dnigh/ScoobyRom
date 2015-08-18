@@ -74,6 +74,8 @@ namespace ScoobyRom
 			this.padding = Padding;
 		}
 
+		abstract public Gdk.Pixbuf CreateIcon (Subaru.Tables.Table table);
+
 		// reuse icon, very useful for performance as many tables have const values
 		public Gdk.Pixbuf ConstDataIcon {
 			get {

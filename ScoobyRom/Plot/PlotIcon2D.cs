@@ -43,8 +43,10 @@ namespace ScoobyRom
 			pen = new System.Drawing.Pen (System.Drawing.Color.Red, width >= 32 ? 2f : 1f);
 		}
 
-		public Gdk.Pixbuf CreateIcon2D (Subaru.Tables.Table2D table)
+		public override Gdk.Pixbuf CreateIcon (Subaru.Tables.Table t)
 		{
+			Subaru.Tables.Table2D table = t as Subaru.Tables.Table2D;
+
 			if (table.Ymin == table.Ymax)
 				return ConstDataIcon;
 
