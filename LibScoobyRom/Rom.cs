@@ -206,8 +206,35 @@ namespace Subaru.File
 			OnProgressChanged (100);
 		}
 
+		static bool Predicate (char c)
+		{
+			return (char.IsLetterOrDigit (c) || char.IsWhiteSpace (c) || char.IsPunctuation (c));
+		}
+
 		public void FindMetadata ()
 		{
+			const string DieselASCII = "DIESEL";
+			const string TurboASCII = "TURBO";
+
+			fs.Position = 0;
+			int? stringPos;
+			string strFound;
+
+			stringPos = Util.SearchBinary.FindASCII (fs, DieselASCII);
+			if (stringPos.HasValue) {
+				fs.Position = stringPos.Value;
+				strFound = Util.SearchBinary.ExtendFindASCII (fs, Predicate);
+				Console.WriteLine ($"[{strFound.Length}]\"{strFound}\" pos: 0x{stringPos.Value:X}");
+			}
+
+			fs.Position = 0;
+			stringPos = Util.SearchBinary.FindASCII (fs, TurboASCII);
+			if (stringPos.HasValue) {
+				fs.Position = stringPos.Value;
+				strFound = Util.SearchBinary.ExtendFindASCII (fs, Predicate);
+				Console.WriteLine ($"[{strFound.Length}]\"{strFound}\" pos: 0x{stringPos.Value:X}");
+			}
+
 			const int Pos_SH7058_Diesel = 0x4000;
 			const int RomIDlongLength = 32;
 			const int CIDLength = 8;
@@ -243,16 +270,17 @@ namespace Subaru.File
 			Console.WriteLine ("Diesel SSMID pos: 0x{0:X}", ssmIDpos);
 
 			const int RomIDLength = 5;
-			byte[] romid = new byte[RomIDLength];
+			byte[] romidBytes = new byte[RomIDLength];
+			long romid;
 			if (ssmIDpos.HasValue) {
 				fs.Position = ssmIDpos.Value + 3;
-				if (fs.Read (romid, 0, RomIDLength) == RomIDLength)
-					Console.WriteLine ("ROMID: {0}", romid.ToString());
+				if (fs.Read (romidBytes, 0, RomIDLength) == RomIDLength) {
+					// parse value from 5 bytes, big endian
+					romid = ((long)(romidBytes[0]) << 32) + Util.BinaryHelper.Int32BigEndian (romidBytes, 1);
+					Console.WriteLine ("ROMID: {0}", romid.ToString ("X10"));
+				}
 
-				const string DieselASCII = "2.0 DIESEL";
-				fs.Position = 0;
-				var stringPos = Util.SearchBinary.FindASCII (fs, DieselASCII);
-				Console.WriteLine ("{0} pos: 0x{1:X}", DieselASCII, stringPos);
+
 			}
 
 

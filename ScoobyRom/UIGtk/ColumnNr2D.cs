@@ -37,7 +37,7 @@ namespace ScoobyRom
 		Xmax,
 		Ymin,
 		Yavg,
-		Ymax,		
+		Ymax,
 		YPos,
 		Description,
 		Obj,

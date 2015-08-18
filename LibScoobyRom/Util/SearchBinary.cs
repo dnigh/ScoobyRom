@@ -20,16 +20,27 @@
 
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace Util
 {
 	public static class SearchBinary
 	{
-
+		/// <summary>
+		/// Returns the stream position of the first occurence of specified bytes.
+		/// </summary>
+		/// <returns>The position or null if not found.</returns>
+		/// <param name="stream">Data.</param>
+		/// <param name="target">Values to search for.</param>
 		public static int? FindBytes (Stream stream, byte[] target)
 		{
+			if (stream == null)
+				throw new ArgumentNullException (nameof (stream));
+			if (target == null)
+				throw new ArgumentNullException (nameof (target));
+			if (target.Length == 0)
+				throw new ArgumentOutOfRangeException (nameof (target), nameof (target) + ".Length == 0");
+
 			int firstByteTarget = target [0];
 			int currentByte;
 			bool match;
@@ -37,7 +48,10 @@ namespace Util
 				if (currentByte == firstByteTarget) {
 					match = true;
 					for (int i = 1; i < target.Length; i++) {
-						if (stream.ReadByte () != target [i]) {
+						currentByte = stream.ReadByte ();
+						if (currentByte < 0)
+							return null;
+						if (currentByte != target [i]) {
 							match = false;
 							stream.Seek (-i, SeekOrigin.Current);
 							break;
@@ -50,10 +64,51 @@ namespace Util
 			return null;
 		}
 
+		/// <summary>
+		/// Returns the stream position of the first occurence of specified string.
+		/// </summary>
+		/// <returns>The position or null if not found.</returns>
+		/// <param name="stream">Data.</param>
+		/// <param name="target">String to search for.</param>
 		public static int? FindASCII (Stream stream, string target)
 		{
 			return FindBytes (stream, System.Text.Encoding.ASCII.GetBytes (target));
 		}
 
+		public static byte[] ExtendFind (Stream stream, Func<byte, bool> check)
+		{
+			int currentByte;
+
+			int leftPos = (int)stream.Position;
+
+			// left
+			//stream.Seek (-1, SeekOrigin.Current);
+			while ((currentByte = stream.ReadByte ()) >= 0 && check((byte)currentByte))
+			{
+				leftPos = (int)stream.Position - 1;
+				stream.Seek (-2, SeekOrigin.Current);
+			}
+
+			// right
+			while ((currentByte = stream.ReadByte ()) >= 0 && check((byte)currentByte))
+			{
+			}
+
+			int count = (int)stream.Position - leftPos - 1;
+			if (count < 1)
+				return null;
+
+			byte[] bytes = new byte[count];
+			stream.Position = leftPos;
+			stream.Read (bytes, 0, count);
+
+			return bytes;
+		}
+
+		public static string ExtendFindASCII (Stream stream, Func<char, bool> check)
+		{
+			byte[] result = ExtendFind(stream, b => check(System.Convert.ToChar(b)));
+			return System.Text.Encoding.ASCII.GetString (result);
+		}
 	}
 }

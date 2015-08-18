@@ -202,10 +202,8 @@ namespace ScoobyRom
 				Table2D table2D = (Table2D)store.GetValue (iter, (int)ColumnNr2D.Obj);
 				Gdk.Pixbuf pixbuf = plotIcon.CreateIcon2D (table2D);
 
-				// copy needed to work properly, closure does not recognize and copy updated ref var ?
-				TreeIter iterCopy = iter;
 				// update model reference in GUI Thread to make sure UI display is ok
-				Application.Invoke (delegate { store.SetValue (iterCopy, (int)ColumnNr2D.Icon, pixbuf); });
+				Application.Invoke (delegate { store.SetValue (iter, (int)ColumnNr2D.Icon, pixbuf); });
 			} while (store.IterNext (ref iter));
 			plotIcon.CleanupTemp ();
 		}

@@ -38,7 +38,7 @@ namespace ScoobyRom
 		ListStore store;
 
 		// draws icons
-		readonly PlotIcon3D plotIcon = new PlotIcon3D(iconWidth, iconHeight);
+		readonly PlotIcon3D plotIcon = new PlotIcon3D (iconWidth, iconHeight);
 
 		bool iconsCached;
 
@@ -66,7 +66,7 @@ namespace ScoobyRom
 			if (iconsCached)
 				return;
 			Task task = new Task (() => CreateAllIcons ());
-			task.ContinueWith ((t) => iconsCached = true);
+			task.ContinueWith(t => iconsCached = true);
 			task.Start();
 		}
 
@@ -219,10 +219,8 @@ namespace ScoobyRom
 				Table3D table3D = (Table3D)store.GetValue (iter, (int)ColumnNr3D.Obj);
 				Gdk.Pixbuf pixbuf = plotIcon.CreateIcon3D (table3D);
 
-				// copy needed to work properly, closure does not recognize and copy updated ref var ?
-				TreeIter iterCopy = iter;
 				// update model reference in GUI Thread to make sure UI display is ok
-				Application.Invoke (delegate { store.SetValue (iterCopy, (int)ColumnNr3D.Icon, pixbuf); });
+				Application.Invoke (delegate { store.SetValue (iter, (int)ColumnNr3D.Icon, pixbuf); });
 			} while (store.IterNext (ref iter));
 			plotIcon.CleanupTemp ();
 		}
