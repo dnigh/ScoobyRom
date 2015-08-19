@@ -6,7 +6,7 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../bin/Debug/ScoobyRom.exe" internal="true" />
+    <widget-library name="../bin/Release/ScoobyRom.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="938 702">
     <action-group name="Default">
@@ -185,7 +185,7 @@
           <widget class="Gtk.Notebook" id="notebook1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="CurrentPage">1</property>
+            <property name="CurrentPage">0</property>
             <signal name="SwitchPage" handler="OnNotebook1SwitchPage" />
             <child>
               <widget class="Gtk.VPaned" id="vpaned2D">
@@ -210,7 +210,33 @@
                   </packing>
                 </child>
                 <child>
-                  <placeholder />
+                  <widget class="Gtk.HPaned" id="hpaned2D">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Position">180</property>
+                    <child>
+                      <widget class="Gtk.ScrolledWindow" id="scrolledwindowTable2D">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="ShadowType">In</property>
+                        <child>
+                          <widget class="Gtk.Viewport" id="GtkViewport1">
+                            <property name="MemberName" />
+                            <property name="ShadowType">None</property>
+                            <child>
+                              <placeholder />
+                            </child>
+                          </widget>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="Resize">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <placeholder />
+                    </child>
+                  </widget>
                 </child>
               </widget>
             </child>

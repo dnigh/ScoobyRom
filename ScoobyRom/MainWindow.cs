@@ -60,7 +60,7 @@ public partial class MainWindow : Gtk.Window
 	// Remember output folder for convenience. No need to save it in app.config?
 	string svgDirectory = null;
 
-	public MainWindow (string[] args) : base(Gtk.WindowType.Toplevel)
+	public MainWindow (string[] args) : base (Gtk.WindowType.Toplevel)
 	{
 		// Execute Gtk# visual designer generated code (MonoDevelop http://monodevelop.com/ )
 		// Obviously, Visual Studio doesn't have a Gtk# designer, you'll have to code all UI stuff by yourself.
@@ -88,12 +88,14 @@ public partial class MainWindow : Gtk.Window
 		};
 
 		plot2D = new Plot2D (plotSurface);
-		this.vpaned2D.Add2 (plotSurface);
-		global::Gtk.Paned.PanedChild pc = ((global::Gtk.Paned.PanedChild)(this.vpaned2D[plotSurface]));
+		//this.vpaned2D.Add2 (plotSurface);
+		this.hpaned2D.Add2 (plotSurface);
+		global::Gtk.Paned.PanedChild pc = ((global::Gtk.Paned.PanedChild)(this.hpaned2D [plotSurface]));
 		// to resize both panes proportionally when parent (main window) resizes
-		pc.Resize = false;
+		//pc.Resize = false;
 		//		pc.Shrink = false;
-		this.vpaned2D.ShowAll ();
+		//this.vpaned2D.ShowAll ();
+		this.hpaned2D.ShowAll ();
 
 		this.notebook1.Page = 1;
 
@@ -104,15 +106,16 @@ public partial class MainWindow : Gtk.Window
 		}
 
 		// program arguments: first argument is ROM path to auto-load
-		if (args != null && args.Length > 0 && !string.IsNullOrEmpty (args[0])) {
-			OpenRom (args[0]);
+		if (args != null && args.Length > 0 && !string.IsNullOrEmpty (args [0])) {
+			OpenRom (args [0]);
 		}
 	}
 
 	ActiveUI CurrentUI {
 		get {
 			if (notebook1.CurrentPageWidget == vpaned2D)
-				return ActiveUI.View2D; else if (notebook1.CurrentPageWidget == vpaned3D)
+				return ActiveUI.View2D;
+			else if (notebook1.CurrentPageWidget == vpaned3D)
 				return ActiveUI.View3D;
 			else
 				return ActiveUI.Undefined;
@@ -126,7 +129,11 @@ public partial class MainWindow : Gtk.Window
 		//this.progressbar1.Adjustment.StepIncrement = 5;
 		this.progressbar1.Adjustment.Value = 0;
 
-		data.ProgressChanged += delegate(object s, System.ComponentModel.ProgressChangedEventArgs pArgs) { Application.Invoke (delegate { this.progressbar1.Adjustment.Value = pArgs.ProgressPercentage; }); };
+		data.ProgressChanged += delegate(object s, System.ComponentModel.ProgressChangedEventArgs pArgs) {
+			Application.Invoke (delegate {
+				this.progressbar1.Adjustment.Value = pArgs.ProgressPercentage;
+			});
+		};
 
 		this.statusbar1.Push (0, "Analyzing file " + System.IO.Path.GetFileName (path));
 
@@ -203,18 +210,17 @@ public partial class MainWindow : Gtk.Window
 		if (table == null)
 			return;
 		var valuesZ = table.GetValuesZasFloats ();
-		var tableUI = new GtkWidgets.TableWidget (coloring, table.ValuesX, table.ValuesY, valuesZ, table.Zmin, table.Zmax);
-		tableUI.TitleMarkup = GtkWidgets.TableWidget.MakeTitleMarkup (table.Title, table.UnitZ);
-		tableUI.AxisMarkupX = GtkWidgets.TableWidget.MakeMarkup (table.NameX, table.UnitX);
-		tableUI.AxisMarkupY = GtkWidgets.TableWidget.MakeMarkup (table.NameY, table.UnitY);
+		var tableUI = new GtkWidgets.TableWidget3D (coloring, table.ValuesX, table.ValuesY, valuesZ,
+			              table.Xmin, table.Xmax, table.Ymin, table.Ymax, table.Zmin, table.Zmax);
+		tableUI.TitleMarkup = Util.Markup.NameUnit_Large (table.Title, table.UnitZ);
+		tableUI.AxisMarkupX = Util.Markup.NameUnit (table.NameX, table.UnitX);
+		tableUI.AxisMarkupY = Util.Markup.NameUnit (table.NameY, table.UnitY);
 
 		// HACK FormatValues, no good digits algorithm yet
-		int digits = ScoobyRom.Data.AutomaticMinDigits(valuesZ);
-		if (digits <= 3)
-		{
-			tableUI.FormatValues = ScoobyRom.Data.ValueFormat(digits);
-		}
-		else{
+		int digits = ScoobyRom.Data.AutomaticMinDigits (valuesZ);
+		if (digits <= 3) {
+			tableUI.FormatValues = ScoobyRom.Data.ValueFormat (digits);
+		} else {
 			tableUI.FormatValues = table.Zmax < 30 ? "0.00" : "0.0";
 			if (table.Zmax < 10)
 				tableUI.FormatValues = "0.000";
@@ -240,6 +246,35 @@ public partial class MainWindow : Gtk.Window
 			return;
 		plot2D.Draw (table);
 		plotSurface.Refresh ();
+
+		var values = table.GetValuesYasFloats ();
+		var tableUI = new GtkWidgets.TableWidget2D (coloring, table.ValuesX, table.Xmin, table.Xmax, values, table.Ymin, table.Ymax);
+		tableUI.HeaderAxisMarkup = Util.Markup.Unit (table.UnitX);
+		tableUI.HeaderValuesMarkup = Util.Markup.Unit (table.UnitY);
+		tableUI.AxisMarkup = Util.Markup.NameUnit (table.NameX, table.UnitX);
+		tableUI.ValuesMarkup = Util.Markup.NameUnit (table.Title, table.UnitY);
+
+		// HACK FormatValues, no good digits algorithm yet
+		int digits = ScoobyRom.Data.AutomaticMinDigits (values);
+		if (digits <= 3) {
+			tableUI.FormatValues = ScoobyRom.Data.ValueFormat (digits);
+		} else {
+			tableUI.FormatValues = table.Ymax < 30 ? "0.00" : "0.0";
+			if (table.Ymax < 10)
+				tableUI.FormatValues = "0.000";
+		}
+
+		// Viewport needed for ScrolledWindow to work as generated table widget has no scroll support
+		var viewPort = new Gtk.Viewport ();
+		viewPort.Add (tableUI.Create ());
+
+		Gtk.Widget previous = this.scrolledwindowTable2D.Child;
+		if (previous != null)
+			this.scrolledwindowTable2D.Remove (previous);
+		// previous.Dispose () or previous.Destroy () cause NullReferenceException!
+
+		this.scrolledwindowTable2D.Add (viewPort);
+		this.scrolledwindowTable2D.ShowAll ();
 	}
 
 
@@ -290,8 +325,9 @@ public partial class MainWindow : Gtk.Window
 				"Gtk#\thttp://mono-project.com/GtkSharp",
 				"NPlot\thttp://netcontrols.org/nplot/wiki/",
 				"gnuplot\thttp://www.gnuplot.info/",
-				},
-			WrapLicense = true };
+			},
+			WrapLicense = true
+		};
 		about.Icon = about.Logo = MainClass.AppIcon;
 		about.Comments = "License: GPL v3";
 
@@ -528,8 +564,8 @@ public partial class MainWindow : Gtk.Window
 		case ActiveUI.View3D:
 			ErrorMsg ("Error", "Creating CSV for 3D table not implemented yet.");
 			return;
-			//table = dataView3DGtk.Selected;
-			//break;
+		//table = dataView3DGtk.Selected;
+		//break;
 		}
 		if (table == null)
 			return;

@@ -96,8 +96,6 @@
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="GtkWidgets\BorderWidget.cs" />
-    <Compile Include="GtkWidgets\TableWidget.cs" />
-    <Compile Include="Coloring.cs" />
     <Compile Include="UIGtk\ColumnNr3D.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="DataFile\RomXml.cs" />
@@ -125,6 +123,10 @@
     <Compile Include="Plot\GnuPlotExceptions.cs" />
     <Compile Include="Plot\PlotIconBase.cs" />
     <Compile Include="UIGtk\DataViewModelBaseGtk.cs" />
+    <Compile Include="GtkWidgets\TableWidget2D.cs" />
+    <Compile Include="Util\Coloring.cs" />
+    <Compile Include="Util\Markup.cs" />
+    <Compile Include="GtkWidgets\TableWidget3D.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -138,6 +140,7 @@
     <Folder Include="DataFile\" />
     <Folder Include="Plot\" />
     <Folder Include="vendor\" />
+    <Folder Include="Util\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

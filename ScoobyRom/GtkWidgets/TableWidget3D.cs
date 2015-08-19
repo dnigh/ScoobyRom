@@ -1,4 +1,4 @@
-// TableWidget.cs: Builds a Gtk.Table showing table data values.
+// TableWidget3D.cs: Builds a Gtk.Table showing 3D table data values.
 
 /* Copyright (C) 2011-2015 SubaruDieselCrew
  *
@@ -24,9 +24,7 @@ using Gtk;
 
 namespace GtkWidgets
 {
-	// 3D table only so far.
-	// TODO Visualize 2D table data.
-	public class TableWidget
+	public sealed class TableWidget3D
 	{
 		const int DataColLeft = 2;
 		const int DataRowTop = 3;
@@ -37,7 +35,7 @@ namespace GtkWidgets
 		string axisMarkupY = "Y Axis [-]";
 		string formatValues = "0.000";
 		readonly float[] axisX, axisY, values;
-		readonly float valuesMax, valuesMin;
+		readonly float axisXmin, axisXmax, axisYmin, axisYmax, valuesMax, valuesMin;
 
 		Gtk.Table table;
 		Widget[] axisWidgetsX, axisWidgetsY, valueWidgets;
@@ -45,20 +43,26 @@ namespace GtkWidgets
 		readonly Util.Coloring coloring;
 
 		// Use LINQ to calc min/max
-//		public TableWidget (Util.Coloring coloring, float[] axisX, float[] axisY, float[] valuesZ) :
-//			this(coloring, axisX, axisY, valuesZ, valuesZ.Min (), valuesZ.Max ())
-//		{
-//		}
+		//		public TableWidget (Util.Coloring coloring, float[] axisX, float[] axisY, float[] valuesZ) :
+		//			this(coloring, axisX, axisY, valuesZ, valuesZ.Min (), valuesZ.Max ())
+		//		{
+		//		}
 
 		/// <summary>
 		///	Create Gtk.Table for 3D table data.
 		/// </summary>
-		public TableWidget (Util.Coloring coloring, float[] axisX, float[] axisY, float[] valuesZ, float valuesZmin, float valuesZmax)
+		public TableWidget3D (Util.Coloring coloring, float[] axisX, float[] axisY, float[] valuesZ,
+		                      float axisXmin, float axisXmax, float axisYmin, float axisYmax, float valuesZmin, float valuesZmax)
 		{
 			this.coloring = coloring;
 			this.axisX = axisX;
 			this.axisY = axisY;
 			this.values = valuesZ;
+
+			this.axisXmin = axisXmin;
+			this.axisXmax = axisXmax;
+			this.axisYmin = axisYmin;
+			this.axisYmax = axisYmax;
 			this.valuesMin = valuesZmin;
 			this.valuesMax = valuesZmax;
 
@@ -112,28 +116,38 @@ namespace GtkWidgets
 			axisWidgetsX = new Widget[countX];
 			for (uint i = 0; i < countX; i++) {
 				Gtk.Label label = new Label ();
-				label.Text = axisX[i].ToString ();
+				float val = axisX [i];
+				label.Text = val.ToString ();
 
-				axisWidgetsX[i] = label;
-				table.Attach (label, DataColLeft + i, DataColLeft + 1 + i, DataRowTop - 1, DataRowTop, AttachOptions.Shrink, AttachOptions.Shrink, AxisPadX, AxisPadY);
+				BorderWidget widget = new BorderWidget ();
+				widget.Color = CalcAxisXColor (val);
+				widget.Add (label);
+
+				axisWidgetsX [i] = widget;
+				table.Attach (widget, DataColLeft + i, DataColLeft + 1 + i, DataRowTop - 1, DataRowTop, AttachOptions.Shrink, AttachOptions.Shrink, AxisPadX, 2 * AxisPadY);
 			}
 
 			// y axis
 			axisWidgetsY = new Widget[countY];
 			for (uint i = 0; i < countY; i++) {
 				Gtk.Label label = new Label ();
-				label.Text = axisY[i].ToString ();
+				float val = axisY [i];
+				label.Text = val.ToString ();
 				label.SetAlignment (1f, 0f);
 
-				axisWidgetsY[i] = label;
-				table.Attach (label, DataColLeft - 1, DataColLeft, DataRowTop + i, DataRowTop + 1 + i, AttachOptions.Fill, AttachOptions.Shrink, AxisPadX, AxisPadY);
+				BorderWidget widget = new BorderWidget ();
+				widget.Color = CalcAxisYColor (val);
+				widget.Add (label);
+
+				axisWidgetsY [i] = widget;
+				table.Attach (widget, DataColLeft - 1, DataColLeft, DataRowTop + i, DataRowTop + 1 + i, AttachOptions.Fill, AttachOptions.Shrink, 2 * AxisPadX, AxisPadY);
 			}
 
 			// values
 			int countZ = values.Length;
 			valueWidgets = new Widget[countZ];
 			for (uint i = 0; i < countZ; i++) {
-				float val = values[i];
+				float val = values [i];
 				Gtk.Widget label = new Label (val.ToString (this.formatValues));
 				BorderWidget widget = new BorderWidget ();
 
@@ -146,7 +160,7 @@ namespace GtkWidgets
 				widget.Color = CalcColor (val);
 				widget.Add (label);
 
-				valueWidgets[i] = widget;
+				valueWidgets [i] = widget;
 				uint row = DataRowTop + i / (uint)this.countX;
 				uint col = DataColLeft + i % (uint)this.countX;
 
@@ -182,21 +196,18 @@ namespace GtkWidgets
 			return coloring.GetColor (factor);
 		}
 
-		public static string MakeMarkup (string name, string unit)
+		Cairo.Color CalcAxisXColor (float val)
 		{
-			if (string.IsNullOrEmpty (name) && string.IsNullOrEmpty (unit))
-				return string.Empty;
-			else
-				return string.Format ("<span weight=\"bold\">{0} <tt>[{1}]</tt></span>", name, unit);
+			double factor = (val - axisXmin) / (axisXmax - axisXmin);
+			// should be able to handle division by zero (NaN)
+			return coloring.GetColor (factor);
 		}
 
-		public static string MakeTitleMarkup (string name, string unit)
+		Cairo.Color CalcAxisYColor (float val)
 		{
-			if (string.IsNullOrEmpty (name) && string.IsNullOrEmpty (unit))
-				return string.Empty;
-			else
-				return string.Format ("<span size=\"large\" weight=\"bold\">{0} <tt>[{1}]</tt></span>", name, unit);
+			double factor = (val - axisYmin) / (axisYmax - axisYmin);
+			// should be able to handle division by zero (NaN)
+			return coloring.GetColor (factor);
 		}
 	}
 }
-
