@@ -248,7 +248,7 @@ public partial class MainWindow : Gtk.Window
 		plotSurface.Refresh ();
 
 		var values = table.GetValuesYasFloats ();
-		var tableUI = new GtkWidgets.TableWidget2D (coloring, table.ValuesX, table.Xmin, table.Xmax, values, table.Ymin, table.Ymax);
+		var tableUI = new GtkWidgets.TableWidget2D (coloring, table.ValuesX, values, table.Xmin, table.Xmax, table.Ymin, table.Ymax);
 		tableUI.HeaderAxisMarkup = Util.Markup.Unit (table.UnitX);
 		tableUI.HeaderValuesMarkup = Util.Markup.Unit (table.UnitY);
 		tableUI.AxisMarkup = Util.Markup.NameUnit (table.NameX, table.UnitX);

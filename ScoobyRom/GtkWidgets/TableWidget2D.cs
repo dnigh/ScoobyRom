@@ -44,7 +44,7 @@ namespace GtkWidgets
 		/// <summary>
 		///	Create Gtk.Table for 2D table data.
 		/// </summary>
-		public TableWidget2D (Util.Coloring coloring, float[] axisX, float axisXmin, float axisXmax, float[] valuesY, float valuesYmin, float valuesYmax)
+		public TableWidget2D (Util.Coloring coloring, float[] axisX, float[] valuesY, float axisXmin, float axisXmax, float valuesYmin, float valuesYmax)
 		{
 			this.coloring = coloring;
 			this.axisX = axisX;

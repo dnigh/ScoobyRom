@@ -45,21 +45,22 @@ namespace Util
 			int currentByte;
 			bool match;
 			while ((currentByte = stream.ReadByte ()) >= 0) {
-				if (currentByte == firstByteTarget) {
-					match = true;
-					for (int i = 1; i < target.Length; i++) {
-						currentByte = stream.ReadByte ();
-						if (currentByte < 0)
-							return null;
-						if (currentByte != target [i]) {
-							match = false;
-							stream.Seek (-i, SeekOrigin.Current);
-							break;
-						}
+				if (currentByte != firstByteTarget)
+					continue;
+				match = true;
+				for (int i = 1; i < target.Length; i++) {
+					currentByte = stream.ReadByte ();
+					if (currentByte < 0)
+						return null;
+					if (currentByte != target [i]) {
+						match = false;
+						stream.Position -= i;
+						break;
 					}
-					if (match)
-						return (int)(stream.Position) - target.Length;
 				}
+				if (match)
+					return (int)(stream.Position) - target.Length;
+
 			}
 			return null;
 		}
@@ -79,35 +80,33 @@ namespace Util
 		{
 			int currentByte;
 
-			int leftPos = (int)stream.Position;
+			long leftPos = stream.Position;
 
 			// left
-			//stream.Seek (-1, SeekOrigin.Current);
-			while ((currentByte = stream.ReadByte ()) >= 0 && check((byte)currentByte))
-			{
-				leftPos = (int)stream.Position - 1;
-				stream.Seek (-2, SeekOrigin.Current);
+			while ((currentByte = stream.ReadByte ()) >= 0 && check ((byte)currentByte)) {
+				leftPos = stream.Position - 1;
+				stream.Position = leftPos - 1;
 			}
 
 			// right
-			while ((currentByte = stream.ReadByte ()) >= 0 && check((byte)currentByte))
-			{
+			while ((currentByte = stream.ReadByte ()) >= 0 && check ((byte)currentByte)) {
 			}
 
-			int count = (int)stream.Position - leftPos - 1;
+			int count = (int)(stream.Position - leftPos) - 1;
 			if (count < 1)
 				return null;
 
 			byte[] bytes = new byte[count];
 			stream.Position = leftPos;
-			stream.Read (bytes, 0, count);
+			if (stream.Read (bytes, 0, count) != count)
+				throw new IOException ("byte count mismatch");
 
 			return bytes;
 		}
 
 		public static string ExtendFindASCII (Stream stream, Func<char, bool> check)
 		{
-			byte[] result = ExtendFind(stream, b => check(System.Convert.ToChar(b)));
+			byte[] result = ExtendFind (stream, b => check ((char)b));
 			return System.Text.Encoding.ASCII.GetString (result);
 		}
 	}

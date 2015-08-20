@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with ScoobyRom.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,13 +29,15 @@ namespace Subaru.File
 {
 	public sealed class Rom : IDisposable
 	{
+		public const int KiB = 1024;
+
 		/// <summary>
 		/// Progress info while ROM is being analyzed.
 		/// </summary>
 		public event EventHandler<ProgressChangedEventArgs> ProgressChanged;
 
 		string path;
-		FileStream fs;
+		Stream stream;
 		RomType romType;
 		// ROM files are much smaller (couple MiB max) than 2 GiB so Int32 for pos, size etc. is sufficient
 		int startPos, lastPos;
@@ -43,8 +47,12 @@ namespace Subaru.File
 			get { return this.path; }
 		}
 
-		public FileStream Stream {
-			get { return this.fs; }
+		public Stream Stream {
+			get { return this.stream; }
+		}
+
+		public int Size {
+			get { return (int)this.stream?.Length; }
 		}
 
 		public RomType RomType {
@@ -52,7 +60,7 @@ namespace Subaru.File
 		}
 
 		public RomChecksumming RomChecksumming {
-			get { return new RomChecksumming (this.romType, this.fs); }
+			get { return new RomChecksumming (this.romType, this.stream); }
 		}
 
 		public Rom (string path)
@@ -63,8 +71,21 @@ namespace Subaru.File
 
 		void Open ()
 		{
-			fs = new FileStream (path, FileMode.Open, FileAccess.Read);
-			romType = DetectRomType (fs);
+			const int BufferSize = 16 * KiB;
+
+			// Copy whole file into MemoryStream at once for best performance.
+			// As Stream has .Position property, it makes sence to use this instead of byte[] + own pos variable.
+			byte[] buffer;
+			int length;
+			using (FileStream fstream = new FileStream (path, FileMode.Open, FileAccess.Read, FileShare.Read, BufferSize, FileOptions.SequentialScan)) {
+				length = (int)fstream.Length;
+				buffer = new byte[length];
+				if (fstream.Read (buffer, 0, length) != length)
+					throw new IOException ("stream.Read length mismatch");
+			}
+			this.stream = new MemoryStream (buffer, 0, length, false, true);
+
+			this.romType = DetectRomType (stream);
 		}
 
 		/// <summary>
@@ -82,17 +103,17 @@ namespace Subaru.File
 		/// </returns>
 		public string ReadASCII (int pos, int length)
 		{
-			fs.Seek (pos, SeekOrigin.Begin);
+			stream.Position = pos;
 			byte[] bytes = new byte[length];
-			fs.Read (bytes, 0, length);
+			stream.Read (bytes, 0, length);
 			return System.Text.Encoding.ASCII.GetString (bytes);
 		}
 
 		public void Close ()
 		{
-			if (fs != null) {
-				fs.Dispose ();
-				fs = null;
+			if (stream != null) {
+				stream.Dispose ();
+				stream = null;
 			}
 		}
 
@@ -117,7 +138,8 @@ namespace Subaru.File
 				ProgressChanged (this, new ProgressChangedEventArgs (percentDone, null));
 		}
 
-		/*
+		//		/* //not used so far
+
 		public IList<Table3D> FindMaps3D ()
 		{
 			return FindMaps3D (0);
@@ -126,13 +148,13 @@ namespace Subaru.File
 		public IList<Table3D> FindMaps3D (int startPos)
 		{
 			// should stop at EOF
-			return FindMaps3D (startPos, (int)fs.Length);
+			return FindMaps3D (startPos, int.MaxValue);
 		}
 
 		public IList<Table3D> FindMaps3D (int startPos, int lastPos)
 		{
 			this.startPos = startPos;
-			lastPos = Math.Min (lastPos, (int)fs.Length);
+			lastPos = Math.Min (lastPos, Size - 1);
 			this.lastPos = lastPos;
 			OnProgressChanged (0);
 			this.percentDoneLastReport = 0;
@@ -140,15 +162,15 @@ namespace Subaru.File
 
 			for (long pos = startPos; pos <= lastPos;) {
 				// check for end of file
-				if (pos >= fs.Length)
+				if (pos >= stream.Length)
 					break;
-				fs.Position = pos;
+				stream.Position = pos;
 				CheckProgress (pos);
 
-				Table3D info3D = Table3D.TryParseValid (this.fs);
+				Table3D info3D = Table3D.TryParseValid (this.stream);
 				if (info3D != null) {
 					list3D.Add (info3D);
-					pos = fs.Position;
+					pos = stream.Position;
 				} else {
 					// not valid, try at next possible location
 					pos++;
@@ -157,18 +179,19 @@ namespace Subaru.File
 			OnProgressChanged (100);
 			return list3D;
 		}
-		*/
+		// */
 
 		public void FindMaps (int startPos, int lastPos, out IList<Table2D> list2D, out IList<Table3D> list3D)
 		{
 			this.startPos = startPos;
-			lastPos = Math.Min (lastPos, (int)fs.Length);
+			lastPos = Math.Min (lastPos, Size - 1);
 			this.lastPos = lastPos;
 
 			// Restricting pointers to a range can improve detection accuracy.
 			// Using conservative settings here:
-			Table.PosMin = 8 * 1024;
-			Table.PosMax = (int)fs.Length - 1;
+			// In Subaru ROMs at least first 8 KiB usually contain low level stuff, no maps.
+			Table.PosMin = 8 * KiB;
+			Table.PosMax = Size - 1;
 
 			// default capacities suitable for current SH7059 diesel ROMs
 			list2D = new List<Table2D> (1000);
@@ -179,24 +202,24 @@ namespace Subaru.File
 
 			for (long pos = startPos; pos <= lastPos;) {
 				// check for end of file
-				if (pos >= fs.Length)
+				if (pos >= stream.Length)
 					break;
-				fs.Position = pos;
+				stream.Position = pos;
 				CheckProgress (pos);
 
 				// try Table3D first as it contains more struct info; more info to validate = better detection
-				Table3D info3D = Table3D.TryParseValid (this.fs);
+				Table3D info3D = Table3D.TryParseValid (this.stream);
 				if (info3D != null) {
 					list3D.Add (info3D);
-					pos = fs.Position;
+					pos = stream.Position;
 				} else {
 					// must back off
-					fs.Position = pos;
+					stream.Position = pos;
 					// not 3D, try 2D
-					Table2D info2D = Table2D.TryParseValid (this.fs);
+					Table2D info2D = Table2D.TryParseValid (this.stream);
 					if (info2D != null) {
 						list2D.Add (info2D);
-						pos = fs.Position;
+						pos = stream.Position;
 					} else {
 						// nothing valid, try at next possible location
 						pos++;
@@ -216,25 +239,26 @@ namespace Subaru.File
 			const string DieselASCII = "DIESEL";
 			const string TurboASCII = "TURBO";
 
-			fs.Position = 0;
+			stream.Position = 0;
 			int? stringPos;
 			string strFound;
 
-			stringPos = Util.SearchBinary.FindASCII (fs, DieselASCII);
+			stringPos = Util.SearchBinary.FindASCII (stream, DieselASCII);
 			if (stringPos.HasValue) {
-				fs.Position = stringPos.Value;
-				strFound = Util.SearchBinary.ExtendFindASCII (fs, Predicate);
+				stream.Position = stringPos.Value;
+				strFound = Util.SearchBinary.ExtendFindASCII (stream, Predicate);
 				Console.WriteLine ($"[{strFound.Length}]\"{strFound}\" pos: 0x{stringPos.Value:X}");
 			}
 
-			fs.Position = 0;
-			stringPos = Util.SearchBinary.FindASCII (fs, TurboASCII);
+			stream.Position = 0;
+			stringPos = Util.SearchBinary.FindASCII (stream, TurboASCII);
 			if (stringPos.HasValue) {
-				fs.Position = stringPos.Value;
-				strFound = Util.SearchBinary.ExtendFindASCII (fs, Predicate);
+				stream.Position = stringPos.Value;
+				strFound = Util.SearchBinary.ExtendFindASCII (stream, Predicate);
 				Console.WriteLine ($"[{strFound.Length}]\"{strFound}\" pos: 0x{stringPos.Value:X}");
 			}
 
+			// 0x4000 = 16 KiB
 			const int Pos_SH7058_Diesel = 0x4000;
 			const int RomIDlongLength = 32;
 			const int CIDLength = 8;
@@ -251,32 +275,32 @@ namespace Subaru.File
 			}
 
 
-			string romIDlong = ReadASCII (pos, RomIDlongLength).TrimEnd();
-			Console.WriteLine ("RomIDlong[{0}]: {1}", romIDlong.Length.ToString(), romIDlong);
+			string romIDlong = ReadASCII (pos, RomIDlongLength).TrimEnd ();
+			Console.WriteLine ("RomIDlong[{0}]: {1}", romIDlong.Length.ToString (), romIDlong);
 
 			string CID = romIDlong.Substring (romIDlong.Length - CIDLength);
 			Console.WriteLine ("CID: {0}", CID);
 
-			fs.Position = pos + RomIDlongLength;
-			int year = fs.ReadByte () + 2000;
-			int month = fs.ReadByte ();
-			int day = fs.ReadByte ();
+			stream.Position = pos + RomIDlongLength;
+			int year = stream.ReadByte () + 2000;
+			int month = stream.ReadByte ();
+			int day = stream.ReadByte ();
 			DateTime romDate = new DateTime (year, month, day);
-			Console.WriteLine ("RomDate: {0}", romDate.ToString("yyyy-MM-dd"));
+			Console.WriteLine ("RomDate: {0}", romDate.ToString ("yyyy-MM-dd"));
 
 			byte[] searchBytes = new byte[] { 0xA2, 0x10, 0x14 };
-			fs.Position = 0;
-			var ssmIDpos = Util.SearchBinary.FindBytes (fs, searchBytes);
+			stream.Position = 0;
+			var ssmIDpos = Util.SearchBinary.FindBytes (stream, searchBytes);
 			Console.WriteLine ("Diesel SSMID pos: 0x{0:X}", ssmIDpos);
 
 			const int RomIDLength = 5;
 			byte[] romidBytes = new byte[RomIDLength];
 			long romid;
 			if (ssmIDpos.HasValue) {
-				fs.Position = ssmIDpos.Value + 3;
-				if (fs.Read (romidBytes, 0, RomIDLength) == RomIDLength) {
+				stream.Position = ssmIDpos.Value + 3;
+				if (stream.Read (romidBytes, 0, RomIDLength) == RomIDLength) {
 					// parse value from 5 bytes, big endian
-					romid = ((long)(romidBytes[0]) << 32) + Util.BinaryHelper.Int32BigEndian (romidBytes, 1);
+					romid = ((long)(romidBytes [0]) << 32) + Util.BinaryHelper.Int32BigEndian (romidBytes, 1);
 					Console.WriteLine ("ROMID: {0}", romid.ToString ("X10"));
 				}
 
@@ -306,10 +330,8 @@ namespace Subaru.File
 		/// </returns>
 		public RomType DetectRomType (Stream stream)
 		{
-			const int KiB = 1024;
-
 			try {
-				int length = (int)stream.Length;
+				int length = Size;
 				switch (length) {
 				case 512 * KiB:
 					return RomType.SH7055;
