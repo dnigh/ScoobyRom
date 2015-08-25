@@ -4,8 +4,6 @@
 *) Make some properties adjustable.
    E.g. validation min/max numbers, take file size into account etc.
 
-*) Inprove search performance.
-
 *) Improve success probability.
    Might use more range overlap checking to increase table type detection accuracy.
 

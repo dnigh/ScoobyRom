@@ -19,7 +19,7 @@
  */
 
 
-// can be useful for testing, may be broken
+// can be useful for testing
 //#define LOAD_SYNC
 
 using System;
@@ -28,7 +28,7 @@ using Gtk;
 using ScoobyRom;
 using Subaru.Tables;
 
-public partial class MainWindow : Gtk.Window
+public sealed partial class MainWindow : Gtk.Window
 {
 	enum ActiveUI
 	{
@@ -38,6 +38,8 @@ public partial class MainWindow : Gtk.Window
 	}
 
 	const string appName = "ScoobyRom";
+	// 0 = first page = View2D; 1 = second = View3D
+	const int DefaultNotebookPageShown = 1;
 
 	readonly Data data = new Data ();
 
@@ -88,16 +90,14 @@ public partial class MainWindow : Gtk.Window
 		};
 
 		plot2D = new Plot2D (plotSurface);
-		//this.vpaned2D.Add2 (plotSurface);
 		this.hpaned2D.Add2 (plotSurface);
 		global::Gtk.Paned.PanedChild pc = ((global::Gtk.Paned.PanedChild)(this.hpaned2D [plotSurface]));
 		// to resize both panes proportionally when parent (main window) resizes
 		//pc.Resize = false;
-		//		pc.Shrink = false;
-		//this.vpaned2D.ShowAll ();
+		//pc.Shrink = false;
 		this.hpaned2D.ShowAll ();
 
-		this.notebook1.Page = 1;
+		this.notebook1.Page = DefaultNotebookPageShown;
 
 		if (Config.IconsOnByDefault) {
 			iconsAction.Active = true;
@@ -141,7 +141,7 @@ public partial class MainWindow : Gtk.Window
 		#if LOAD_SYNC
 
 		LoadRomTask (path);
-		//LoadRomDone (new Task((t) => Console.WriteLine ("LoadRomDone")));
+		LoadRomDone (null);
 
 		#else
 
@@ -171,14 +171,14 @@ public partial class MainWindow : Gtk.Window
 		stopwatch.Stop ();
 
 		Application.Invoke (delegate {
-			if (t.Status == TaskStatus.Faulted) {
-				Console.Error.WriteLine ("Exception loading ROM:");
+			if (t?.Status == TaskStatus.Faulted) {
+				Console.Error.WriteLine ("Exception processing ROM:");
 				Console.Error.WriteLine (t.Exception.ToString ());
 			} else {
 				SetWindowTitle ();
 				SetActionsSensitiveForRomLoaded (true);
 
-				string txt = "Search took " + stopwatch.ElapsedMilliseconds.ToString () + " ms";
+				string txt = string.Format ("Processing ROM finished in {0} ms.", stopwatch.ElapsedMilliseconds.ToString ());
 				this.progressbar1.Text = txt;
 				this.statusbar1.Push (0, "Updating UI ...");
 				DoPendingEvents ();
@@ -215,17 +215,7 @@ public partial class MainWindow : Gtk.Window
 		tableUI.TitleMarkup = Util.Markup.NameUnit_Large (table.Title, table.UnitZ);
 		tableUI.AxisMarkupX = Util.Markup.NameUnit (table.NameX, table.UnitX);
 		tableUI.AxisMarkupY = Util.Markup.NameUnit (table.NameY, table.UnitY);
-
-		// HACK FormatValues, no good digits algorithm yet
-		int digits = ScoobyRom.Data.AutomaticMinDigits (valuesZ);
-		if (digits <= 3) {
-			tableUI.FormatValues = ScoobyRom.Data.ValueFormat (digits);
-		} else {
-			tableUI.FormatValues = table.Zmax < 30 ? "0.00" : "0.0";
-			if (table.Zmax < 10)
-				tableUI.FormatValues = "0.000";
-		}
-
+		tableUI.FormatValues = ScoobyRom.Data.AutomaticValueFormat (valuesZ, table.Zmin, table.Zmax);
 
 		// Viewport needed for ScrolledWindow to work as generated table widget has no scroll support
 		var viewPort = new Gtk.Viewport ();
@@ -253,16 +243,7 @@ public partial class MainWindow : Gtk.Window
 		tableUI.HeaderValuesMarkup = Util.Markup.Unit (table.UnitY);
 		tableUI.AxisMarkup = Util.Markup.NameUnit (table.NameX, table.UnitX);
 		tableUI.ValuesMarkup = Util.Markup.NameUnit (table.Title, table.UnitY);
-
-		// HACK FormatValues, no good digits algorithm yet
-		int digits = ScoobyRom.Data.AutomaticMinDigits (values);
-		if (digits <= 3) {
-			tableUI.FormatValues = ScoobyRom.Data.ValueFormat (digits);
-		} else {
-			tableUI.FormatValues = table.Ymax < 30 ? "0.00" : "0.0";
-			if (table.Ymax < 10)
-				tableUI.FormatValues = "0.000";
-		}
+		tableUI.FormatValues = ScoobyRom.Data.AutomaticValueFormat (values, table.Ymin, table.Ymax);
 
 		// Viewport needed for ScrolledWindow to work as generated table widget has no scroll support
 		var viewPort = new Gtk.Viewport ();

@@ -29,11 +29,14 @@
 # set xlabel "Engine Speed\n{/mono [1/min]}" ...
 # set ylabel ...
 # set title ...
-# load "this_template_file.plt"
+# call "this_template_file.plt" pathToBinaryDataFile
 # --------
 
 set macros
-dataFile = "\"gnuplot_data.tmp\""
+
+# first argument ARG1 to this script must be path of binary data file
+dataFile = ARG1
+#print dataFile
 terminal = "wxt"
 
 # TERMINAL SPECIFIC !!! Must match currently used terminal!!!!
@@ -104,7 +107,7 @@ bind Home "set view viewDefault; refresh"
 # app generates a binary data file on each plot action, basically a temporary file containing coordinates
 # mark as "volatile" so a single temporary data file can be shared, replot would re-read and could show wrong data
 
-splot @dataFile binary volatile title "" with pm3d
+splot dataFile binary volatile title "" with pm3d
 
 #set label 1 "Annotation Label" at screen 0.01,0.95 front left textcolor rgb "blue"
 

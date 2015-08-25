@@ -35,8 +35,8 @@ namespace Subaru.File
 			// necessary, otherwise single line
 			xw.Formatting = Formatting.Indented;
 
-			var l2D = list2D == null ? null : list2D.Select (t => t.RRXml ());
-			var l3D = list3D == null ? null : list3D.Select (t => t.RRXml ());
+			var l2D = list2D?.Select (t => t.RRXml ());
+			var l3D = list3D?.Select (t => t.RRXml ());
 
 			XDocument doc = RRXmlDocument (new XElement ("rom", romid, l2D, l3D));
 
@@ -51,7 +51,7 @@ namespace Subaru.File
 		}
 
 		public static XElement RomID (string xmlid, int internalidaddress, string internalidstring, string ecuid, string year, string market, string make, string model, string submodel, string transmission,
-		string memmodel, string flashmethod, int filesize)
+		                              string memmodel, string flashmethod, int filesize)
 		{
 			// TODO check if RR supports unambiguous designations "KiB", "MiB"
 			int fSize = filesize;
@@ -65,8 +65,19 @@ namespace Subaru.File
 
 				postfix = "MB";
 			}
-			return new XElement ("romid", new XElement ("xmlid", xmlid), new XElement ("internalidaddress", internalidaddress.ToString ("X")), new XElement ("internalidstring", internalidstring), new XElement ("ecuid", ecuid), new XElement ("year", year), new XElement ("market", market), new XElement ("make", make), new XElement ("model", model), new XElement ("submodel", submodel),
-			new XElement ("transmission", transmission), new XElement ("memmodel", memmodel), new XElement ("flashmethod", flashmethod), new XElement ("filesize", postfix != null ? fSize.ToString () + postfix : fSize.ToString ()));
+			return new XElement ("romid", new XElement ("xmlid", xmlid),
+				new XElement ("internalidaddress", internalidaddress.ToString ("X")),
+				new XElement ("internalidstring", internalidstring),
+				new XElement ("ecuid", ecuid),
+				new XElement ("year", year),
+				new XElement ("market", market),
+				new XElement ("make", make),
+				new XElement ("model", model),
+				new XElement ("submodel", submodel),
+				new XElement ("transmission", transmission),
+				new XElement ("memmodel", memmodel),
+				new XElement ("flashmethod", flashmethod),
+				new XElement ("filesize", postfix != null ? fSize.ToString () + postfix : fSize.ToString ()));
 		}
 	}
 }

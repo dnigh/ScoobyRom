@@ -30,12 +30,9 @@ namespace ScoobyRom
 {
 	public sealed class GnuPlot
 	{
-		// Temporary file to transfer binary plot data, const name used in templates!
-		// Pros: The file can be handy for manual gnuplot experiments as ScoobyRom does not delete it.
-		// Cons: This behavior needs write access in app dir!
-		// TODO consider real temporary file in temp folder (System.IO.Path.GetTempFileName)
-		// 	- requires generating the plot command, though, as it's not known upfront.
-		const string BinaryFile = "gnuplot_data.tmp";
+		// Temporary file to transfer binary plot data
+		// Sharing a single temporary file is sufficient, written on each new plot.
+		static string BinaryFile = "gnuplot_data.tmp";
 
 		// TODO could put template file names into app.config
 		const string TemplateFile2D = "gnuplot_Table2D.plt";
@@ -49,6 +46,7 @@ namespace ScoobyRom
 
 		static GnuPlot ()
 		{
+			BinaryFile = System.IO.Path.Combine (System.IO.Path.GetTempPath (), BinaryFile);
 		}
 
 		/// <summary>
@@ -132,13 +130,13 @@ namespace ScoobyRom
 			try {
 				// TODO avoid necessary write access in app directory
 				using (FileStream fs = new FileStream (BinaryFile, FileMode.Create, FileAccess.Write))
-					using (BinaryWriter bw = new BinaryWriter (fs)) {
-						Table3D t3D = table as Table3D;
-						if (t3D != null)
-							WriteGnuPlotBinary (bw, t3D);
-						else
-							WriteGnuPlotBinary (bw, (Table2D)table);
-					}
+				using (BinaryWriter bw = new BinaryWriter (fs)) {
+					Table3D t3D = table as Table3D;
+					if (t3D != null)
+						WriteGnuPlotBinary (bw, t3D);
+					else
+						WriteGnuPlotBinary (bw, (Table2D)table);
+				}
 			} catch (Exception ex) {
 				throw new GnuPlotException ("Could not write binary data file.\n" + ex.Message);
 			}
@@ -227,7 +225,8 @@ namespace ScoobyRom
 			tw.WriteLine ("set label 1 \"" + AnnotationStr (table3D) + "\" at screen 0.01,0.95 front left textcolor rgb \"blue\"");
 			//set label 1 "Annotation Label" at screen 0.01,0.95 front left textcolor rgb "blue"
 
-			tw.WriteLine ("load \"" + TemplateFile3D + "\"");
+			// call gnuplot script, also pass argument to it (path to temporary binary data file)
+			tw.WriteLine ("call \"" + TemplateFile3D + "\" \"" + BinaryFile + "\"");
 		}
 
 		static void ScriptGnuplot2D (TextWriter tw, Table2D table2D)
@@ -242,7 +241,7 @@ namespace ScoobyRom
 			// Min/Max/Avg label might obscure title etc.
 			//tw.WriteLine ("set label 1 \"" + AnnotationStr (table2D) + "\" at screen 0.01,0.96 front left textcolor rgb \"blue\"");
 
-			tw.WriteLine ("load \"" + TemplateFile2D + "\"");
+			tw.WriteLine ("call \"" + TemplateFile2D + "\" \"" + BinaryFile + "\"");
 		}
 
 		static string SetLabel (string item, string name, bool newLineBeforeUnit, string unit)
@@ -270,10 +269,10 @@ namespace ScoobyRom
 			return string.Format ("Min: {0}\\nMax: {1}\\nAvg: {2}", table3D.Zmin.ToString (), table3D.Zmax.ToString (), table3D.Zavg.ToString ());
 		}
 
-//		static string AnnotationStr (Table2D table2D)
-//		{
-//			return string.Format ("Min: {0} Max: {1} Avg: {2}", table2D.Ymin.ToString (), table2D.Ymax.ToString (), table2D.Yavg.ToString ());
-//		}
+		//		static string AnnotationStr (Table2D table2D)
+		//		{
+		//			return string.Format ("Min: {0} Max: {1} Avg: {2}", table2D.Ymin.ToString (), table2D.Ymax.ToString (), table2D.Yavg.ToString ());
+		//		}
 
 		// TODO investigate piping binary data via standard input, avoiding temp file
 		// However temp file might be useful for manual gnuplot experiments.
@@ -300,9 +299,9 @@ namespace ScoobyRom
 			float[] valuesY = table3D.ValuesY;
 			float[] valuesZ = table3D.GetValuesZasFloats ();
 			for (int iy = 0; iy < valuesY.Length; iy++) {
-				bw.Write (valuesY[iy]);
+				bw.Write (valuesY [iy]);
 				for (int ix = 0; ix < valuesX.Length; ix++) {
-					bw.Write (valuesZ[ix + iy * valuesX.Length]);
+					bw.Write (valuesZ [ix + iy * valuesX.Length]);
 				}
 			}
 		}
@@ -318,7 +317,7 @@ namespace ScoobyRom
 			float[] valuesY = table2D.GetValuesYasFloats ();
 			bw.Write (0f);
 			for (int ix = 0; ix < valuesX.Length; ix++) {
-				bw.Write (valuesY[ix]);
+				bw.Write (valuesY [ix]);
 			}
 		}
 

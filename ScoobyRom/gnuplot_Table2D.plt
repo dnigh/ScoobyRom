@@ -20,7 +20,7 @@
 # See template file for 3D surface plot, more documentation in there!
 
 set macros
-dataFile = "\"gnuplot_data.tmp\""
+dataFile = ARG1
 terminal = "wxt"
 
 # TERMINAL SPECIFIC !!! Must match currently used terminal!!!!
@@ -35,7 +35,7 @@ style_lines = "lines linetype -1 linecolor \"red\" linewidth 3"
 style_points = "points linetype -1 linecolor \"blue\" pointtype 7 pointsize 1.0"
 
 # lines and points have same color
-#plot @dataFile binary volatile title "" with linespoints linetype 1 pointtype 7 linewidth 2 linecolor "red"
+#plot dataFile binary volatile title "" with linespoints linetype 1 pointtype 7 linewidth 2 linecolor "red"
 
 # two combined plots to allow separate colors for both lines and points
-plot @dataFile binary volatile title "" with @style_points, "gnuplot_data.tmp" binary volatile title "" with @style_lines
+plot dataFile binary volatile title "" with @style_points, dataFile binary volatile title "" with @style_lines

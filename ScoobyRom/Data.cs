@@ -206,10 +206,9 @@ namespace ScoobyRom
 			do {
 				bool found = true;
 				for (int i = 0; i < values.Length; i++) {
-					float value = values[i];
+					float value = values [i];
 					float rounded = (float)Math.Round (value, digits);
-					if (Math.Abs(value - rounded) > float.Epsilon)
-					{
+					if (Math.Abs (value - rounded) > float.Epsilon) {
 						++digits;
 						found = false;
 						break;
@@ -217,8 +216,7 @@ namespace ScoobyRom
 				}
 				if (found)
 					break;
-			}
-			while (digits <= MaxDecimals);
+			} while (digits <= MaxDecimals);
 			return digits;
 		}
 
@@ -226,7 +224,19 @@ namespace ScoobyRom
 		{
 			if (decimals < 1)
 				return "0";
-			return "0." + new string('0', decimals);
+			return "0." + new string ('0', decimals);
+		}
+
+		// HACK might need better algorithm
+		public static string AutomaticValueFormat (float[] values, float valuesMin, float valuesMax)
+		{
+			int digits = ScoobyRom.Data.AutomaticMinDigits (values);
+			if (digits > 3) {
+				digits = valuesMax < 30 ? 2 : 1;
+				if (valuesMax < 10)
+					digits = 3;
+			}
+			return ValueFormat (digits);
 		}
 	}
 }

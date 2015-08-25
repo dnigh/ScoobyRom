@@ -33,8 +33,8 @@ namespace GtkWidgets
 	}
 
 	// Deriving from Gtk.Frame seems easiest solution: just have to paint background.
-	// Disadvantage: Frame might not look good on all platforms.
 	// Can put any widget inside - Label, Entry, ...
+	// Disadvantage: Frame might not look good on all platforms.
 	[System.ComponentModel.ToolboxItem(true)]
 	public sealed class BorderWidget : Gtk.Frame
 	{

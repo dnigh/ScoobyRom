@@ -35,7 +35,13 @@ namespace ScoobyRom
 
 		public static void Main (string[] args)
 		{
-			Application.Init ();
+			try {
+				Application.Init ();
+			} catch (Exception ex) {
+				Console.WriteLine ("Error in Application.Init! Gtk# package not installed!?");
+				Console.WriteLine (ex);
+				throw ex;
+			}
 
 			// does not catch Exceptions in MainWindow constructor!
 			GLib.ExceptionManager.UnhandledException += OnUnhandledException;
@@ -45,6 +51,7 @@ namespace ScoobyRom
 				appIcon = Gdk.Pixbuf.LoadFromResource ("Images.AppIcon.png");
 			} catch (System.ArgumentException) {
 				// i.e. resource not found
+				Console.WriteLine ("Exception: loading resources");
 			}
 
 			// program arguments: if available, first argument is supposed to be ROM path

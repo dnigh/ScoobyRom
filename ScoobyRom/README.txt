@@ -124,12 +124,26 @@ http://www.gtk.org/
 Note: Software like MonoDevelop depends on Gtk#, too.
 No need to install this if it's already on the machine of course.
 
-http://mono-project.com/GtkSharp
-( Download --> http://www.go-mono.com/mono-downloads/download.html )
-It's called "Gtk# for .NET", you may not need the others (Mono).
+http://www.mono-project.com/docs/gui/gtksharp/
+http://www.mono-project.com/docs/gui/gtksharp/installer-for-net-framework/
+
+--> Download
+(
+-> http://www.mono-project.com/download/
+
+
 
 Windows
 -------
+
+GTK# for .NET
+Installer for running Gtk#-based applications on Microsoft .NET:
+)
+It's called "Gtk# for .NET", you may not need the others (Mono).
+On Windows you probably have .NET installed already, therefore do not need to install Mono.
+
+http://www.mono-project.com/download/#download-win
+
 Tested version:
 gtk-sharp-2.12.10.win32.msi (15.7 MiB)
 
@@ -143,10 +157,14 @@ Unix/Linux
 On Linux at least, one does not need to care about 32 or 64 bit, x64 is fine by default.
 Generally, UI performance on Unix/Linux is best as Gtk+ libraries are often in use anyway.
 
+http://www.mono-project.com/download/#download-lin
+
 
 OSX
 ---
 Awaiting feedback... not sure if it runs on MacOS. Theoretically it should.
+
+http://www.mono-project.com/download/#download-mac
 
 
 Performance Note:
@@ -177,6 +195,7 @@ Homepage: http://www.gnuplot.info/
 gnuplot installation on Windows
 -------------------------------
 1) Windows binaries:
+http://www.gnuplot.info/download.html
 http://sourceforge.net/projects/gnuplot/files/
 latest tested: gp443win32.zip (10.1 MiB)
 

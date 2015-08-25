@@ -6,9 +6,9 @@
 http://monodevelop.com/
 This one is ideal because it has a good Gtk# user interface designer - saves time.
 Multi-platform, tested on Linux and Windows.
+Uses xbuild for compilation.
 
-*)	Visual Studio 2010
-Confirmed working.
+*)	Visual Studio
 http://msdn.microsoft.com/en-us/vstudio/
 Free express versions: http://www.microsoft.com/express/Downloads
 Obviously Windows only, has no Gtk# designer but can compile own + generated Gtk# code.
