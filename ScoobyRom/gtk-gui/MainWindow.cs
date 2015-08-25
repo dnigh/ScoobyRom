@@ -165,12 +165,12 @@ public partial class MainWindow
 		this.notebook1 = new global::Gtk.Notebook ();
 		this.notebook1.CanFocus = true;
 		this.notebook1.Name = "notebook1";
-		this.notebook1.CurrentPage = 0;
+		this.notebook1.CurrentPage = 1;
 		// Container child notebook1.Gtk.Notebook+NotebookChild
 		this.vpaned2D = new global::Gtk.VPaned ();
 		this.vpaned2D.CanFocus = true;
 		this.vpaned2D.Name = "vpaned2D";
-		this.vpaned2D.Position = 200;
+		this.vpaned2D.Position = 250;
 		// Container child vpaned2D.Gtk.Paned+PanedChild
 		this.GtkScrolledWindowTV2D = new global::Gtk.ScrolledWindow ();
 		this.GtkScrolledWindowTV2D.Name = "GtkScrolledWindowTV2D";
@@ -198,6 +198,9 @@ public partial class MainWindow
 		global::Gtk.Paned.PanedChild w5 = ((global::Gtk.Paned.PanedChild)(this.hpaned2D [this.scrolledwindowTable2D]));
 		w5.Resize = false;
 		this.vpaned2D.Add (this.hpaned2D);
+		global::Gtk.Paned.PanedChild w6 = ((global::Gtk.Paned.PanedChild)(this.vpaned2D [this.hpaned2D]));
+		w6.Resize = false;
+		w6.Shrink = false;
 		this.notebook1.Add (this.vpaned2D);
 		// Notebook tab
 		this.label1 = new global::Gtk.Label ();
@@ -209,7 +212,7 @@ public partial class MainWindow
 		this.vpaned3D = new global::Gtk.VPaned ();
 		this.vpaned3D.CanFocus = true;
 		this.vpaned3D.Name = "vpaned3D";
-		this.vpaned3D.Position = 200;
+		this.vpaned3D.Position = 250;
 		// Container child vpaned3D.Gtk.Paned+PanedChild
 		this.ScrolledWindowTV3D = new global::Gtk.ScrolledWindow ();
 		this.ScrolledWindowTV3D.Name = "ScrolledWindowTV3D";

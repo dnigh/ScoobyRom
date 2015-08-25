@@ -29,10 +29,6 @@ namespace ScoobyRom
 	/// </summary>
 	public sealed class PlotIcon3D : PlotIconBase
 	{
-		public PlotIcon3D () : this (DefaultWidth, DefaultHeight)
-		{
-		}
-
 		public PlotIcon3D (int width, int height) : base (width, height)
 		{
 		}

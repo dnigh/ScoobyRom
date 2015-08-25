@@ -29,7 +29,7 @@ namespace ScoobyRom
 	// sort of ViewModel in M-V-VM (Model-View-ViewModel pattern)
 	public sealed class DataView2DModelGtk : DataViewModelBaseGtk
 	{
-		public DataView2DModelGtk (Data data) : base (data, new PlotIcon2D (iconWidth, iconHeight))
+		public DataView2DModelGtk (Data data, int iconWidth, int iconHeight) : base (data, new PlotIcon2D (iconWidth, iconHeight))
 		{
 			data.ItemsChanged2D += OnDataItemsChanged;
 		}

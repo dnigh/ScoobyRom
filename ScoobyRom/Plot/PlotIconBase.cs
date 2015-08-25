@@ -36,8 +36,6 @@ namespace ScoobyRom
 	public abstract class PlotIconBase
 	{
 		protected const int MemoryStreamCapacity = 2048;
-		public const int DefaultWidth = 128;
-		public const int DefaultHeight = 128;
 		public const int Padding = 2;
 
 		#if !BitmapToPixbufConversionRaw
@@ -85,9 +83,35 @@ namespace ScoobyRom
 					//					image.Dispose ();
 
 					// bits per sample must be 8!
-					constDataIcon = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, false, 8, width, height);
+//					constDataIcon = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, false, 8, width, height);
 					// RGBA
-					constDataIcon.Fill (0xAAAAAAFF);
+//					constDataIcon.Fill (0xAAAAAAFF);
+
+					using (var surface = new Cairo.ImageSurface (Cairo.Format.Rgb24, width, height)) {
+						using (Cairo.Context cr = new Cairo.Context (surface)) {
+							cr.SetSourceRGB (0.7, 0.7, 0.7);
+							cr.Paint ();
+							cr.SetSourceRGB (1, 0, 0);
+							//cr.MoveTo (0.2 * width, 0.6 * height);
+//							cr.ShowText ("const");
+//							cr.Stroke ();
+
+							using (var layout = Pango.CairoHelper.CreateLayout (cr)) {
+								layout.FontDescription = Pango.FontDescription.FromString ("Sans 12");
+								layout.SetText ("const");
+								int lwidth, lheight;
+								layout.GetPixelSize (out lwidth, out lheight);
+								// 0, 0 = left top
+								cr.MoveTo (0.5 * (width - lwidth), 0.5 * (height - lheight));
+								Pango.CairoHelper.ShowLayout (cr, layout);
+							}
+
+
+						}
+						constDataIcon = new Gdk.Pixbuf (surface.Data, Gdk.Colorspace.Rgb, true, 8, width, height, surface.Stride, null);
+					}
+
+
 				}
 				return constDataIcon;
 			}

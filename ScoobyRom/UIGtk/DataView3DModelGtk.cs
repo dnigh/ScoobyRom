@@ -29,7 +29,7 @@ namespace ScoobyRom
 	// sort of ViewModel in M-V-VM (Model-View-ViewModel pattern)
 	public sealed class DataView3DModelGtk : DataViewModelBaseGtk
 	{
-		public DataView3DModelGtk (Data data) : base (data, new PlotIcon3D (iconWidth, iconHeight))
+		public DataView3DModelGtk (Data data, int iconWidth, int iconHeight) : base (data, new PlotIcon3D (iconWidth, iconHeight))
 		{
 			data.ItemsChanged3D += OnDataItemsChanged;
 		}

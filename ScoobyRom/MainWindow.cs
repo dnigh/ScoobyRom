@@ -71,7 +71,10 @@ public sealed partial class MainWindow : Gtk.Window
 
 		this.Icon = MainClass.AppIcon;
 
-		dataView3DModelGtk = new DataView3DModelGtk (this.data);
+		int iconWidth = Config.IconWidth;
+		int iconHeight = Config.IconHeight;
+
+		dataView3DModelGtk = new DataView3DModelGtk (this.data, iconWidth, iconHeight);
 		dataView3DGtk = new DataView3DGtk (dataView3DModelGtk, treeview3D);
 		dataView3DGtk.Activated += delegate(object sender, ActionEventArgs e) {
 			Table3D table3D = (Table3D)e.Tag;
@@ -80,7 +83,7 @@ public sealed partial class MainWindow : Gtk.Window
 			}
 		};
 
-		dataView2DModelGtk = new DataView2DModelGtk (this.data);
+		dataView2DModelGtk = new DataView2DModelGtk (this.data, iconWidth, iconHeight);
 		dataView2DGtk = new DataView2DGtk (dataView2DModelGtk, treeview2D);
 		dataView2DGtk.Activated += delegate(object sender, ActionEventArgs e) {
 			Table2D table2D = (Table2D)e.Tag;

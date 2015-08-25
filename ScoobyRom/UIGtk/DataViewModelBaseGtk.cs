@@ -28,9 +28,6 @@ namespace ScoobyRom
 	// sort of ViewModel in M-V-VM (Model-View-ViewModel pattern)
 	public abstract class DataViewModelBaseGtk
 	{
-		protected const int iconWidth = 64;
-		protected const int iconHeight = 48;
-
 		// generates icons
 		protected readonly PlotIconBase plotIcon;
 

@@ -34,10 +34,6 @@ namespace ScoobyRom
 
 		readonly System.Drawing.Pen pen;
 
-		public PlotIcon2D () : this (DefaultWidth, DefaultHeight)
-		{
-		}
-
 		public PlotIcon2D (int width, int height) : base (width, height)
 		{
 			pen = new System.Drawing.Pen (System.Drawing.Color.Red, width >= 32 ? 2f : 1f);

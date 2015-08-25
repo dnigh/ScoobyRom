@@ -185,13 +185,13 @@
           <widget class="Gtk.Notebook" id="notebook1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="CurrentPage">0</property>
+            <property name="CurrentPage">1</property>
             <signal name="SwitchPage" handler="OnNotebook1SwitchPage" />
             <child>
               <widget class="Gtk.VPaned" id="vpaned2D">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Position">200</property>
+                <property name="Position">250</property>
                 <child>
                   <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindowTV2D">
                     <property name="MemberName" />
@@ -237,6 +237,10 @@
                       <placeholder />
                     </child>
                   </widget>
+                  <packing>
+                    <property name="Resize">False</property>
+                    <property name="Shrink">False</property>
+                  </packing>
                 </child>
               </widget>
             </child>
@@ -253,7 +257,7 @@
               <widget class="Gtk.VPaned" id="vpaned3D">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Position">200</property>
+                <property name="Position">250</property>
                 <child>
                   <widget class="Gtk.ScrolledWindow" id="ScrolledWindowTV3D">
                     <property name="MemberName" />
