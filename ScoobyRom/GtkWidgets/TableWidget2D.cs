@@ -35,10 +35,6 @@ namespace GtkWidgets
 		string formatValues = "0.000";
 		readonly float[] axisX, values;
 		readonly float axisXmin, axisXmax, valuesMax, valuesMin;
-
-		Gtk.Table table;
-		Widget[] axisWidgets, valueWidgets;
-
 		readonly Util.Coloring coloring;
 
 		/// <summary>
@@ -84,7 +80,7 @@ namespace GtkWidgets
 
 		public Gtk.Widget Create ()
 		{
-			table = new Gtk.Table ((uint)rows, (uint)cols, false);
+			var table = new Gtk.Table ((uint)rows, (uint)cols, false);
 
 			// could add some spacing so cell content won't touch
 			// table.ColumnSpacing = table.RowSpacing = 0;
@@ -115,7 +111,6 @@ namespace GtkWidgets
 			table.Attach (titleRight, DataColLeft + 2, DataColLeft + 3, 0, (uint)rows, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
 
 			// x values
-			axisWidgets = new Widget[countX];
 			for (uint i = 0; i < countX; i++) {
 				float val = axisX [i];
 
@@ -127,13 +122,11 @@ namespace GtkWidgets
 				widget.Color = CalcAxisColor (val);
 				widget.Add (label);
 
-				axisWidgets [i] = widget;
 				table.Attach (widget, DataColLeft, DataColLeft + 1, DataRowTop + i, DataRowTop + 1 + i, AttachOptions.Fill, AttachOptions.Shrink, PadX, PadY);
 			}
 
 			// y values
 			int count = values.Length;
-			valueWidgets = new Widget[count];
 			for (uint i = 0; i < count; i++) {
 				float val = values [i];
 
@@ -149,12 +142,12 @@ namespace GtkWidgets
 				widget.Color = CalcValueColor (val);
 				widget.Add (label);
 
-				valueWidgets [i] = widget;
 				uint row = DataRowTop + i;
 				uint col = DataColLeft + 1;
 
 				table.Attach (widget, col, col + 1, row, row + 1, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
 			}
+
 			return table;
 		}
 

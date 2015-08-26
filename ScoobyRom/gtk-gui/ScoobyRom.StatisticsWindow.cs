@@ -241,8 +241,8 @@ namespace ScoobyRom
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 328;
-			this.DefaultHeight = 268;
+			this.DefaultWidth = 262;
+			this.DefaultHeight = 189;
 			this.Show ();
 			this.buttonRefresh.Clicked += new global::System.EventHandler (this.OnButtonRefreshClicked);
 		}

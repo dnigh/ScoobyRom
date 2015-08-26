@@ -78,42 +78,43 @@ namespace ScoobyRom
 		public Gdk.Pixbuf ConstDataIcon {
 			get {
 				if (constDataIcon == null) {
-					//					Gtk.Image image = new Gtk.Image ();
-					//					missingDataPic = image.RenderIcon (Gtk.Stock.MissingImage, Gtk.IconSize.SmallToolbar, null);
-					//					image.Dispose ();
-
-					// bits per sample must be 8!
-//					constDataIcon = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, false, 8, width, height);
-					// RGBA
-//					constDataIcon.Fill (0xAAAAAAFF);
-
-					using (var surface = new Cairo.ImageSurface (Cairo.Format.Rgb24, width, height)) {
-						using (Cairo.Context cr = new Cairo.Context (surface)) {
-							cr.SetSourceRGB (0.7, 0.7, 0.7);
-							cr.Paint ();
-							cr.SetSourceRGB (1, 0, 0);
-							//cr.MoveTo (0.2 * width, 0.6 * height);
-//							cr.ShowText ("const");
-//							cr.Stroke ();
-
-							using (var layout = Pango.CairoHelper.CreateLayout (cr)) {
-								layout.FontDescription = Pango.FontDescription.FromString ("Sans 12");
-								layout.SetText ("const");
-								int lwidth, lheight;
-								layout.GetPixelSize (out lwidth, out lheight);
-								// 0, 0 = left top
-								cr.MoveTo (0.5 * (width - lwidth), 0.5 * (height - lheight));
-								Pango.CairoHelper.ShowLayout (cr, layout);
-							}
-
-
-						}
-						constDataIcon = new Gdk.Pixbuf (surface.Data, Gdk.Colorspace.Rgb, true, 8, width, height, surface.Stride, null);
-					}
-
-
+					constDataIcon = DrawConstDataIcon ();
 				}
 				return constDataIcon;
+			}
+		}
+
+		protected Gdk.Pixbuf DrawConstDataIcon ()
+		{
+			using (var surface = new Cairo.ImageSurface (Cairo.Format.Argb32, width, height)) {
+				using (Cairo.Context cr = new Cairo.Context (surface)) {
+					// background
+					cr.SetSourceRGB (0.7, 0.7, 0.7);
+					cr.Paint ();
+
+					// text
+					cr.SetSourceRGB (1, 0, 0);
+					// simple Cairo text API instead of Pango
+					//cr.MoveTo (10, 0.3 * height);
+					//cr.SetFontSize (20);
+					//cr.ShowText ("const");
+
+					using (var layout = Pango.CairoHelper.CreateLayout (cr)) {
+						// font size 12 seems suitable for iconHeight 48 pixels
+						float fontSize = 12 * height / 48f;
+						layout.FontDescription = Pango.FontDescription.FromString ("Sans " + fontSize.ToString ());
+						layout.SetText ("const");
+						layout.Width = width;
+						layout.Alignment = Pango.Alignment.Center;
+						int lwidth, lheight;
+						layout.GetPixelSize (out lwidth, out lheight);
+						// 0, 0 = left top
+						//cr.MoveTo (0.5 * (width - lwidth), 0.5 * (height - lheight));
+						cr.MoveTo (0.5 * width, 0.5 * (height - lheight));
+						Pango.CairoHelper.ShowLayout (cr, layout);
+					}
+				}
+				return new Gdk.Pixbuf (surface.Data, Gdk.Colorspace.Rgb, true, 8, width, height, surface.Stride, null);
 			}
 		}
 
@@ -151,6 +152,7 @@ namespace ScoobyRom
 		}
 
 		#if BitmapToPixbufConversionRaw
+		
 		// working but sensitive to internal bitmap data format
 		// http://mono.1490590.n4.nabble.com/Current-way-of-creating-a-Pixbuf-from-an-RGB-Array-td1545766.html
 		// https://stackoverflow.com/questions/19187737/converting-a-bgr-bitmap-to-rgb

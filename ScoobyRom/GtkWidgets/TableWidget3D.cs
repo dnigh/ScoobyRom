@@ -36,10 +36,6 @@ namespace GtkWidgets
 		string formatValues = "0.000";
 		readonly float[] axisX, axisY, values;
 		readonly float axisXmin, axisXmax, axisYmin, axisYmax, valuesMax, valuesMin;
-
-		Gtk.Table table;
-		Widget[] axisWidgetsX, axisWidgetsY, valueWidgets;
-
 		readonly Util.Coloring coloring;
 
 		// Use LINQ to calc min/max
@@ -98,7 +94,7 @@ namespace GtkWidgets
 
 		public Gtk.Widget Create ()
 		{
-			table = new Gtk.Table ((uint)rows, (uint)cols, false);
+			var table = new Gtk.Table ((uint)rows, (uint)cols, false);
 
 			Gtk.Label title = new Label ();
 			title.Markup = this.titleMarkup;
@@ -113,7 +109,6 @@ namespace GtkWidgets
 			const uint AxisPadY = 2;
 
 			// x axis
-			axisWidgetsX = new Widget[countX];
 			for (uint i = 0; i < countX; i++) {
 				Gtk.Label label = new Label ();
 				float val = axisX [i];
@@ -123,12 +118,10 @@ namespace GtkWidgets
 				widget.Color = CalcAxisXColor (val);
 				widget.Add (label);
 
-				axisWidgetsX [i] = widget;
 				table.Attach (widget, DataColLeft + i, DataColLeft + 1 + i, DataRowTop - 1, DataRowTop, AttachOptions.Shrink, AttachOptions.Shrink, AxisPadX, 2 * AxisPadY);
 			}
 
 			// y axis
-			axisWidgetsY = new Widget[countY];
 			for (uint i = 0; i < countY; i++) {
 				Gtk.Label label = new Label ();
 				float val = axisY [i];
@@ -139,13 +132,11 @@ namespace GtkWidgets
 				widget.Color = CalcAxisYColor (val);
 				widget.Add (label);
 
-				axisWidgetsY [i] = widget;
 				table.Attach (widget, DataColLeft - 1, DataColLeft, DataRowTop + i, DataRowTop + 1 + i, AttachOptions.Fill, AttachOptions.Shrink, 2 * AxisPadX, AxisPadY);
 			}
 
 			// values
 			int countZ = values.Length;
-			valueWidgets = new Widget[countZ];
 			for (uint i = 0; i < countZ; i++) {
 				float val = values [i];
 				Gtk.Widget label = new Label (val.ToString (this.formatValues));
@@ -160,7 +151,6 @@ namespace GtkWidgets
 				widget.Color = CalcColor (val);
 				widget.Add (label);
 
-				valueWidgets [i] = widget;
 				uint row = DataRowTop + i / (uint)this.countX;
 				uint col = DataColLeft + i % (uint)this.countX;
 

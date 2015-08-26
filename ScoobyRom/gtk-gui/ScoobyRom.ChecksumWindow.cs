@@ -91,8 +91,8 @@ namespace ScoobyRom
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 462;
-			this.DefaultHeight = 517;
+			this.DefaultWidth = 419;
+			this.DefaultHeight = 548;
 			this.Show ();
 		}
 	}

@@ -343,7 +343,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="ScoobyRom.ChecksumWindow" design-size="462 517">
+  <widget class="Gtk.Window" id="ScoobyRom.ChecksumWindow" design-size="419 548">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Checksum Window</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -457,7 +457,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="ScoobyRom.StatisticsWindow" design-size="328 268">
+  <widget class="Gtk.Window" id="ScoobyRom.StatisticsWindow" design-size="262 189">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Statistics Window</property>
     <child>
