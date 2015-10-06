@@ -30,6 +30,8 @@ namespace ScoobyRom
 		
 		private global::Gtk.Label label3DLastRecord;
 		
+		private global::Gtk.Label labelRomDate;
+		
 		private global::Gtk.Label labelRowAnnotated;
 		
 		private global::Gtk.Label labelRowCountTotal;
@@ -37,6 +39,8 @@ namespace ScoobyRom
 		private global::Gtk.Label labelRowFirstRecord;
 		
 		private global::Gtk.Label labelRowLastRecord;
+		
+		private global::Gtk.Label labelRowRomDate;
 
 		protected virtual void Build ()
 		{
@@ -53,7 +57,7 @@ namespace ScoobyRom
 			global::Gtk.Viewport w1 = new global::Gtk.Viewport ();
 			w1.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child GtkViewport.Gtk.Container+ContainerChild
-			this.table1 = new global::Gtk.Table (((uint)(6)), ((uint)(3)), false);
+			this.table1 = new global::Gtk.Table (((uint)(7)), ((uint)(3)), false);
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
@@ -196,45 +200,70 @@ namespace ScoobyRom
 			w12.XOptions = ((global::Gtk.AttachOptions)(4));
 			w12.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
+			this.labelRomDate = new global::Gtk.Label ();
+			this.labelRomDate.Name = "labelRomDate";
+			this.labelRomDate.LabelProp = global::Mono.Unix.Catalog.GetString ("-");
+			this.table1.Add (this.labelRomDate);
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRomDate]));
+			w13.TopAttach = ((uint)(6));
+			w13.BottomAttach = ((uint)(7));
+			w13.LeftAttach = ((uint)(2));
+			w13.RightAttach = ((uint)(3));
+			w13.XOptions = ((global::Gtk.AttachOptions)(4));
+			w13.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
 			this.labelRowAnnotated = new global::Gtk.Label ();
 			this.labelRowAnnotated.Name = "labelRowAnnotated";
 			this.labelRowAnnotated.LabelProp = global::Mono.Unix.Catalog.GetString ("Annotated");
 			this.table1.Add (this.labelRowAnnotated);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowAnnotated]));
-			w13.TopAttach = ((uint)(2));
-			w13.BottomAttach = ((uint)(3));
-			w13.XOptions = ((global::Gtk.AttachOptions)(4));
-			w13.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowAnnotated]));
+			w14.TopAttach = ((uint)(2));
+			w14.BottomAttach = ((uint)(3));
+			w14.XOptions = ((global::Gtk.AttachOptions)(4));
+			w14.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.labelRowCountTotal = new global::Gtk.Label ();
 			this.labelRowCountTotal.Name = "labelRowCountTotal";
 			this.labelRowCountTotal.LabelProp = global::Mono.Unix.Catalog.GetString ("Count Total");
 			this.table1.Add (this.labelRowCountTotal);
-			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowCountTotal]));
-			w14.TopAttach = ((uint)(1));
-			w14.BottomAttach = ((uint)(2));
-			w14.XOptions = ((global::Gtk.AttachOptions)(4));
-			w14.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowCountTotal]));
+			w15.TopAttach = ((uint)(1));
+			w15.BottomAttach = ((uint)(2));
+			w15.XOptions = ((global::Gtk.AttachOptions)(4));
+			w15.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.labelRowFirstRecord = new global::Gtk.Label ();
 			this.labelRowFirstRecord.Name = "labelRowFirstRecord";
 			this.labelRowFirstRecord.LabelProp = global::Mono.Unix.Catalog.GetString ("First Record");
 			this.table1.Add (this.labelRowFirstRecord);
-			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowFirstRecord]));
-			w15.TopAttach = ((uint)(3));
-			w15.BottomAttach = ((uint)(4));
-			w15.XOptions = ((global::Gtk.AttachOptions)(4));
-			w15.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowFirstRecord]));
+			w16.TopAttach = ((uint)(3));
+			w16.BottomAttach = ((uint)(4));
+			w16.XOptions = ((global::Gtk.AttachOptions)(4));
+			w16.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.labelRowLastRecord = new global::Gtk.Label ();
 			this.labelRowLastRecord.Name = "labelRowLastRecord";
 			this.labelRowLastRecord.LabelProp = global::Mono.Unix.Catalog.GetString ("Last Record");
 			this.table1.Add (this.labelRowLastRecord);
-			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowLastRecord]));
-			w16.TopAttach = ((uint)(4));
-			w16.BottomAttach = ((uint)(5));
-			w16.XOptions = ((global::Gtk.AttachOptions)(4));
-			w16.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowLastRecord]));
+			w17.TopAttach = ((uint)(4));
+			w17.BottomAttach = ((uint)(5));
+			w17.XOptions = ((global::Gtk.AttachOptions)(4));
+			w17.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.labelRowRomDate = new global::Gtk.Label ();
+			this.labelRowRomDate.Name = "labelRowRomDate";
+			this.labelRowRomDate.LabelProp = global::Mono.Unix.Catalog.GetString ("ROM Date <sup>(Diesel only)</sup>");
+			this.labelRowRomDate.UseMarkup = true;
+			this.labelRowRomDate.Wrap = true;
+			this.table1.Add (this.labelRowRomDate);
+			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowRomDate]));
+			w18.TopAttach = ((uint)(6));
+			w18.BottomAttach = ((uint)(7));
+			w18.RightAttach = ((uint)(2));
+			w18.XOptions = ((global::Gtk.AttachOptions)(4));
+			w18.YOptions = ((global::Gtk.AttachOptions)(4));
 			w1.Add (this.table1);
 			this.scrolledwindow1.Add (w1);
 			this.Add (this.scrolledwindow1);
@@ -242,7 +271,7 @@ namespace ScoobyRom
 				this.Child.ShowAll ();
 			}
 			this.DefaultWidth = 262;
-			this.DefaultHeight = 189;
+			this.DefaultHeight = 210;
 			this.Show ();
 			this.buttonRefresh.Clicked += new global::System.EventHandler (this.OnButtonRefreshClicked);
 		}

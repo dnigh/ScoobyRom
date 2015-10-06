@@ -42,6 +42,7 @@ namespace Subaru.File
 		// ROM files are much smaller (couple MiB max) than 2 GiB so Int32 for pos, size etc. is sufficient
 		int startPos, lastPos;
 		int percentDoneLastReport;
+		DateTime? romDate;
 
 		public string Path {
 			get { return this.path; }
@@ -61,6 +62,14 @@ namespace Subaru.File
 
 		public RomChecksumming RomChecksumming {
 			get { return new RomChecksumming (this.romType, this.stream); }
+		}
+
+		public DateTime? RomDate {
+			get { return this.romDate; }
+		}
+
+		public string RomDateStr {
+			get { return this.romDate.HasValue ? this.romDate.Value.ToString ("yyyy-MM-dd") : "-"; }
 		}
 
 		public Rom (string path)
@@ -138,7 +147,7 @@ namespace Subaru.File
 				ProgressChanged (this, new ProgressChangedEventArgs (percentDone, null));
 		}
 
-		//		/* //not used so far
+		/* //not used so far
 
 		public IList<Table3D> FindMaps3D ()
 		{
@@ -179,7 +188,7 @@ namespace Subaru.File
 			OnProgressChanged (100);
 			return list3D;
 		}
-		// */
+		*/
 
 		public void FindMaps (int startPos, int lastPos, out IList<Table2D> list2D, out IList<Table3D> list3D)
 		{
@@ -247,7 +256,7 @@ namespace Subaru.File
 			if (stringPos.HasValue) {
 				stream.Position = stringPos.Value;
 				strFound = Util.SearchBinary.ExtendFindASCII (stream, Predicate);
-				Console.WriteLine ($"[{strFound.Length}]\"{strFound}\" pos: 0x{stringPos.Value:X}");
+				Console.WriteLine ("[{0}]\"{1}\" pos: 0x{stringPos.Value:X}", strFound.Length, strFound);
 			}
 
 			stream.Position = 0;
@@ -255,7 +264,7 @@ namespace Subaru.File
 			if (stringPos.HasValue) {
 				stream.Position = stringPos.Value;
 				strFound = Util.SearchBinary.ExtendFindASCII (stream, Predicate);
-				Console.WriteLine ($"[{strFound.Length}]\"{strFound}\" pos: 0x{stringPos.Value:X}");
+				Console.WriteLine ("[{0}]\"{1}\" pos: 0x{stringPos.Value:X}", strFound.Length, strFound);
 			}
 
 			// 0x4000 = 16 KiB
@@ -281,12 +290,16 @@ namespace Subaru.File
 			string CID = romIDlong.Substring (romIDlong.Length - CIDLength);
 			Console.WriteLine ("CID: {0}", CID);
 
-			stream.Position = pos + RomIDlongLength;
-			int year = stream.ReadByte () + 2000;
-			int month = stream.ReadByte ();
-			int day = stream.ReadByte ();
-			DateTime romDate = new DateTime (year, month, day);
-			Console.WriteLine ("RomDate: {0}", romDate.ToString ("yyyy-MM-dd"));
+			try {
+				stream.Position = pos + RomIDlongLength;
+				int year = stream.ReadByte () + 2000;
+				int month = stream.ReadByte ();
+				int day = stream.ReadByte ();
+				this.romDate = new DateTime (year, month, day);
+				Console.WriteLine ("RomDate: {0}", RomDateStr);
+			} catch (Exception) {
+				Console.Error.WriteLine ("RomDate failed");
+			}
 
 			byte[] searchBytes = new byte[] { 0xA2, 0x10, 0x14 };
 			stream.Position = 0;
@@ -303,11 +316,7 @@ namespace Subaru.File
 					romid = ((long)(romidBytes [0]) << 32) + Util.BinaryHelper.Int32BigEndian (romidBytes, 1);
 					Console.WriteLine ("ROMID: {0}", romid.ToString ("X10"));
 				}
-
-
 			}
-
-
 		}
 
 		#region IDisposable implementation

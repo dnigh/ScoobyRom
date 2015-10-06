@@ -67,6 +67,8 @@ namespace ScoobyRom
 			} else {
 				label3DFirstRecord.Text = label3DLastRecord.Text = EmptyString;
 			}
+
+			this.labelRomDate.Text = this.data.Rom.RomDateStr;
 		}
 
 		void OnButtonRefreshClicked (object sender, System.EventArgs e)

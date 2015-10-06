@@ -65,7 +65,7 @@ namespace ScoobyRom
 
 			cellRendererText = new CellRendererText ();
 			Pango.FontDescription fontDesc = new Pango.FontDescription ();
-			fontDesc.Family = System.Environment.OSVersion.Platform == PlatformID.Win32NT ? "Monospace" : "DejaVu Sans Mono";
+			fontDesc.Family = System.Environment.OSVersion.Platform == PlatformID.Win32NT ? "Consolas" : "Monospace";
 
 			cellRendererText.FontDesc = fontDesc;
 
