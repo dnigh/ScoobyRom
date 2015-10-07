@@ -1,5 +1,7 @@
 
-*) Add CVN calculation methods for gasoline ECU ROMs.
+*) provide detected (diesel) ROM metadata for UI and new XML
+
+*) Add CVN calculation methods for gasoline ECU ROMs (ranges might be hardcoded though, therefore not feasible)
 
 *) Make some properties adjustable.
    E.g. validation min/max numbers, take file size into account etc.

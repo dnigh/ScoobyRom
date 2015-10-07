@@ -177,6 +177,7 @@ public sealed partial class MainWindow : Gtk.Window
 			if (t?.Status == TaskStatus.Faulted) {
 				Console.Error.WriteLine ("Exception processing ROM:");
 				Console.Error.WriteLine (t.Exception.ToString ());
+				openAction.Sensitive = true;
 			} else {
 				SetWindowTitle ();
 				SetActionsSensitiveForRomLoaded (true);

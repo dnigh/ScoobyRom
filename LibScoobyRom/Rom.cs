@@ -110,7 +110,7 @@ namespace Subaru.File
 		/// <returns>
 		/// A <see cref="System.String"/>
 		/// </returns>
-		public string ReadASCII (int pos, int length)
+		public string ReadASCII (long pos, int length)
 		{
 			stream.Position = pos;
 			byte[] bytes = new byte[length];
@@ -238,33 +238,62 @@ namespace Subaru.File
 			OnProgressChanged (100);
 		}
 
+		static bool IsASCIIPrintable (char c)
+		{
+			return (c >= ' ' && c <= '~');
+		}
+
 		static bool Predicate (char c)
 		{
-			return (char.IsLetterOrDigit (c) || char.IsWhiteSpace (c) || char.IsPunctuation (c));
+			return (IsASCIIPrintable (c) && (char.IsLetterOrDigit (c) || char.IsWhiteSpace (c) || char.IsPunctuation (c)));
+		}
+
+		static bool CheckString (string s, Func<char, bool> predicate)
+		{
+			for (int i = 0; i < s.Length; i++) {
+				if (!predicate (s [i]))
+					return false;
+			}
+			return true;
+		}
+
+		void PrintStringInfo (string s, long pos)
+		{
+			Console.WriteLine ("ASCII [{0}] \"{1}\" pos: 0x{2:X}", s.Length.ToString (), s, pos);
+		}
+
+		bool FindExtendASCII (Stream stream, string find, out string found, out long position)
+		{
+			int? stringPos = Util.SearchBinary.FindASCII (stream, find);
+			if (stringPos.HasValue) {
+				stream.Position = stringPos.Value;
+				found = Util.SearchBinary.ExtendFindASCII (stream, Predicate);
+				position = stream.Position - found.Length;
+				return true;
+			} else {
+				found = null;
+				position = -1;
+				return false;
+			}
 		}
 
 		public void FindMetadata ()
 		{
+			// Euro5 (not Euro4) diesel as well as newer petrol models have System String
 			const string DieselASCII = "DIESEL";
 			const string TurboASCII = "TURBO";
 
-			stream.Position = 0;
-			int? stringPos;
+			long pos;
 			string strFound;
 
-			stringPos = Util.SearchBinary.FindASCII (stream, DieselASCII);
-			if (stringPos.HasValue) {
-				stream.Position = stringPos.Value;
-				strFound = Util.SearchBinary.ExtendFindASCII (stream, Predicate);
-				Console.WriteLine ("[{0}]\"{1}\" pos: 0x{stringPos.Value:X}", strFound.Length, strFound);
+			stream.Position = 0;
+			if (FindExtendASCII (stream, DieselASCII, out strFound, out pos)) {
+				PrintStringInfo (strFound, pos);
 			}
 
 			stream.Position = 0;
-			stringPos = Util.SearchBinary.FindASCII (stream, TurboASCII);
-			if (stringPos.HasValue) {
-				stream.Position = stringPos.Value;
-				strFound = Util.SearchBinary.ExtendFindASCII (stream, Predicate);
-				Console.WriteLine ("[{0}]\"{1}\" pos: 0x{stringPos.Value:X}", strFound.Length, strFound);
+			if (FindExtendASCII (stream, TurboASCII, out strFound, out pos)) {
+				PrintStringInfo (strFound, pos);
 			}
 
 			// 0x4000 = 16 KiB
@@ -272,7 +301,6 @@ namespace Subaru.File
 			const int RomIDlongLength = 32;
 			const int CIDLength = 8;
 
-			int pos = 0;
 			switch (RomType) {
 			case RomType.SH7058:
 			case RomType.SH7059:
@@ -285,10 +313,14 @@ namespace Subaru.File
 
 
 			string romIDlong = ReadASCII (pos, RomIDlongLength).TrimEnd ();
-			Console.WriteLine ("RomIDlong[{0}]: {1}", romIDlong.Length.ToString (), romIDlong);
+			if (CheckString (romIDlong, Predicate)) {
+				Console.WriteLine ("RomIDlong[{0}]: {1}", romIDlong.Length.ToString (), romIDlong);
+			}
 
 			string CID = romIDlong.Substring (romIDlong.Length - CIDLength);
-			Console.WriteLine ("CID: {0}", CID);
+			if (CheckString (CID, Predicate)) {
+				Console.WriteLine ("CID: {0}", CID);
+			}
 
 			try {
 				stream.Position = pos + RomIDlongLength;
