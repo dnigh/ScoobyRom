@@ -1,4 +1,4 @@
-// NPlotUtil.cs: Utility classes.
+// FlorenceUtil.cs: Utility classes.
 
 /* Copyright (C) 2011-2015 SubaruDieselCrew
  *
@@ -21,7 +21,7 @@
 
 using System;
 
-namespace NPlotUtil
+namespace FlorenceUtil
 {
 	public static class ColorExtensions
 	{
@@ -33,17 +33,17 @@ namespace NPlotUtil
 	}
 
 	/// <summary>
-	/// To use own coloring in an NPlot.ImagePlot
+	/// To use own coloring in an NPlot/Florence.ImagePlot
 	/// </summary>
-	public sealed class NPlotGradient : NPlot.IGradient
+	public sealed class FlorenceGradient : Florence.IGradient
 	{
 		readonly Util.Coloring coloring;
 
-		public NPlotGradient () : this(new Util.Coloring ())
+		public FlorenceGradient () : this (new Util.Coloring ())
 		{
 		}
 
-		public NPlotGradient (Util.Coloring coloring)
+		public FlorenceGradient (Util.Coloring coloring)
 		{
 			this.coloring = coloring;
 		}

@@ -19,7 +19,7 @@
  */
 
 
-using NPlot;
+using Florence;
 using Subaru.Tables;
 
 namespace ScoobyRom
@@ -32,17 +32,18 @@ namespace ScoobyRom
 		// Default = no antialiasing!
 		const System.Drawing.Drawing2D.SmoothingMode SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-		readonly IPlotSurface2D plotSurface2D;
+		//readonly IPlotSurface2D plotSurface2D;
+		readonly InteractivePlotSurface2D plotSurface2D;
 
 		// FontFamily.GenericSansSerif -> "Arial" on Linux
 		readonly System.Drawing.Font titleFont = new System.Drawing.Font (System.Drawing.FontFamily.GenericSansSerif, 20, System.Drawing.GraphicsUnit.Point);
 		readonly System.Drawing.Font labelFont = new System.Drawing.Font (System.Drawing.FontFamily.GenericSansSerif, 16, System.Drawing.GraphicsUnit.Point);
 		readonly System.Drawing.Font tickTextFont = new System.Drawing.Font (System.Drawing.FontFamily.GenericSansSerif, 14, System.Drawing.GraphicsUnit.Point);
 
-		readonly NPlot.Marker marker;
+		readonly Marker marker;
 		readonly System.Drawing.Pen pen;
 
-		public Plot2D (IPlotSurface2D plotSurface)
+		public Plot2D (InteractivePlotSurface2D plotSurface)
 		{
 			this.plotSurface2D = plotSurface;
 
@@ -61,8 +62,23 @@ namespace ScoobyRom
 			float[] valuesY = table2D.GetValuesYasFloats ();
 
 			// clear everything. reset fonts. remove plot components etc.
+			// including Florence interactions
 			this.plotSurface2D.Clear ();
-			plotSurface2D.Padding = 0;
+
+			// Florence
+			// for correct Guideline display (Linux) need plotWidget.DoubleBuffered = false;
+			plotSurface2D.AddInteraction (new VerticalGuideline (System.Drawing.Color.Gray));
+			plotSurface2D.AddInteraction (new HorizontalGuideline (System.Drawing.Color.Gray));
+
+			//plotSurface2D.AddInteraction (new PlotSelection (System.Drawing.Color.Green));
+			plotSurface2D.AddInteraction (new PlotDrag (true, true));
+
+			plotSurface2D.AddInteraction (new AxisDrag ());
+			// PlotZoom: mouse wheel zoom
+			plotSurface2D.AddInteraction (new PlotZoom ());
+			plotSurface2D.AddInteraction (new KeyActions ());
+
+			plotSurface2D.SurfacePadding = 0;
 			plotSurface2D.SmoothingMode = SmoothingMode;
 
 			// y-values, x-values (!)
@@ -78,8 +94,8 @@ namespace ScoobyRom
 			myGrid.HorizontalGridType = Grid.GridType.Coarse;
 
 			plotSurface2D.Add (myGrid);
-			plotSurface2D.Add (lp);
 			plotSurface2D.Add (pp);
+			plotSurface2D.Add (lp);
 
 			plotSurface2D.TitleFont = titleFont;
 			plotSurface2D.Title = table2D.Title;
@@ -93,7 +109,7 @@ namespace ScoobyRom
 			plotSurface2D.YAxis1.Label = AxisText (table2D.Title, table2D.UnitY);
 			plotSurface2D.YAxis1.TickTextFont = tickTextFont;
 
-			// Refresh () not part of interface!
+			// NPlot: Refresh () not part of interface!
 		}
 
 		// "Axisname [Unit]"

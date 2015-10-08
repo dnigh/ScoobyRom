@@ -50,7 +50,10 @@ public sealed partial class MainWindow : Gtk.Window
 	readonly DataView2DGtk dataView2DGtk;
 
 	// Gtk# integration: NPlot.Gtk.PlotSurface2D instead of generic NPlot.PlotSurface2D
-	readonly NPlot.Gtk.NPlotSurface2D plotSurface = new NPlot.Gtk.NPlotSurface2D ();
+	//readonly NPlot.Gtk.NPlotSurface2D plotSurface = new NPlot.Gtk.NPlotSurface2D ();
+	readonly Florence.InteractivePlotSurface2D plotSurface = new Florence.InteractivePlotSurface2D();
+
+
 	readonly Plot2D plot2D;
 
 	// const so far, so share it
@@ -93,8 +96,14 @@ public sealed partial class MainWindow : Gtk.Window
 		};
 
 		plot2D = new Plot2D (plotSurface);
-		this.hpaned2D.Add2 (plotSurface);
-		global::Gtk.Paned.PanedChild pc = ((global::Gtk.Paned.PanedChild)(this.hpaned2D [plotSurface]));
+
+		var plotWidget = new Florence.GtkSharp.PlotWidget ();
+		plotWidget.InteractivePlotSurface2D = plotSurface;
+		// default: true, otherwise causes flickering
+		//plotWidget.DoubleBuffered = false;
+
+		this.hpaned2D.Add2 (plotWidget);
+		//global::Gtk.Paned.PanedChild pc = ((global::Gtk.Paned.PanedChild)(this.hpaned2D [plotWidget]));
 		// to resize both panes proportionally when parent (main window) resizes
 		//pc.Resize = false;
 		//pc.Shrink = false;
@@ -238,9 +247,12 @@ public sealed partial class MainWindow : Gtk.Window
 	{
 		if (table == null)
 			return;
+
+		// plot
 		plot2D.Draw (table);
 		plotSurface.Refresh ();
 
+		// table data as text
 		var values = table.GetValuesYasFloats ();
 		var tableUI = new GtkWidgets.TableWidget2D (coloring, table.ValuesX, values, table.Xmin, table.Xmax, table.Ymin, table.Ymax);
 		tableUI.HeaderAxisMarkup = Util.Markup.Unit (table.UnitX);
