@@ -28,7 +28,7 @@ using Gtk;
 using ScoobyRom;
 using Subaru.Tables;
 
-public sealed partial class MainWindow : Gtk.Window
+public partial class MainWindow : Gtk.Window
 {
 	enum ActiveUI
 	{
@@ -183,7 +183,7 @@ public sealed partial class MainWindow : Gtk.Window
 		stopwatch.Stop ();
 
 		Application.Invoke (delegate {
-			if (t?.Status == TaskStatus.Faulted) {
+			if (t.Status == TaskStatus.Faulted) {
 				Console.Error.WriteLine ("Exception processing ROM:");
 				Console.Error.WriteLine (t.Exception.ToString ());
 				openAction.Sensitive = true;

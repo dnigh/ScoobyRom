@@ -35,8 +35,8 @@ namespace Subaru.File
 			// necessary, otherwise single line
 			xw.Formatting = Formatting.Indented;
 
-			var l2D = list2D?.Select (t => t.RRXml ());
-			var l3D = list3D?.Select (t => t.RRXml ());
+			var l2D = list2D == null ? null : list2D.Select (t => t.RRXml ());
+			var l3D = list3D == null ? null : list3D.Select (t => t.RRXml ());
 
 			XDocument doc = RRXmlDocument (new XElement ("rom", romid, l2D, l3D));
 

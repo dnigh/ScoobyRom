@@ -53,7 +53,7 @@ namespace Subaru.File
 		}
 
 		public int Size {
-			get { return (int)this.stream?.Length; }
+			get { return (int)this.stream.Length; }
 		}
 
 		public RomType RomType {
