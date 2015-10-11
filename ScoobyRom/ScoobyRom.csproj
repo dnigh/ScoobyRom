@@ -164,9 +164,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
     </None>
-    <None Include="README.txt">
-      <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
-    </None>
     <None Include="DEVELOPMENT.txt">
       <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
     </None>
@@ -174,6 +171,7 @@
       <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
     </None>
     <None Include="TODO.txt" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibScoobyRom\LibScoobyRom.csproj">

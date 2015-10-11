@@ -25,3 +25,7 @@ TestResult.xml
 
 # script files (cleanup)
 *.sh
+
+# generated documentation formats
+*.html
+README.txt
