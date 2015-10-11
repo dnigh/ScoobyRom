@@ -461,6 +461,10 @@ public partial class MainWindow : Gtk.Window
 			Console.Error.WriteLine (ex);
 			ErrorMsg ("Error launching gnuplot!", ex.Message);
 		}
+		catch (System.IO.FileNotFoundException ex) {
+			Console.Error.WriteLine (ex);
+			ErrorMsg ("Error using gnuplot!", ex.Message + "\nFile: " + ex.FileName);
+		}
 	}
 
 	// depends on gnuplot
@@ -641,6 +645,8 @@ public partial class MainWindow : Gtk.Window
 	void ErrorMsg (string title, string text)
 	{
 		MessageDialog md = new MessageDialog (this, DialogFlags.DestroyWithParent, MessageType.Error, ButtonsType.Close, text);
+		md.UseMarkup = false;
+		md.SecondaryUseMarkup = false;
 		md.Title = title;
 		md.Run ();
 		md.Destroy ();

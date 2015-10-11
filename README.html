@@ -1,0 +1,46 @@
+<h1 id="scoobyrom">ScoobyRom</h1>
+<div class="figure">
+<img src="ScoobyRom/Images/AppIcon.png" alt="" />
+
+</div>
+<h1 id="quick-facts">Quick Facts</h1>
+<h2 id="contents">CONTENTS</h2>
+<ol style="list-style-type: decimal">
+<li>License</li>
+<li>Purpose</li>
+<li>Further Details</li>
+</ol>
+<hr />
+<h2 id="license">1) License</h2>
+<p>GPLv3. See text file <a href="COPYING.txt" class="uri">COPYING.txt</a> for license text.</p>
+<p><a href="http://fsf.org/" class="uri" title="Free Software Foundation">http://fsf.org/</a></p>
+<p>You can also get license text in different formats and further details there.</p>
+<p><a href="http://www.gnu.org/licenses/gpl.html" class="uri">http://www.gnu.org/licenses/gpl.html</a></p>
+<p><a href="http://www.gnu.org/licenses/gpl-faq.html" class="uri">http://www.gnu.org/licenses/gpl-faq.html</a></p>
+<hr />
+<h2 id="purpose">2) Purpose</h2>
+<p><em>ScoobyRom</em> is a <em>Denso</em> ROM specific <strong>data visualization viewer and metadata editor</strong>. Originally designed for <em>Subaru</em> Diesel (Euro 4 &amp; 5) ROMs, some Subaru petrol models, as well as ROMs from other brands like <em>Mazda</em>, <em>Nissan</em> etc. might work. In general, different car models are equipped with different ECUs, therefore success varies.</p>
+<p>Currently it can find and visualize 2D (x-y) and 3D (x-y-z) tables. Also it has some checksumming calculations built in.</p>
+<p>ROM memory model is supposed to be <strong>32 bit, big endian</strong>, others are unlikely to work.</p>
+<p>ROM types confirmed working:</p>
+<ul>
+<li><em>Engine Control Unit</em> (ECU):
+<ul>
+<li>petrol and diesel models, <em>Renesas</em> microcontrollers <em>SH7058</em> (1.0 MiB) and <em>SH7059</em> (1.5 MiB)</li>
+</ul></li>
+<li><em>Transmission Control Unit</em> (TCU):
+<ul>
+<li>Automatic Transmission 5AT (1.0 MiB)</li>
+</ul></li>
+</ul>
+<p>However you can try any file safely as it is being opened in <strong>read-only</strong> mode. Worst thing that can happen is the app finds nothing at all or false items only.</p>
+<p>This application is not a <strong>ROM editor</strong> (yet), you cannot change table values or modify a ROM in any way! Remember, in this version the ROM file is only being read. All additional data is saved into an extra XML file. However, ScoobyRom has a <em>RomRaider ECU definition</em> export feature.</p>
+<hr />
+<h2 id="further-details">3) Further Details</h2>
+<p>See README files in project subfolders.</p>
+<p>Main Documentation is available in multiple formats:</p>
+<ul>
+<li><a href="ScoobyRom/README.md">Markdown</a> (on <em>GitHub</em> go there; source of all other formats)</li>
+<li><a href="ScoobyRom/README.html">HTML</a></li>
+<li><a href="ScoobyRom/README.txt">Plain Text</a></li>
+</ul>

@@ -74,6 +74,8 @@ namespace ScoobyRom
 		static void ErrorMsg (string title, string text)
 		{
 			MessageDialog md = new MessageDialog (null, DialogFlags.Modal, MessageType.Error, ButtonsType.Close, null);
+			md.UseMarkup = false;
+			md.SecondaryUseMarkup = false;
 			md.Title = title;
 			md.Text = text;
 			md.Run ();

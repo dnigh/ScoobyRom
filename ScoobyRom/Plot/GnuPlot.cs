@@ -118,6 +118,17 @@ namespace ScoobyRom
 				gnupDict.Remove (table);
 		}
 
+		public static string AssemblyPath
+		{
+			get { return System.Reflection.Assembly.GetCallingAssembly ().Location; }
+		}
+
+		public static string AssemblyFolder
+		{
+			get { return Path.GetDirectoryName (AssemblyPath); }
+		}
+
+
 		#endregion static
 
 		#region fields
@@ -144,6 +155,7 @@ namespace ScoobyRom
 			} catch (Exception ex) {
 				throw new GnuPlotException ("Could not write binary data file.\n" + ex.Message);
 			}
+
 			try {
 				StartProcess (table);
 			} catch (System.ComponentModel.Win32Exception ex) {
@@ -234,6 +246,26 @@ namespace ScoobyRom
 			WriteLine (sw, string.Format ("windowtitle=\"{0}\"", table.Title));
 		}
 
+		/// <summary>
+		/// Try to find filename in current dir or application dir.
+		/// </summary>
+		/// <returns>The file path.</returns>
+		/// <param name="filename">Filename.</param>
+		static string FindFileInCurrentOrAppFolder (string filename)
+		{
+			string p = filename;
+			if (File.Exists (p)) {
+				return p;
+			} else {
+				p = Path.Combine (AssemblyFolder, filename);
+				if (File.Exists (p)) {
+					return p;
+				} else {
+					throw new FileNotFoundException ("Cannot find required file in current dir or application dir!", filename);
+				}
+			}
+		}
+
 		static void ScriptGnuplot3D (StreamWriter sw, Table3D table3D)
 		{
 			WriteLine (sw, SetLabel ("xlabel", table3D.NameX, true, table3D.UnitX));
@@ -246,7 +278,8 @@ namespace ScoobyRom
 
 			// call gnuplot script, also pass argument to it (path to temporary binary data file)
 			// Windows: do not use double quotes - does not recognize paths containing "\" then
-			sw.WriteLine ("call '{0}' '{1}'", TemplateFile3D, BinaryFile);
+
+			sw.WriteLine ("call '{0}' '{1}'", FindFileInCurrentOrAppFolder (TemplateFile3D), BinaryFile);
 		}
 
 		static void ScriptGnuplot2D (StreamWriter sw, Table2D table2D)
@@ -259,7 +292,7 @@ namespace ScoobyRom
 			//sw.WriteLine ("set label 1 \"" + AnnotationStr (table2D) + "\" at screen 0.01,0.96 front left textcolor rgb \"blue\"");
 
 			// Windows: use single instead of double quotes because would interpret backslashes in path
-			sw.WriteLine ("call '{0}' '{1}'", TemplateFile2D, BinaryFile);
+			sw.WriteLine ("call '{0}' '{1}'", FindFileInCurrentOrAppFolder (TemplateFile2D), BinaryFile);
 		}
 
 		// needed to get special characters displayed correctly on Windows, not needed on Linux
