@@ -118,8 +118,7 @@ namespace GtkWidgets
 				label.Text = val.ToString ();
 				label.SetAlignment (1f, 0f);
 
-				BorderWidget widget = new BorderWidget ();
-				widget.Color = CalcAxisColor (val);
+				BorderWidget widget = new BorderWidget (CalcAxisColor (val));
 				widget.Add (label);
 
 				table.Attach (widget, DataColLeft, DataColLeft + 1, DataRowTop + i, DataRowTop + 1 + i, AttachOptions.Fill, AttachOptions.Shrink, PadX, PadY);
@@ -131,7 +130,7 @@ namespace GtkWidgets
 				float val = values [i];
 
 				Gtk.Widget label = new Label (val.ToString (this.formatValues));
-				BorderWidget widget = new BorderWidget ();
+				BorderWidget widget = new BorderWidget (CalcValueColor (val));
 
 				// ShadowType appearance differences might be minimal
 				if (val >= this.valuesMax)
@@ -139,7 +138,6 @@ namespace GtkWidgets
 				else if (val <= this.valuesMin)
 					widget.ShadowType = ShadowType.EtchedIn;
 
-				widget.Color = CalcValueColor (val);
 				widget.Add (label);
 
 				uint row = DataRowTop + i;

@@ -24,7 +24,7 @@
 //#define BitmapToPixbufConversionRaw
 
 using System.Drawing;
-using NPlot;
+using Florence;
 using Gdk;
 
 namespace ScoobyRom
@@ -36,7 +36,8 @@ namespace ScoobyRom
 	public abstract class PlotIconBase
 	{
 		protected const int MemoryStreamCapacity = 2048;
-		public const int Padding = 2;
+		public const int FrameWidth = 1;
+		public const int Padding = FrameWidth;
 
 		#if !BitmapToPixbufConversionRaw
 		// for conversion purposes only: System.Drawing.Bitmap -> Gdk.Pixbuf
@@ -52,10 +53,11 @@ namespace ScoobyRom
 
 		protected int width, height, padding;
 		protected System.Drawing.Rectangle bounds;
+		protected Pen framePen = new Pen(System.Drawing.Color.Black, FrameWidth);
 		protected Gdk.Pixbuf constDataIcon;
 
 		// reuse objects where possible to improve performance
-		protected readonly NPlot.PlotSurface2D plotSurface = new NPlot.PlotSurface2D ();
+		protected readonly PlotSurface2D plotSurface = new PlotSurface2D ();
 		protected readonly System.Drawing.Bitmap bitmap_cache;
 
 
@@ -130,10 +132,11 @@ namespace ScoobyRom
 		protected Gdk.Pixbuf DrawAndConvert ()
 		{
 			// Things like Padding needs to be set each time after Clear()
-			plotSurface.Padding = padding;
+			plotSurface.SurfacePadding = padding;
 
 			using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage (bitmap_cache)) {
 				plotSurface.Draw (g, bounds);
+				g.DrawRectangle (framePen, 0, 0, width - FrameWidth, height - FrameWidth);
 			}
 
 			// NPlot library uses System.Drawing (.NET Base Class Library) types

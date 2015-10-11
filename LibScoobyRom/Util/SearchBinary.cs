@@ -35,11 +35,11 @@ namespace Util
 		public static int? FindBytes (Stream stream, byte[] target)
 		{
 			if (stream == null)
-				throw new ArgumentNullException (nameof (stream));
+				throw new ArgumentNullException ("stream");
 			if (target == null)
-				throw new ArgumentNullException (nameof (target));
+				throw new ArgumentNullException ("target");
 			if (target.Length == 0)
-				throw new ArgumentOutOfRangeException (nameof (target), nameof (target) + ".Length == 0");
+				throw new ArgumentOutOfRangeException ("target", "target.Length == 0");
 
 			int firstByteTarget = target [0];
 			int currentByte;

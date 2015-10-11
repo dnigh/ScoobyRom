@@ -32,7 +32,7 @@ namespace ScoobyRom
 	{
 		// Temporary file to transfer binary plot data
 		// Sharing a single temporary file is sufficient, written on each new plot.
-		static string BinaryFile = "gnuplot_data.tmp";
+		const string BinaryFilename = "gnuplot_data.tmp";
 
 		// TODO could put template file names into app.config
 		const string TemplateFile2D = "gnuplot_Table2D.plt";
@@ -41,12 +41,14 @@ namespace ScoobyRom
 
 		#region static
 
+		static string BinaryFile;
 		static readonly string exePath = Config.GnuplotPath;
 		static readonly Dictionary<Table, GnuPlot> gnupDict = new Dictionary<Table, GnuPlot> ();
 
 		static GnuPlot ()
 		{
-			BinaryFile = System.IO.Path.Combine (System.IO.Path.GetTempPath (), BinaryFile);
+			BinaryFile = System.IO.Path.Combine (System.IO.Path.GetTempPath (), BinaryFilename);
+			// Windows 8.1 x64 -> "C:\Users\<UserName>\AppData\Local\Temp\gnuplot_data.tmp"
 		}
 
 		/// <summary>
@@ -118,17 +120,19 @@ namespace ScoobyRom
 
 		#endregion static
 
+		#region fields
 
 		// keep Process reference for keeping it and input stream alive
 		Process process;
 		// sending gnuplot commands via standard input stream
 		StreamWriter stdInputStream;
 
+		#endregion fields
+
 		// use static factory methods!
 		private GnuPlot (Table table)
 		{
 			try {
-				// TODO avoid necessary write access in app directory
 				using (FileStream fs = new FileStream (BinaryFile, FileMode.Create, FileAccess.Write))
 				using (BinaryWriter bw = new BinaryWriter (fs)) {
 					Table3D t3D = table as Table3D;
@@ -188,7 +192,10 @@ namespace ScoobyRom
 			// --persist + using stdinput prints gnuplot commands into terminal text
 			// process.StartInfo.Arguments = "--persist";
 
-			// hide additional cmd window on Windows
+
+			//process.StartInfo.StandardInputEncoding = System.Text.Encoding.UTF8;
+
+			// hide additional cmd window on Windows, useful for debugging (printing gnuplot vars etc.)
 			process.StartInfo.CreateNoWindow = true;
 
 			process.EnableRaisingEvents = true;
@@ -197,6 +204,9 @@ namespace ScoobyRom
 			process.Start ();
 
 			stdInputStream = process.StandardInput;
+
+			ScriptGnuplotCommon (stdInputStream, table);
+
 			Table3D t = table as Table3D;
 			if (t != null)
 				ScriptGnuplot3D (stdInputStream, t);
@@ -215,33 +225,50 @@ namespace ScoobyRom
 
 		#region private static helper methods
 
-		static void ScriptGnuplot3D (TextWriter tw, Table3D table3D)
+		static void ScriptGnuplotCommon (StreamWriter sw, Table table)
 		{
-			tw.WriteLine (SetLabel ("xlabel", table3D.NameX, true, table3D.UnitX));
-			tw.WriteLine (SetLabel ("ylabel", table3D.NameY, true, table3D.UnitY));
-			// use title instead of zlabel as it would need extra space
-			tw.WriteLine (SetLabel ("title", table3D.Title, false, table3D.UnitZ));
+			// easy test:
+			// sw.WriteLine ("plot sin(x), cos(x)"); return;
 
-			tw.WriteLine ("set label 1 \"" + AnnotationStr (table3D) + "\" at screen 0.01,0.95 front left textcolor rgb \"blue\"");
+			sw.WriteLine ("set encoding utf8");
+			WriteLine (sw, string.Format ("windowtitle=\"{0}\"", table.Title));
+		}
+
+		static void ScriptGnuplot3D (StreamWriter sw, Table3D table3D)
+		{
+			WriteLine (sw, SetLabel ("xlabel", table3D.NameX, true, table3D.UnitX));
+			WriteLine (sw, SetLabel ("ylabel", table3D.NameY, true, table3D.UnitY));
+			// use title instead of zlabel as it would need extra space
+			WriteLine (sw, SetLabel ("title", table3D.Title, false, table3D.UnitZ));
+
+			WriteLine (sw, "set label 1 \"" + AnnotationStr (table3D) + "\" at screen 0.01,0.95 front left textcolor rgb \"blue\"");
 			//set label 1 "Annotation Label" at screen 0.01,0.95 front left textcolor rgb "blue"
 
 			// call gnuplot script, also pass argument to it (path to temporary binary data file)
-			tw.WriteLine ("call \"" + TemplateFile3D + "\" \"" + BinaryFile + "\"");
+			// Windows: do not use double quotes - does not recognize paths containing "\" then
+			sw.WriteLine ("call '{0}' '{1}'", TemplateFile3D, BinaryFile);
 		}
 
-		static void ScriptGnuplot2D (TextWriter tw, Table2D table2D)
+		static void ScriptGnuplot2D (StreamWriter sw, Table2D table2D)
 		{
-			// easy test:
-			// tw.WriteLine ("plot sin(x), cos(x)"); return;
-
-			tw.WriteLine (SetLabel ("xlabel", table2D.NameX, false, table2D.UnitX));
-			tw.WriteLine (SetLabel ("ylabel", table2D.Title, false, table2D.UnitY));
-			tw.WriteLine (SetLabel ("title", table2D.Title, false, table2D.UnitY));
+			WriteLine (sw, SetLabel ("xlabel", table2D.NameX, false, table2D.UnitX));
+			WriteLine (sw, SetLabel ("ylabel", table2D.Title, false, table2D.UnitY));
+			WriteLine (sw, SetLabel ("title", table2D.Title, false, table2D.UnitY));
 
 			// Min/Max/Avg label might obscure title etc.
-			//tw.WriteLine ("set label 1 \"" + AnnotationStr (table2D) + "\" at screen 0.01,0.96 front left textcolor rgb \"blue\"");
+			//sw.WriteLine ("set label 1 \"" + AnnotationStr (table2D) + "\" at screen 0.01,0.96 front left textcolor rgb \"blue\"");
 
-			tw.WriteLine ("call \"" + TemplateFile2D + "\" \"" + BinaryFile + "\"");
+			// Windows: use single instead of double quotes because would interpret backslashes in path
+			sw.WriteLine ("call '{0}' '{1}'", TemplateFile2D, BinaryFile);
+		}
+
+		// needed to get special characters displayed correctly on Windows, not needed on Linux
+		// workaround as there is no process.StartInfo.StandardOutputEncoding, only process.StartInfo.StandardInputEncoding
+		static void WriteLine (StreamWriter sw, string s)
+		{
+			byte[] bytes = System.Text.Encoding.UTF8.GetBytes (s);
+			sw.BaseStream.Write (bytes, 0, bytes.Length);
+			sw.WriteLine ();
 		}
 
 		static string SetLabel (string item, string name, bool newLineBeforeUnit, string unit)
@@ -256,7 +283,7 @@ namespace ScoobyRom
 			sb.Append (name);
 
 			if (!string.IsNullOrEmpty (unit)) {
-				sb.Append (newLineBeforeUnit ? @"\n" : " ");
+				sb.Append (newLineBeforeUnit ? @"\n" : "  ");
 				sb.Append ("{/mono [");
 				sb.Append (unit);
 				sb.Append ("]}\"");

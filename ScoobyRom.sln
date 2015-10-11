@@ -28,6 +28,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ScoobyRom\ScoobyRom.csproj
+		version = 0.7.0
 	EndGlobalSection
 EndGlobal

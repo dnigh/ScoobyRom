@@ -29,7 +29,7 @@
 # set xlabel "Engine Speed\n{/mono [1/min]}" ...
 # set ylabel ...
 # set title ...
-# call "this_template_file.plt" pathToBinaryDataFile
+# call 'this_template_file.plt' 'pathToBinaryDataFile'
 # --------
 
 set macros
@@ -37,11 +37,16 @@ set macros
 # first argument ARG1 to this script must be path of binary data file
 dataFile = ARG1
 #print dataFile
-terminal = "wxt"
+# variable set by app: windowtitle = "..."
+
+# interactive terminals tested on Windows: qt, wxt, windows
+# override terminal if needed, better use default (i.e. OS environment variable GNUTERM)
+#terminal = "qt"
 
 # TERMINAL SPECIFIC !!! Must match currently used terminal!!!!
 # p.33; use default (platform specific) sans-serif font, font size 14
-set term @terminal font "sans,14"
+set term GPVAL_TERM font "sans,12
+set term GPVAL_TERM title windowtitle
 
 # to allow inline text formatting. If fontname given it must follow '/'.
 set termoption enhanced
