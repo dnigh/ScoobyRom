@@ -33,6 +33,17 @@ namespace ScoobyRom
 			get { return appIcon; }
 		}
 
+		static internal string AppName {
+			get { return "ScoobyRom"; }
+		}
+
+		static internal string AppVersion {
+			get {
+				System.Version version = System.Reflection.Assembly.GetExecutingAssembly ().GetName ().Version;
+				return string.Format ("{0}.{1}.{2}", version.Major.ToString (), version.Minor.ToString (), version.Build.ToString ());
+			}
+		}
+
 		public static void Main (string[] args)
 		{
 			try {

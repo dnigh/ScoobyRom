@@ -37,7 +37,6 @@ public partial class MainWindow : Gtk.Window
 		View3D
 	}
 
-	const string appName = "ScoobyRom";
 	// 0 = first page = View2D; 1 = second = View3D
 	const int DefaultNotebookPageShown = 1;
 
@@ -215,7 +214,7 @@ public partial class MainWindow : Gtk.Window
 
 	void SetWindowTitle ()
 	{
-		this.Title = data.RomLoaded ? string.Format ("{0} - {1}", appName, data.CalID) : appName;
+		this.Title = data.RomLoaded ? string.Format ("{0} - {1}", MainClass.AppName, data.CalID) : MainClass.AppName;
 	}
 
 	void Show3D (Table3D table)
@@ -311,19 +310,18 @@ public partial class MainWindow : Gtk.Window
 	{
 		const string LicensePath = "COPYING.txt";
 
-		System.Version version = System.Reflection.Assembly.GetExecutingAssembly ().GetName ().Version;
-		string appVersion = string.Format ("{0}.{1}.{2}", version.Major.ToString (), version.Minor.ToString (), version.Build.ToString ());
-
-		AboutDialog about = new AboutDialog { ProgramName = appName, Version = appVersion,
+		AboutDialog about = new AboutDialog {
+			ProgramName = MainClass.AppName,
+			Version = MainClass.AppVersion,
 			Copyright = "© 2011-2015 SubaruDieselCrew",
 			Authors = new string[] { "subdiesel\thttp://subdiesel.wordpress.com/",
 				"\nThanks for any feedback!",
 				"\nEXTERNAL BINARY DEPENDENCIES:",
 				"Gtk#\thttp://mono-project.com/GtkSharp",
-				"NPlot\thttp://netcontrols.org/nplot/wiki/",
+				"Florence\thttp://github.com/scottstephens/Florence",
 				"gnuplot\thttp://www.gnuplot.info/",
 			},
-			WrapLicense = true
+			WrapLicense = true,
 		};
 		about.Icon = about.Logo = MainClass.AppIcon;
 		about.Comments = "License: GPL v3";
@@ -393,7 +391,10 @@ public partial class MainWindow : Gtk.Window
 			fc.AddFilter (filter);
 
 			fc.DoOverwriteConfirmation = true;
-			fc.CurrentName = pathSuggested;
+			// fc.CurrentFolder is read-only
+			fc.SetFilename (pathSuggested);
+			//fc.SetCurrentFolder (System.IO.Path.GetDirectoryName (pathSuggested));
+			fc.CurrentName = System.IO.Path.GetFileName (pathSuggested);
 			if (fc.Run () == (int)ResponseType.Accept) {
 				data.SaveAsRomRaiderXml (fc.Filename);
 			}
@@ -456,7 +457,7 @@ public partial class MainWindow : Gtk.Window
 			}
 		} catch (GnuPlotProcessException ex) {
 			Console.Error.WriteLine (ex);
-			ErrorMsg ("Error launching gnuplot!", ex.Message + "\n\nHave you installed gnuplot?" + "\nYou also may need to edit file '" + appName + ".exe.config'." + "\nCurrent platform-ID is '" + System.Environment.OSVersion.Platform.ToString () + "'." + "\nSee 'README.txt' for details.");
+			ErrorMsg ("Error launching gnuplot!", ex.Message + "\n\nHave you installed gnuplot?" + "\nYou also may need to edit file '" + MainClass.AppName + ".exe.config'." + "\nCurrent platform-ID is '" + System.Environment.OSVersion.Platform.ToString () + "'." + "\nSee 'README.txt' for details.");
 		} catch (GnuPlotException ex) {
 			Console.Error.WriteLine (ex);
 			ErrorMsg ("Error launching gnuplot!", ex.Message);

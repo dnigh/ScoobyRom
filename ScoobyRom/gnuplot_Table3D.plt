@@ -41,14 +41,15 @@ dataFile = ARG1
 
 # interactive terminals tested on Windows: qt, wxt, windows
 # override terminal if needed, better use default (i.e. OS environment variable GNUTERM)
-#terminal = "qt"
+# set term qt
 
-# TERMINAL SPECIFIC !!! Must match currently used terminal!!!!
-# p.33; use default (platform specific) sans-serif font, font size 14
+# font and size
+# Gnuplot-defined variable GPVAL_TERM has currently active terminal i.e. "qt"
 set term GPVAL_TERM font "sans,12
+
 set term GPVAL_TERM title windowtitle
 
-# to allow inline text formatting. If fontname given it must follow '/'.
+# to allow inline text formatting
 set termoption enhanced
 
 # HSV color interpolation: min, max as HSV

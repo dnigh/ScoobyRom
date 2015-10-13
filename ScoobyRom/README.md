@@ -2,6 +2,10 @@
 
 ![](Images/AppIcon.png)
 
+Author: <http://subdiesel.wordpress.com/>
+
+Project homepage on *GitHub*: [https://github.com/SubaruDieselCrew/ScoobyRom/][project homepage]
+
 # Documentation
 
 ## CONTENTS
@@ -57,6 +61,9 @@ This application is not a **ROM editor** (yet), you cannot change table values o
 Remember, in this version the ROM file is only being read.
 All additional data is saved into an extra XML file.
 However, ScoobyRom has a *RomRaider ECU definition* export feature.
+
+"RomRaider is a free, open source tuning suite created for viewing, logging and tuning of modern Subaru Engine Control Units and some older BMW M3 (MS41/42/43) DME."
+<http://www.romraider.com>
 
 ---
 
@@ -210,9 +217,12 @@ Florence source code is pure C#, multi-platform. Currently, WinForms, Gtk#, and 
 
 <https://github.com/scottstephens/Florence>
 
-Older versions of Scoobyrom used *NPlot* which does not support interactive zoom, pan etc. Otherwise plots look exactly the same.
-##### Original *NPlot*
-Development is rather inactive for years but pretty good and compact. Cannot do 3D (surface) plots!
+Older versions of Scoobyrom used *NPlot* which does not support interactive zoom, pan etc.
+The plot graphics look exactly the same.
+
+##### *NPlot*
+Development is rather inactive for years but pretty good and compact. Cannot do 3D (surface) plots
+ - therefore gnuplot is used!
 
 <http://netcontrols.org/nplot/wiki/>
 
@@ -220,29 +230,49 @@ Development is rather inactive for years but pretty good and compact. Cannot do 
 ### 4.4) gnuplot
 
 OPTIONAL.
-gnuplot is being used for EXTERNAL plotting (inside extra windows).
-+) It's the only method to get 3D surface plots.
-+) Generating SVG files is also done through gnuplot, basically it's like a re-plot into file.
-+) interactive features (zoom, scale, stretch... try mouse/keys, see gnuplot documentation)
 
-Homepage: http://www.gnuplot.info/
+"Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS Windows, OSX, VMS, and many other platforms."
+
+Homepage: <http://www.gnuplot.info/>
+
+ScoobyRom uses gnuplot for **external** plotting (opening extra windows).
+
+*	It's the only method to get 3D surface plots.
+*	Interactive (zoom, scale, stretch... try mouse/keys, depends on used gnuplot "terminal", see gnuplot documentation)
+*	Action "Plot -> Create SVG File.." is also done through gnuplot, basically it's like a re-plot into file.
+	Some gnuplot terminals (i.e. "qt", "wxt") also provide their own export features (SVG, PDF, bitmap image).
 
 #### Installation
 
 ##### Windows
 
 1) Windows binaries:
-http://www.gnuplot.info/download.html
-http://sourceforge.net/projects/gnuplot/files/
-latest tested: gp443win32.zip (10.1 MiB)
+<http://www.gnuplot.info/download.html>
 
-2) Extract the ZIP file somewhere (ex. "C:\"),
-it should place all files under main subdirectory "gnuplot" from there.
-(--> "C:\gnuplot\" )
+currently redirects to:
+<http://sourceforge.net/projects/gnuplot/files/gnuplot/>
 
-3) You'll need to edit file 'ScoobyRom.exe.config' with a text editor.
-Enter the exact full path of 'gnuplot.exe', it should be in subfolder "binary".
-Ex: "C:\gnuplot\binary\gnuplot.exe"
+Select either a win32 or win64 file depending on your operating system architecture.
+
+Tested example:
+
+*	Windows 8.1 x64
+
+	`gp501-win64-mingw.exe` (v5.0.1, 64 bit, 2015-07-14, 18 MB)
+	
+	Accepted default install path: `"C:\Program Files\gnuplot\"`
+	
+	`ScoobyRom.exe.config` entry (see below) -> `"C:\Program Files\gnuplot\bin\gnuplot.exe"`
+
+2) Run installer EXE or extract ZIP, respectively.
+
+3) Check and edit file `ScoobyRom.exe.config` with a text editor.
+Enter the exact full path of `gnuplot.exe`, it will probably exist in a gnuplot subfolder like "bin".
+See chapter 5.1 for more details.
+
+Example:
+
+`<add key="gnuplot_Win32NT" value="C:\Program Files\gnuplot\bin\gnuplot.exe"/>`
 
 
 ##### Linux/Unix Systems
@@ -251,8 +281,8 @@ Your distribution repositories might offer a package called "gnuplot" - use your
 (If you want to play with gnuplot yourself I also recommend installing documentation package
 like "gnuplot-doc" or similar in case doc is not already included).
 
-You should be able to run `gnuplot` (from terminal). It may live in `/usr/bin/gnuplot` for example.
-Edit `ScoobyRom.exe.config` if necessary.
+You should be able to run command `gnuplot` (from a terminal). It may live in `/usr/bin/gnuplot` for example.
+Edit `ScoobyRom.exe.config` if necessary, see chapter 5.1 for more details.
 
 
 ##### Other Platforms
@@ -260,11 +290,11 @@ Edit `ScoobyRom.exe.config` if necessary.
 MacOS etc. - Not tested yet! Please provide feedback!
 
 
-### Testing gnuplot
+#### Testing gnuplot
 
-Launch the binary (Windows: gnuplot.exe, Unix: gnuplot)
+Launch the binary (Windows: `gnuplot.exe`, Linux/Unix: `gnuplot`)
 
-(gnuplot command prompt "gnuplot>" should come up.)
+(gnuplot command prompt `gnuplot>` should come up.)
 
 	plot cos(x)
 
@@ -272,7 +302,29 @@ Launch the binary (Windows: gnuplot.exe, Unix: gnuplot)
 
 	quit
 
-closes gnuplot
+(closes gnuplot)
+
+
+#### Advanced Tips
+
+*	On Windows gnuplot comes with a graphical user interface app, a special editor (`wgnuplot.exe`).
+
+*	gnuplot Terminals:
+
+	On some platforms gnuplot ships with multiple interactive *terminals*.
+Tested on Linux:
+
+	*	qt
+	*	wxt
+
+	Try available ones to see which one works best.
+	If not specified (**`GNUTERM`** environment variable not set, see gnuplot documentation), gnuplot will use the default one.
+
+	Linux example, choose terminal "wxt" and launch ScoobyRom:
+
+	`GNUTERM="wxt" ScoobyRom.exe`
+
+	You can also set it by editing gnuplot template files, insert command "set term wxt", see also chapter 5.7.
 
 ---
 
@@ -281,34 +333,45 @@ closes gnuplot
 ### 5.1) ScoobyRom.exe.config
 
 Contains settings, see comments inside for details.
-Since there's no settings user interface yet, you'll need to edit the (XML) file with a text editor.
+Since there is no preferences dialog in the user interface yet, you will need to edit the (XML) file with a text editor.
 To be recognized it must live in EXE folder and have exact name.
-The app should work without .config file but it might be required for gnuplot features.
+The app itself should work without .config file but it might be required for gnuplot features to work.
+ScoobyRom does not modify this file and it is only being read at startup.
+For changes to become effective, you need to restart ScoobyRom unfortunately.
 
 #### gnuplot
 Especially on Windows the appropriate path for gnuplot is important!
-ScoobyRom does not try to find required **gnuplot.exe** on its own.
+ScoobyRom does not try to find required **`gnuplot.exe`** on its own - very time consuming to search entire disks.
 
-In case the gnuplot installer added gnuplot binary dir into system PATH, just "gnuplot.exe" will work.
-You can test this by launching gnuplot manually via command prompt (Windows) or terminal (Unix systems).
+In case the gnuplot installer added gnuplot binary dir into system PATH, just `gnuplot.exe` will work.
+You can test this by launching gnuplot manually via *command prompt* (Windows) or terminal (Unix systems).
 
-Tested example: Windows 8.1 x64 + gnuplot 5.0.1 x64 (gp501-win64-mingw.exe) using default install path:
+##### Tested example:
 
-	"C:\Program Files\gnuplot\bin\gnuplot.exe"
+Windows 8.1 x64 + gnuplot 5.0.1 x64 (`gp501-win64-mingw.exe`) using default install path (`C:\Program Files\gnuplot`)
 
-<add key="gnuplot_Win32NT" value="C:\Program Files\gnuplot\bin\gnuplot.exe"/>
+--> full path of gnuplot.exe is `"C:\Program Files\gnuplot\bin\gnuplot.exe"`
+
+Edit .config line to:
+
+`<add key="gnuplot_Win32NT" value="C:\Program Files\gnuplot\bin\gnuplot.exe"/>`
 
 #### Icons on by default
 Applies to icon column in both 2D and 3D table lists.
 
-*	"True": As icons are generated using a background thread this does not matter on modern computers.
+	<add key="iconsOnByDefault" value="True"/>
+
+*	`"True"`: As icons are generated using a background thread this does not really matter anymore on fast computers.
 
 	or
 
-*	"False": Icons are generated on first demand. UI row heights are smaller without icons. Perhaps use this in case you rarely want icons visible.
+*	`"False"`: Icons are created on first demand. UI row heights are smaller without icons. Perhaps use this in case you rarely want icons visible.
 
 #### Icon size
 Errors or missing entry will result in default size (64 x 48) pixels.
+
+	<add key="iconWidth" value="64"/>
+	<add key="iconHeight" value="48"/>
 
 ### 5.2) ScoobyRom XML
 
@@ -325,20 +388,25 @@ The file is not required (like opening a new ROM with no ScoobyRom metadata save
 If it does exist, the app will try to read saved metadata and
 combine (merge) it with data (values) found from searching through the ROM.
 
+Notes:
 
-#### File Path
+*	Like feature "*Export As -> RomRaider def XML*" included XML comments are auto generated by *ScoobyRom* as these can be useful for verifying content.
+*	Any comments will be ignored and lost whenever XML is being saved, just the newly written auto-generated ones will be there!
+*	In XML payload text special characters like "<" or "&" must be escaped. Either avoid these or use "& l t ;" or "& a m p;" etc.
+
+#### 5.2.1) File Path
 ScoobyRom assumes its XML to be found inside current ROM file directory!!!
 Filename will/must be
 
 	<ROM-filename-without-extension>.xml
 
-ROM binary file extension (.rom, .bin, .hex etc.) does not matter!
+ROM binary file extension (`.bin, .hex, .rom` etc.) does not matter!
 
 Example:
 
-	"my ROM file.rom"
+`my ROM file.bin`
 
-	"my ROM file.xml" <-- loaded with open or will be created using save command
+`my ROM file.xml` <-- loaded if it exists when opening binary, or will be created/overwritten using save command (`Ctrl+S`)
 
 
 * Pros:
@@ -347,21 +415,22 @@ Example:
   Easy to find and backup this XML regularly (simple file copy, source control, ...).
 
 * Cons:
-  ROM folder must be writeable.
-  WARNING: In case of existing file, ScoobyRom does not ask for permission,
-    it immediately overwrites existing file! Be careful not to overwrite XML files produced by any other software!!!
+  ROM folder must be writeable.  
+  WARNING: In case of existing file, ScoobyRom does not ask for permission (too anoying for every save),
+    it immediately overwrites existing file! Be careful not to overwrite XML files meant for other software!!!
 
+#### 5.2.2) Table Search Range
+In short, this is to improve load performance and avoid bad recognition positives.
 
-#### How to improve load performance and possibly avoid false maps:
 ROM search range is not required but improves search/load speed tremendously!
-Unfortunately, the table position range is very ROM specific.
+Unfortunately, the exact table position range is very **ROM specific**.
 
 Without XML or missing XML element (see below), the app will search through the whole ROM file.
 This can take several or many seconds.
 Using a good search range, load time is usually just a fraction of a second - highly recommended!
 See record position column and statistics window to get first/last record positions.
 Currently you've got to adjust this manually in the XML.
-Ex.:
+
 
 It's not necessary to copy & paste exact numbers like
 
@@ -377,24 +446,20 @@ Note: Searching through unsuitable range (too large or whole file) might introdu
 
 If you want to annotate a new ROM, I recommend specifying metadata and a suitable search range sooner than later, you'll get proper CID displayed in main window, better load speed and avoid looking at false data.
 
+#### 5.2.3) romid metadata
+Borrowed from *RomRaider* ECU def format, needed for "Export as -> RomRaider def XML" anyway.
 
-Notes:
+There is no UI dialog yet, you have to edit XML manually!
 
-*	Like for *RomRaider* export the XML comments are auto generated by *ScoobyRom* as these can be useful for verifying content.
-*	Any comments will be ignored and lost whenever XML is being saved, just the auto-generated ones will be there.
-*	In XML payload text special characters like "<" or "&" must be escaped. Either avoid these or use "& l t ;" or "& a m p;" etc.
-
-
-#### romid metadata
-Borrowed from RomRaider ECU def format, needed for RR-export anyway.
-There's no UI yet, you'll have to edit XML manually.
-In case you've got similar ROMs I would copy & paste whole romid-segment, then do the required changes.
+In case you've got similar ROMs I suggest copy & paste the whole romid-segment, then edit required changes.
 
 ScoobyRom itself currently does only use these elements
+
 *	internalidaddress
 *	internalidstring
+
 to verify the string from ROM and display it in main window title.
-All others are just being read and written.
+All others are just being read and re-written.
 
 ##### Full example content
 The following XML example file contains just two annotated tables for brevity:

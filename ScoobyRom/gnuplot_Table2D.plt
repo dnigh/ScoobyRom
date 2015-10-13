@@ -22,19 +22,21 @@
 set macros
 dataFile = ARG1
 #print dataFile
+
 # interactive terminals tested on Windows: qt, wxt, windows
-#terminal = "qt"
+# override terminal if needed, better use default (i.e. OS environment variable GNUTERM)
+# set term qt
+
 #show xlabel
 #show ylabel
 #show title
 # variable set by app: windowtitle = "..."
 #print windowtitle
 
-
-# TERMINAL SPECIFIC !!! Must match currently used terminal!!!!
-# p.33; use default (platform specific) sans-serif font, font size 14
+# font and size
 # Gnuplot-defined variable GPVAL_TERM has currently active terminal i.e. "qt"
 set term GPVAL_TERM font "sans,12
+
 set term GPVAL_TERM title windowtitle
 
 set termoption enhanced
