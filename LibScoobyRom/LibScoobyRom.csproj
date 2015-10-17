@@ -66,15 +66,13 @@
     <Folder Include="IDA\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="COPYING.txt" />
-    <None Include="TODO.txt" />
-    <None Include="README.html" />
+    <None Include="TODO.md" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="README.txt">
+    <Content Include="COPYING.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

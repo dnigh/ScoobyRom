@@ -140,10 +140,13 @@
     <Content Include="README.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="README.html">
+    <Content Include="gnuplot_Table2D.plt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="README.txt">
+    <Content Include="gnuplot_Table3D.plt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="COPYING.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -159,28 +162,14 @@
     <None Include="app.config">
       <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
     </None>
-    <None Include="gnuplot_Table3D.plt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
-    </None>
-    <None Include="gnuplot_Table2D.plt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
-    </None>
     <None Include="Images\AppIcon.svg">
-      <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
-    </None>
-    <None Include="COPYING.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
-    </None>
-    <None Include="DEVELOPMENT.txt">
       <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
     </None>
     <None Include="vendor\NPlot.dll">
       <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
     </None>
-    <None Include="TODO.txt" />
+    <None Include="TODO.md" />
+    <None Include="DEVELOPMENT.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibScoobyRom\LibScoobyRom.csproj">
