@@ -32,7 +32,7 @@ namespace Subaru.Tables
 		UInt16 = 0x08,
 		Int8 = 0x0C,
 		Int16 = 0x10,
-		
+
 		UInt32 = 0xF1,
 	}
 }

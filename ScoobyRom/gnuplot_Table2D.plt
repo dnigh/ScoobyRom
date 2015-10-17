@@ -20,12 +20,24 @@
 # See template file for 3D surface plot, more documentation in there!
 
 set macros
-dataFile = "\"gnuplot_data.tmp\""
-terminal = "wxt"
+dataFile = ARG1
+#print dataFile
 
-# TERMINAL SPECIFIC !!! Must match currently used terminal!!!!
-# p.33; use default (platform specific) sans-serif font, font size 14
-set term @terminal font "sans,14"
+# interactive terminals tested on Windows: qt, wxt, windows
+# override terminal if needed, better use default (i.e. OS environment variable GNUTERM)
+# set term qt
+
+#show xlabel
+#show ylabel
+#show title
+# variable set by app: windowtitle = "..."
+#print windowtitle
+
+# font and size
+# Gnuplot-defined variable GPVAL_TERM has currently active terminal i.e. "qt"
+set term GPVAL_TERM font "sans,12
+
+set term GPVAL_TERM title windowtitle
 
 set termoption enhanced
 
@@ -35,7 +47,7 @@ style_lines = "lines linetype -1 linecolor \"red\" linewidth 3"
 style_points = "points linetype -1 linecolor \"blue\" pointtype 7 pointsize 1.0"
 
 # lines and points have same color
-#plot @dataFile binary volatile title "" with linespoints linetype 1 pointtype 7 linewidth 2 linecolor "red"
+#plot dataFile binary volatile title "" with linespoints linetype 1 pointtype 7 linewidth 2 linecolor "red"
 
 # two combined plots to allow separate colors for both lines and points
-plot @dataFile binary volatile title "" with @style_points, "gnuplot_data.tmp" binary volatile title "" with @style_lines
+plot dataFile binary volatile title "" with @style_points, dataFile binary volatile title "" with @style_lines

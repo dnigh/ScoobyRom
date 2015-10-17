@@ -58,17 +58,19 @@ namespace ScoobyRom
 				GetColumn ((int)ColumnNr3D.Icon).Visible = value;
 
 				if (value) {
-					treeView.Sensitive = false;
+					//treeView.Sensitive = false;
 					viewModel.RequestIcons ();
-					treeView.Sensitive = true;
+					//treeView.Sensitive = true;
 				} else {
-					// row sizes won't shrink automaticalle, only after updating column content !?
-					// no effect: treeView.SizeRequest ();
+					// row heights won't shrink automatically, only after editing any column content
+					// no effect: treeView.SizeRequest (); treeView.QueueResize ();
 					// there is no treeView.RowsAutosize ()
+
+					// HACK shrinking row heights - no better method found yet
+					// disadvantage: does not maintain current selected row
+					treeView.Model = null;
+					treeView.Model = viewModel.TreeModel;
 				}
-				// HACK shrinking/increading row heights - no better method found yet
-				//	treeView.Model = null;
-				//	treeView.Model = this.treeStore;
 			}
 		}
 

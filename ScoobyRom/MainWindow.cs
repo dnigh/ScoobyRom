@@ -19,7 +19,7 @@
  */
 
 
-// can be useful for testing, may be broken
+// can be useful for testing
 //#define LOAD_SYNC
 
 using System;
@@ -37,7 +37,8 @@ public partial class MainWindow : Gtk.Window
 		View3D
 	}
 
-	const string appName = "ScoobyRom";
+	// 0 = first page = View2D; 1 = second = View3D
+	const int DefaultNotebookPageShown = 1;
 
 	readonly Data data = new Data ();
 
@@ -48,7 +49,10 @@ public partial class MainWindow : Gtk.Window
 	readonly DataView2DGtk dataView2DGtk;
 
 	// Gtk# integration: NPlot.Gtk.PlotSurface2D instead of generic NPlot.PlotSurface2D
-	readonly NPlot.Gtk.NPlotSurface2D plotSurface = new NPlot.Gtk.NPlotSurface2D ();
+	//readonly NPlot.Gtk.NPlotSurface2D plotSurface = new NPlot.Gtk.NPlotSurface2D ();
+	readonly Florence.InteractivePlotSurface2D plotSurface = new Florence.InteractivePlotSurface2D();
+
+
 	readonly Plot2D plot2D;
 
 	// const so far, so share it
@@ -60,7 +64,7 @@ public partial class MainWindow : Gtk.Window
 	// Remember output folder for convenience. No need to save it in app.config?
 	string svgDirectory = null;
 
-	public MainWindow (string[] args) : base(Gtk.WindowType.Toplevel)
+	public MainWindow (string[] args) : base (Gtk.WindowType.Toplevel)
 	{
 		// Execute Gtk# visual designer generated code (MonoDevelop http://monodevelop.com/ )
 		// Obviously, Visual Studio doesn't have a Gtk# designer, you'll have to code all UI stuff by yourself.
@@ -69,7 +73,10 @@ public partial class MainWindow : Gtk.Window
 
 		this.Icon = MainClass.AppIcon;
 
-		dataView3DModelGtk = new DataView3DModelGtk (this.data);
+		int iconWidth = Config.IconWidth;
+		int iconHeight = Config.IconHeight;
+
+		dataView3DModelGtk = new DataView3DModelGtk (this.data, iconWidth, iconHeight);
 		dataView3DGtk = new DataView3DGtk (dataView3DModelGtk, treeview3D);
 		dataView3DGtk.Activated += delegate(object sender, ActionEventArgs e) {
 			Table3D table3D = (Table3D)e.Tag;
@@ -78,7 +85,7 @@ public partial class MainWindow : Gtk.Window
 			}
 		};
 
-		dataView2DModelGtk = new DataView2DModelGtk (this.data);
+		dataView2DModelGtk = new DataView2DModelGtk (this.data, iconWidth, iconHeight);
 		dataView2DGtk = new DataView2DGtk (dataView2DModelGtk, treeview2D);
 		dataView2DGtk.Activated += delegate(object sender, ActionEventArgs e) {
 			Table2D table2D = (Table2D)e.Tag;
@@ -88,14 +95,20 @@ public partial class MainWindow : Gtk.Window
 		};
 
 		plot2D = new Plot2D (plotSurface);
-		this.vpaned2D.Add2 (plotSurface);
-		global::Gtk.Paned.PanedChild pc = ((global::Gtk.Paned.PanedChild)(this.vpaned2D[plotSurface]));
-		// to resize both panes proportionally when parent (main window) resizes
-		pc.Resize = false;
-		//		pc.Shrink = false;
-		this.vpaned2D.ShowAll ();
 
-		this.notebook1.Page = 1;
+		var plotWidget = new Florence.GtkSharp.PlotWidget ();
+		plotWidget.InteractivePlotSurface2D = plotSurface;
+		// default: true, otherwise causes flickering
+		//plotWidget.DoubleBuffered = false;
+
+		this.hpaned2D.Add2 (plotWidget);
+		//global::Gtk.Paned.PanedChild pc = ((global::Gtk.Paned.PanedChild)(this.hpaned2D [plotWidget]));
+		// to resize both panes proportionally when parent (main window) resizes
+		//pc.Resize = false;
+		//pc.Shrink = false;
+		this.hpaned2D.ShowAll ();
+
+		this.notebook1.Page = DefaultNotebookPageShown;
 
 		if (Config.IconsOnByDefault) {
 			iconsAction.Active = true;
@@ -104,15 +117,16 @@ public partial class MainWindow : Gtk.Window
 		}
 
 		// program arguments: first argument is ROM path to auto-load
-		if (args != null && args.Length > 0 && !string.IsNullOrEmpty (args[0])) {
-			OpenRom (args[0]);
+		if (args != null && args.Length > 0 && !string.IsNullOrEmpty (args [0])) {
+			OpenRom (args [0]);
 		}
 	}
 
 	ActiveUI CurrentUI {
 		get {
 			if (notebook1.CurrentPageWidget == vpaned2D)
-				return ActiveUI.View2D; else if (notebook1.CurrentPageWidget == vpaned3D)
+				return ActiveUI.View2D;
+			else if (notebook1.CurrentPageWidget == vpaned3D)
 				return ActiveUI.View3D;
 			else
 				return ActiveUI.Undefined;
@@ -126,14 +140,19 @@ public partial class MainWindow : Gtk.Window
 		//this.progressbar1.Adjustment.StepIncrement = 5;
 		this.progressbar1.Adjustment.Value = 0;
 
-		data.ProgressChanged += delegate(object s, System.ComponentModel.ProgressChangedEventArgs pArgs) { Application.Invoke (delegate { this.progressbar1.Adjustment.Value = pArgs.ProgressPercentage; }); };
+		data.ProgressChanged += delegate(object s, System.ComponentModel.ProgressChangedEventArgs pArgs) {
+			Application.Invoke (delegate {
+				this.progressbar1.Adjustment.Value = pArgs.ProgressPercentage;
+			});
+		};
 
 		this.statusbar1.Push (0, "Analyzing file " + System.IO.Path.GetFileName (path));
+
 
 		#if LOAD_SYNC
 
 		LoadRomTask (path);
-		//LoadRomDone (new Task((t) => Console.WriteLine ("LoadRomDone")));
+		LoadRomDone (null);
 
 		#else
 
@@ -164,13 +183,14 @@ public partial class MainWindow : Gtk.Window
 
 		Application.Invoke (delegate {
 			if (t.Status == TaskStatus.Faulted) {
-				Console.Error.WriteLine ("Exception loading ROM:");
+				Console.Error.WriteLine ("Exception processing ROM:");
 				Console.Error.WriteLine (t.Exception.ToString ());
+				openAction.Sensitive = true;
 			} else {
 				SetWindowTitle ();
 				SetActionsSensitiveForRomLoaded (true);
 
-				string txt = "Search took " + stopwatch.ElapsedMilliseconds.ToString () + " ms";
+				string txt = string.Format ("Processing ROM finished in {0} ms.", stopwatch.ElapsedMilliseconds.ToString ());
 				this.progressbar1.Text = txt;
 				this.statusbar1.Push (0, "Updating UI ...");
 				DoPendingEvents ();
@@ -194,7 +214,7 @@ public partial class MainWindow : Gtk.Window
 
 	void SetWindowTitle ()
 	{
-		this.Title = data.RomLoaded ? string.Format ("{0} - {1}", appName, data.CalID) : appName;
+		this.Title = data.RomLoaded ? string.Format ("{0} - {1}", MainClass.AppName, data.CalID) : MainClass.AppName;
 	}
 
 	void Show3D (Table3D table)
@@ -202,23 +222,12 @@ public partial class MainWindow : Gtk.Window
 		if (table == null)
 			return;
 		var valuesZ = table.GetValuesZasFloats ();
-		var tableUI = new GtkWidgets.TableWidget (coloring, table.ValuesX, table.ValuesY, valuesZ, table.Zmin, table.Zmax);
-		tableUI.TitleMarkup = GtkWidgets.TableWidget.MakeTitleMarkup (table.Title, table.UnitZ);
-		tableUI.AxisMarkupX = GtkWidgets.TableWidget.MakeMarkup (table.NameX, table.UnitX);
-		tableUI.AxisMarkupY = GtkWidgets.TableWidget.MakeMarkup (table.NameY, table.UnitY);
-
-		// HACK FormatValues, no good digits algorithm yet
-		int digits = ScoobyRom.Data.AutomaticMinDigits(valuesZ);
-		if (digits <= 3)
-		{
-			tableUI.FormatValues = ScoobyRom.Data.ValueFormat(digits);
-		}
-		else{
-			tableUI.FormatValues = table.Zmax < 30 ? "0.00" : "0.0";
-			if (table.Zmax < 10)
-				tableUI.FormatValues = "0.000";
-		}
-
+		var tableUI = new GtkWidgets.TableWidget3D (coloring, table.ValuesX, table.ValuesY, valuesZ,
+			              table.Xmin, table.Xmax, table.Ymin, table.Ymax, table.Zmin, table.Zmax);
+		tableUI.TitleMarkup = Util.Markup.NameUnit_Large (table.Title, table.UnitZ);
+		tableUI.AxisMarkupX = Util.Markup.NameUnit (table.NameX, table.UnitX);
+		tableUI.AxisMarkupY = Util.Markup.NameUnit (table.NameY, table.UnitY);
+		tableUI.FormatValues = ScoobyRom.Data.AutomaticValueFormat (valuesZ, table.Zmin, table.Zmax);
 
 		// Viewport needed for ScrolledWindow to work as generated table widget has no scroll support
 		var viewPort = new Gtk.Viewport ();
@@ -237,8 +246,31 @@ public partial class MainWindow : Gtk.Window
 	{
 		if (table == null)
 			return;
+
+		// plot
 		plot2D.Draw (table);
 		plotSurface.Refresh ();
+
+		// table data as text
+		var values = table.GetValuesYasFloats ();
+		var tableUI = new GtkWidgets.TableWidget2D (coloring, table.ValuesX, values, table.Xmin, table.Xmax, table.Ymin, table.Ymax);
+		tableUI.HeaderAxisMarkup = Util.Markup.Unit (table.UnitX);
+		tableUI.HeaderValuesMarkup = Util.Markup.Unit (table.UnitY);
+		tableUI.AxisMarkup = Util.Markup.NameUnit (table.NameX, table.UnitX);
+		tableUI.ValuesMarkup = Util.Markup.NameUnit (table.Title, table.UnitY);
+		tableUI.FormatValues = ScoobyRom.Data.AutomaticValueFormat (values, table.Ymin, table.Ymax);
+
+		// Viewport needed for ScrolledWindow to work as generated table widget has no scroll support
+		var viewPort = new Gtk.Viewport ();
+		viewPort.Add (tableUI.Create ());
+
+		Gtk.Widget previous = this.scrolledwindowTable2D.Child;
+		if (previous != null)
+			this.scrolledwindowTable2D.Remove (previous);
+		// previous.Dispose () or previous.Destroy () cause NullReferenceException!
+
+		this.scrolledwindowTable2D.Add (viewPort);
+		this.scrolledwindowTable2D.ShowAll ();
 	}
 
 
@@ -278,19 +310,19 @@ public partial class MainWindow : Gtk.Window
 	{
 		const string LicensePath = "COPYING.txt";
 
-		System.Version version = System.Reflection.Assembly.GetExecutingAssembly ().GetName ().Version;
-		string appVersion = string.Format ("{0}.{1}.{2}", version.Major.ToString (), version.Minor.ToString (), version.Build.ToString ());
-
-		AboutDialog about = new AboutDialog { ProgramName = appName, Version = appVersion,
+		AboutDialog about = new AboutDialog {
+			ProgramName = MainClass.AppName,
+			Version = MainClass.AppVersion,
 			Copyright = "© 2011-2015 SubaruDieselCrew",
 			Authors = new string[] { "subdiesel\thttp://subdiesel.wordpress.com/",
 				"\nThanks for any feedback!",
 				"\nEXTERNAL BINARY DEPENDENCIES:",
 				"Gtk#\thttp://mono-project.com/GtkSharp",
-				"NPlot\thttp://netcontrols.org/nplot/wiki/",
+				"Florence\thttp://github.com/scottstephens/Florence",
 				"gnuplot\thttp://www.gnuplot.info/",
-				},
-			WrapLicense = true };
+			},
+			WrapLicense = true,
+		};
 		about.Icon = about.Logo = MainClass.AppIcon;
 		about.Comments = "License: GPL v3";
 
@@ -359,7 +391,10 @@ public partial class MainWindow : Gtk.Window
 			fc.AddFilter (filter);
 
 			fc.DoOverwriteConfirmation = true;
-			fc.CurrentName = pathSuggested;
+			// fc.CurrentFolder is read-only
+			fc.SetFilename (pathSuggested);
+			//fc.SetCurrentFolder (System.IO.Path.GetDirectoryName (pathSuggested));
+			fc.CurrentName = System.IO.Path.GetFileName (pathSuggested);
 			if (fc.Run () == (int)ResponseType.Accept) {
 				data.SaveAsRomRaiderXml (fc.Filename);
 			}
@@ -422,10 +457,14 @@ public partial class MainWindow : Gtk.Window
 			}
 		} catch (GnuPlotProcessException ex) {
 			Console.Error.WriteLine (ex);
-			ErrorMsg ("Error launching gnuplot!", ex.Message + "\n\nHave you installed gnuplot?" + "\nYou also may need to edit file '" + appName + ".exe.config'." + "\nCurrent platform-ID is '" + System.Environment.OSVersion.Platform.ToString () + "'." + "\nSee 'README.txt' for details.");
+			ErrorMsg ("Error launching gnuplot!", ex.Message + "\n\nHave you installed gnuplot?" + "\nYou also may need to edit file '" + MainClass.AppName + ".exe.config'." + "\nCurrent platform-ID is '" + System.Environment.OSVersion.Platform.ToString () + "'." + "\nSee 'README.txt' for details.");
 		} catch (GnuPlotException ex) {
 			Console.Error.WriteLine (ex);
 			ErrorMsg ("Error launching gnuplot!", ex.Message);
+		}
+		catch (System.IO.FileNotFoundException ex) {
+			Console.Error.WriteLine (ex);
+			ErrorMsg ("Error using gnuplot!", ex.Message + "\nFile: " + ex.FileName);
 		}
 	}
 
@@ -527,8 +566,8 @@ public partial class MainWindow : Gtk.Window
 		case ActiveUI.View3D:
 			ErrorMsg ("Error", "Creating CSV for 3D table not implemented yet.");
 			return;
-			//table = dataView3DGtk.Selected;
-			//break;
+		//table = dataView3DGtk.Selected;
+		//break;
 		}
 		if (table == null)
 			return;
@@ -607,6 +646,8 @@ public partial class MainWindow : Gtk.Window
 	void ErrorMsg (string title, string text)
 	{
 		MessageDialog md = new MessageDialog (this, DialogFlags.DestroyWithParent, MessageType.Error, ButtonsType.Close, text);
+		md.UseMarkup = false;
+		md.SecondaryUseMarkup = false;
 		md.Title = title;
 		md.Run ();
 		md.Destroy ();

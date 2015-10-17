@@ -27,7 +27,7 @@ namespace ScoobyRom
 			global::Stetic.Gui.Initialize (this);
 			// Widget ScoobyRom.ChecksumWindow
 			this.Name = "ScoobyRom.ChecksumWindow";
-			this.Title = global::Mono.Unix.Catalog.GetString ("Checksum Window");
+			this.Title = "Checksum Window";
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Container child ScoobyRom.ChecksumWindow.Gtk.Container+ContainerChild
 			this.vbox2 = new global::Gtk.VBox ();
@@ -54,14 +54,14 @@ namespace ScoobyRom
 			this.frame1.Add (this.GtkAlignment);
 			this.GtkLabel = new global::Gtk.Label ();
 			this.GtkLabel.Name = "GtkLabel";
-			this.GtkLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Checksum Table</b>");
+			this.GtkLabel.LabelProp = "<b>Checksum Table</b>";
 			this.GtkLabel.UseMarkup = true;
 			this.frame1.LabelWidget = this.GtkLabel;
 			this.vbox2.Add (this.frame1);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.frame1]));
 			w4.Position = 0;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.table1 = new global::Gtk.Table (((uint)(3)), ((uint)(2)), false);
+			this.table1 = new global::Gtk.Table (((uint)(1)), ((uint)(2)), false);
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
@@ -78,7 +78,7 @@ namespace ScoobyRom
 			// Container child table1.Gtk.Table+TableChild
 			this.labelTitleCVN8 = new global::Gtk.Label ();
 			this.labelTitleCVN8.Name = "labelTitleCVN8";
-			this.labelTitleCVN8.LabelProp = global::Mono.Unix.Catalog.GetString ("CVN8:");
+			this.labelTitleCVN8.LabelProp = "CVN8:";
 			this.table1.Add (this.labelTitleCVN8);
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelTitleCVN8]));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -91,8 +91,8 @@ namespace ScoobyRom
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 462;
-			this.DefaultHeight = 517;
+			this.DefaultWidth = 419;
+			this.DefaultHeight = 548;
 			this.Show ();
 		}
 	}

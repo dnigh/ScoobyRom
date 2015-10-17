@@ -54,6 +54,10 @@ namespace ScoobyRom
 				GetColumn ((int)ColumnNr2D.Icon).Visible = value;
 				if (value) {
 					viewModel.RequestIcons ();
+				} else {
+					// HACK shrinking row heights - no better method found yet
+					treeView.Model = null;
+					treeView.Model = viewModel.TreeModel;
 				}
 			}
 		}

@@ -53,6 +53,10 @@ public partial class MainWindow
 	
 	private global::Gtk.TreeView treeview2D;
 	
+	private global::Gtk.HPaned hpaned2D;
+	
+	private global::Gtk.ScrolledWindow scrolledwindowTable2D;
+	
 	private global::Gtk.Label label1;
 	
 	private global::Gtk.VPaned vpaned3D;
@@ -75,74 +79,74 @@ public partial class MainWindow
 		// Widget MainWindow
 		this.UIManager = new global::Gtk.UIManager ();
 		global::Gtk.ActionGroup w1 = new global::Gtk.ActionGroup ("Default");
-		this.FileAction = new global::Gtk.Action ("FileAction", global::Mono.Unix.Catalog.GetString ("_File"), null, null);
-		this.FileAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_File");
+		this.FileAction = new global::Gtk.Action ("FileAction", "_File", null, null);
+		this.FileAction.ShortLabel = "_File";
 		w1.Add (this.FileAction, null);
-		this.openAction = new global::Gtk.Action ("openAction", global::Mono.Unix.Catalog.GetString ("_Open"), null, "gtk-open");
-		this.openAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Open");
+		this.openAction = new global::Gtk.Action ("openAction", "_Open", null, "gtk-open");
+		this.openAction.ShortLabel = "_Open";
 		w1.Add (this.openAction, null);
-		this.quitAction = new global::Gtk.Action ("quitAction", global::Mono.Unix.Catalog.GetString ("_Quit"), null, "gtk-quit");
-		this.quitAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Quit");
+		this.quitAction = new global::Gtk.Action ("quitAction", "_Quit", null, "gtk-quit");
+		this.quitAction.ShortLabel = "_Quit";
 		w1.Add (this.quitAction, null);
-		this.ViewAction = new global::Gtk.Action ("ViewAction", global::Mono.Unix.Catalog.GetString ("_View"), null, null);
-		this.ViewAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_View");
+		this.ViewAction = new global::Gtk.Action ("ViewAction", "_View", null, null);
+		this.ViewAction.ShortLabel = "_View";
 		w1.Add (this.ViewAction, null);
-		this.HelpAction = new global::Gtk.Action ("HelpAction", global::Mono.Unix.Catalog.GetString ("_Help"), null, null);
-		this.HelpAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Help");
+		this.HelpAction = new global::Gtk.Action ("HelpAction", "_Help", null, null);
+		this.HelpAction.ShortLabel = "_Help";
 		w1.Add (this.HelpAction, null);
-		this.aboutAction = new global::Gtk.Action ("aboutAction", global::Mono.Unix.Catalog.GetString ("_About"), null, "gtk-about");
-		this.aboutAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_About");
+		this.aboutAction = new global::Gtk.Action ("aboutAction", "_About", null, "gtk-about");
+		this.aboutAction.ShortLabel = "_About";
 		w1.Add (this.aboutAction, null);
-		this.saveAction = new global::Gtk.Action ("saveAction", global::Mono.Unix.Catalog.GetString ("_Save XML"), null, "gtk-save");
+		this.saveAction = new global::Gtk.Action ("saveAction", "_Save XML", null, "gtk-save");
 		this.saveAction.Sensitive = false;
-		this.saveAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Save XML");
+		this.saveAction.ShortLabel = "_Save XML";
 		w1.Add (this.saveAction, null);
-		this.iconsAction = new global::Gtk.ToggleAction ("iconsAction", global::Mono.Unix.Catalog.GetString ("Icons"), null, null);
+		this.iconsAction = new global::Gtk.ToggleAction ("iconsAction", "Icons", null, null);
 		this.iconsAction.Sensitive = false;
-		this.iconsAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Icons");
+		this.iconsAction.ShortLabel = "Icons";
 		w1.Add (this.iconsAction, "<Control>i");
-		this.exportAsAction = new global::Gtk.Action ("exportAsAction", global::Mono.Unix.Catalog.GetString ("_Export As"), null, null);
+		this.exportAsAction = new global::Gtk.Action ("exportAsAction", "_Export As", null, null);
 		this.exportAsAction.Sensitive = false;
-		this.exportAsAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Export As");
+		this.exportAsAction.ShortLabel = "_Export As";
 		w1.Add (this.exportAsAction, null);
-		this.exportAsRRAction = new global::Gtk.Action ("exportAsRRAction", global::Mono.Unix.Catalog.GetString ("RomRaider Def XML"), null, "gtk-save-as");
+		this.exportAsRRAction = new global::Gtk.Action ("exportAsRRAction", "RomRaider Def XML", null, "gtk-save-as");
 		this.exportAsRRAction.Sensitive = false;
-		this.exportAsRRAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("RomRaider Def XML");
+		this.exportAsRRAction.ShortLabel = "RomRaider Def XML";
 		w1.Add (this.exportAsRRAction, null);
-		this.plotExternalAction = new global::Gtk.Action ("plotExternalAction", global::Mono.Unix.Catalog.GetString ("_Plot External (gnuplot)"), null, null);
+		this.plotExternalAction = new global::Gtk.Action ("plotExternalAction", "_Plot External (gnuplot)", null, null);
 		this.plotExternalAction.Sensitive = false;
-		this.plotExternalAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Plot");
+		this.plotExternalAction.ShortLabel = "_Plot";
 		w1.Add (this.plotExternalAction, "<Control>p");
-		this.checksumWindowAction = new global::Gtk.Action ("checksumWindowAction", global::Mono.Unix.Catalog.GetString ("Checksum Window"), null, null);
+		this.checksumWindowAction = new global::Gtk.Action ("checksumWindowAction", "Checksum Window", null, null);
 		this.checksumWindowAction.Sensitive = false;
-		this.checksumWindowAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Checksum Window");
+		this.checksumWindowAction.ShortLabel = "Checksum Window";
 		w1.Add (this.checksumWindowAction, null);
-		this.statisticsWindowAction = new global::Gtk.Action ("statisticsWindowAction", global::Mono.Unix.Catalog.GetString ("Statistics Window"), null, null);
+		this.statisticsWindowAction = new global::Gtk.Action ("statisticsWindowAction", "Statistics Window", null, null);
 		this.statisticsWindowAction.Sensitive = false;
-		this.statisticsWindowAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Statistics Window");
+		this.statisticsWindowAction.ShortLabel = "Statistics Window";
 		w1.Add (this.statisticsWindowAction, null);
-		this.PlotAction = new global::Gtk.Action ("PlotAction", global::Mono.Unix.Catalog.GetString ("_Plot"), null, null);
-		this.PlotAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Plot");
+		this.PlotAction = new global::Gtk.Action ("PlotAction", "_Plot", null, null);
+		this.PlotAction.ShortLabel = "_Plot";
 		w1.Add (this.PlotAction, null);
-		this.createSVGFileAction = new global::Gtk.Action ("createSVGFileAction", global::Mono.Unix.Catalog.GetString ("Create SVG File"), null, null);
+		this.createSVGFileAction = new global::Gtk.Action ("createSVGFileAction", "Create SVG File", null, null);
 		this.createSVGFileAction.Sensitive = false;
-		this.createSVGFileAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Create SVG File");
+		this.createSVGFileAction.ShortLabel = "Create SVG File";
 		w1.Add (this.createSVGFileAction, null);
-		this.visualizationAction = new global::Gtk.Action ("visualizationAction", global::Mono.Unix.Catalog.GetString ("Visualization"), null, "gtk-refresh");
+		this.visualizationAction = new global::Gtk.Action ("visualizationAction", "Visualization", null, "gtk-refresh");
 		this.visualizationAction.Sensitive = false;
-		this.visualizationAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Visualization");
+		this.visualizationAction.ShortLabel = "Visualization";
 		w1.Add (this.visualizationAction, "<Control>space");
-		this.DataAction = new global::Gtk.Action ("DataAction", global::Mono.Unix.Catalog.GetString ("_Data"), null, null);
-		this.DataAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Data");
+		this.DataAction = new global::Gtk.Action ("DataAction", "_Data", null, null);
+		this.DataAction.ShortLabel = "_Data";
 		w1.Add (this.DataAction, null);
-		this.exportTableAsCSVAction = new global::Gtk.Action ("exportTableAsCSVAction", global::Mono.Unix.Catalog.GetString ("Export Table as CSV"), null, null);
+		this.exportTableAsCSVAction = new global::Gtk.Action ("exportTableAsCSVAction", "Export Table as CSV", null, null);
 		this.exportTableAsCSVAction.Sensitive = false;
-		this.exportTableAsCSVAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Export Table as CSV");
+		this.exportTableAsCSVAction.ShortLabel = "Export Table as CSV";
 		w1.Add (this.exportTableAsCSVAction, null);
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
-		this.Title = global::Mono.Unix.Catalog.GetString ("ScoobyRom");
+		this.Title = "ScoobyRom";
 		this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 		// Container child MainWindow.Gtk.Container+ContainerChild
 		this.vbox1 = new global::Gtk.VBox ();
@@ -161,12 +165,12 @@ public partial class MainWindow
 		this.notebook1 = new global::Gtk.Notebook ();
 		this.notebook1.CanFocus = true;
 		this.notebook1.Name = "notebook1";
-		this.notebook1.CurrentPage = 1;
+		this.notebook1.CurrentPage = 0;
 		// Container child notebook1.Gtk.Notebook+NotebookChild
 		this.vpaned2D = new global::Gtk.VPaned ();
 		this.vpaned2D.CanFocus = true;
 		this.vpaned2D.Name = "vpaned2D";
-		this.vpaned2D.Position = 200;
+		this.vpaned2D.Position = 250;
 		// Container child vpaned2D.Gtk.Paned+PanedChild
 		this.GtkScrolledWindowTV2D = new global::Gtk.ScrolledWindow ();
 		this.GtkScrolledWindowTV2D.Name = "GtkScrolledWindowTV2D";
@@ -180,18 +184,35 @@ public partial class MainWindow
 		global::Gtk.Paned.PanedChild w4 = ((global::Gtk.Paned.PanedChild)(this.vpaned2D [this.GtkScrolledWindowTV2D]));
 		w4.Resize = false;
 		w4.Shrink = false;
+		// Container child vpaned2D.Gtk.Paned+PanedChild
+		this.hpaned2D = new global::Gtk.HPaned ();
+		this.hpaned2D.CanFocus = true;
+		this.hpaned2D.Name = "hpaned2D";
+		this.hpaned2D.Position = 180;
+		// Container child hpaned2D.Gtk.Paned+PanedChild
+		this.scrolledwindowTable2D = new global::Gtk.ScrolledWindow ();
+		this.scrolledwindowTable2D.CanFocus = true;
+		this.scrolledwindowTable2D.Name = "scrolledwindowTable2D";
+		this.scrolledwindowTable2D.ShadowType = ((global::Gtk.ShadowType)(1));
+		this.hpaned2D.Add (this.scrolledwindowTable2D);
+		global::Gtk.Paned.PanedChild w5 = ((global::Gtk.Paned.PanedChild)(this.hpaned2D [this.scrolledwindowTable2D]));
+		w5.Resize = false;
+		this.vpaned2D.Add (this.hpaned2D);
+		global::Gtk.Paned.PanedChild w6 = ((global::Gtk.Paned.PanedChild)(this.vpaned2D [this.hpaned2D]));
+		w6.Resize = false;
+		w6.Shrink = false;
 		this.notebook1.Add (this.vpaned2D);
 		// Notebook tab
 		this.label1 = new global::Gtk.Label ();
 		this.label1.Name = "label1";
-		this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("2D Tables");
+		this.label1.LabelProp = "2D Tables";
 		this.notebook1.SetTabLabel (this.vpaned2D, this.label1);
 		this.label1.ShowAll ();
 		// Container child notebook1.Gtk.Notebook+NotebookChild
 		this.vpaned3D = new global::Gtk.VPaned ();
 		this.vpaned3D.CanFocus = true;
 		this.vpaned3D.Name = "vpaned3D";
-		this.vpaned3D.Position = 200;
+		this.vpaned3D.Position = 250;
 		// Container child vpaned3D.Gtk.Paned+PanedChild
 		this.ScrolledWindowTV3D = new global::Gtk.ScrolledWindow ();
 		this.ScrolledWindowTV3D.Name = "ScrolledWindowTV3D";
@@ -202,30 +223,30 @@ public partial class MainWindow
 		this.treeview3D.Name = "treeview3D";
 		this.ScrolledWindowTV3D.Add (this.treeview3D);
 		this.vpaned3D.Add (this.ScrolledWindowTV3D);
-		global::Gtk.Paned.PanedChild w7 = ((global::Gtk.Paned.PanedChild)(this.vpaned3D [this.ScrolledWindowTV3D]));
-		w7.Resize = false;
-		w7.Shrink = false;
+		global::Gtk.Paned.PanedChild w9 = ((global::Gtk.Paned.PanedChild)(this.vpaned3D [this.ScrolledWindowTV3D]));
+		w9.Resize = false;
+		w9.Shrink = false;
 		// Container child vpaned3D.Gtk.Paned+PanedChild
 		this.scrolledwindowTable3D = new global::Gtk.ScrolledWindow ();
 		this.scrolledwindowTable3D.CanFocus = true;
 		this.scrolledwindowTable3D.Name = "scrolledwindowTable3D";
 		this.scrolledwindowTable3D.ShadowType = ((global::Gtk.ShadowType)(1));
 		this.vpaned3D.Add (this.scrolledwindowTable3D);
-		global::Gtk.Paned.PanedChild w8 = ((global::Gtk.Paned.PanedChild)(this.vpaned3D [this.scrolledwindowTable3D]));
-		w8.Resize = false;
-		w8.Shrink = false;
+		global::Gtk.Paned.PanedChild w10 = ((global::Gtk.Paned.PanedChild)(this.vpaned3D [this.scrolledwindowTable3D]));
+		w10.Resize = false;
+		w10.Shrink = false;
 		this.notebook1.Add (this.vpaned3D);
-		global::Gtk.Notebook.NotebookChild w9 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vpaned3D]));
-		w9.Position = 1;
+		global::Gtk.Notebook.NotebookChild w11 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vpaned3D]));
+		w11.Position = 1;
 		// Notebook tab
 		this.label2 = new global::Gtk.Label ();
 		this.label2.Name = "label2";
-		this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("3D Tables");
+		this.label2.LabelProp = "3D Tables";
 		this.notebook1.SetTabLabel (this.vpaned3D, this.label2);
 		this.label2.ShowAll ();
 		this.vbox1.Add (this.notebook1);
-		global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.notebook1]));
-		w10.Position = 1;
+		global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.notebook1]));
+		w12.Position = 1;
 		// Container child vbox1.Gtk.Box+BoxChild
 		this.statusbar1 = new global::Gtk.Statusbar ();
 		this.statusbar1.Name = "statusbar1";
@@ -234,14 +255,14 @@ public partial class MainWindow
 		this.progressbar1 = new global::Gtk.ProgressBar ();
 		this.progressbar1.Name = "progressbar1";
 		this.statusbar1.Add (this.progressbar1);
-		global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.statusbar1 [this.progressbar1]));
-		w11.Position = 2;
+		global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.statusbar1 [this.progressbar1]));
+		w13.Position = 2;
 		this.vbox1.Add (this.statusbar1);
-		global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.statusbar1]));
-		w12.PackType = ((global::Gtk.PackType)(1));
-		w12.Position = 2;
-		w12.Expand = false;
-		w12.Fill = false;
+		global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.statusbar1]));
+		w14.PackType = ((global::Gtk.PackType)(1));
+		w14.Position = 2;
+		w14.Expand = false;
+		w14.Fill = false;
 		this.Add (this.vbox1);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();

@@ -30,14 +30,14 @@ namespace ScoobyRom
 
 		Data data;
 
-		private StatisticsWindow () : base(Gtk.WindowType.Toplevel)
+		private StatisticsWindow () : base (Gtk.WindowType.Toplevel)
 		{
 			this.Build ();
 			this.Icon = MainClass.AppIcon;
 			this.Focus = this.buttonRefresh;
 		}
 
-		public StatisticsWindow (Data data) : this()
+		public StatisticsWindow (Data data) : this ()
 		{
 			this.data = data;
 			Update ();
@@ -55,18 +55,20 @@ namespace ScoobyRom
 			label3DAnnotated.Text = data.List3DAnnotated.Count.ToString ();
 
 			if (data.List2D.Count > 0) {
-				label2DFirstRecord.Text = string.Format (StringFormatHex, data.List2D[0].Location);
-				label2DLastRecord.Text = string.Format (StringFormatHex, data.List2D[data.List2D.Count - 1].Location);
+				label2DFirstRecord.Text = string.Format (StringFormatHex, data.List2D [0].Location);
+				label2DLastRecord.Text = string.Format (StringFormatHex, data.List2D [data.List2D.Count - 1].Location);
 			} else {
 				label2DFirstRecord.Text = label2DLastRecord.Text = EmptyString;
 			}
 
 			if (data.List3D.Count > 0) {
-				label3DFirstRecord.Text = string.Format (StringFormatHex, data.List3D[0].Location);
-				label3DLastRecord.Text = string.Format (StringFormatHex, data.List3D[data.List3D.Count - 1].Location);
+				label3DFirstRecord.Text = string.Format (StringFormatHex, data.List3D [0].Location);
+				label3DLastRecord.Text = string.Format (StringFormatHex, data.List3D [data.List3D.Count - 1].Location);
 			} else {
 				label3DFirstRecord.Text = label3DLastRecord.Text = EmptyString;
 			}
+
+			this.labelRomDate.Text = this.data.Rom.RomDateStr;
 		}
 
 		void OnButtonRefreshClicked (object sender, System.EventArgs e)

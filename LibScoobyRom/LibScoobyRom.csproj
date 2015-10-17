@@ -3,13 +3,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{FA950E69-7715-4732-AAF2-DB1D56816858}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Subaru</RootNamespace>
     <AssemblyName>LibScoobyRom</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <ReleaseVersion>0.7.0</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,6 +22,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <AssemblyOriginatorKeyFile>keypair.snk</AssemblyOriginatorKeyFile>
+    <LangVersion>3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -31,6 +33,7 @@
     <ConsolePause>false</ConsolePause>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\keypair.snk</AssemblyOriginatorKeyFile>
+    <LangVersion>3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -54,6 +57,7 @@
     <Compile Include="RomChecksumming.cs" />
     <Compile Include="IDA\IdcScript.cs" />
     <Compile Include="RomType.cs" />
+    <Compile Include="Util\SearchBinary.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -62,8 +66,14 @@
     <Folder Include="IDA\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="README.txt" />
-    <None Include="COPYING.txt" />
-    <None Include="TODO.txt" />
+    <None Include="TODO.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="COPYING.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

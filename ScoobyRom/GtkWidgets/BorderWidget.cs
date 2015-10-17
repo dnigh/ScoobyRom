@@ -33,8 +33,8 @@ namespace GtkWidgets
 	}
 
 	// Deriving from Gtk.Frame seems easiest solution: just have to paint background.
-	// Disadvantage: Frame might not look good on all platforms.
 	// Can put any widget inside - Label, Entry, ...
+	// Disadvantage: Frame might not look good on all platforms.
 	[System.ComponentModel.ToolboxItem(true)]
 	public sealed class BorderWidget : Gtk.Frame
 	{
@@ -54,6 +54,11 @@ namespace GtkWidgets
 		{
 		}
 
+		public BorderWidget (Cairo.Color color)
+		{
+			this.color = color;
+		}
+
 		// GLib.Object subclass GtkWidgets.BorderWidget must provide a protected or public
 		// IntPtr ctor to support wrapping of native object handles.
 		public BorderWidget (IntPtr raw) : base(raw)
@@ -66,7 +71,11 @@ namespace GtkWidgets
 			// draw background fill before child widget so child appears on top
 			// use Cairo drawing API (Gtk+ uses it internally as well)
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-				cr.SetSourceColor (this.color);
+				// Gtk deprecated warning: cr.Color = this.color;
+				// available on Linux GTK# but not yet on Windows (gtk-sharp-2.12.26.msi): cr.SetSourceColor (this.color);
+				// Windows: warning CS0618: 'Cairo.Context.Color' is obsolete: 'Use SetSourceRGBA method'
+				// solution for now, Gtk# Context method SetSourceColor (Color) does this anyway: NativeMethods.cairo_set_source_rgba (handle, color.R, color.G, color.B, color.A);
+				cr.SetSourceRGBA (this.color.R, this.color.G, this.color.B, this.color.A);
 				cr.Rectangle (this.Allocation.Left, this.Allocation.Top, this.Allocation.Width, this.Allocation.Height);
 				cr.Fill ();
 			}

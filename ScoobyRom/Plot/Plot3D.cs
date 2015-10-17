@@ -1,4 +1,4 @@
-// Plot3D.cs: Draw NPlot.ImagePlot via interface. Does not depend on UI.
+// Plot3D.cs: Draw Florence.ImagePlot (Heatmap) via interface. Does not depend on UI.
 
 /* Copyright (C) 2011-2015 SubaruDieselCrew
  *
@@ -19,17 +19,17 @@
  */
 
 
-using NPlot;
+using Florence;
 using Subaru.Tables;
 
 namespace ScoobyRom
 {
 	public static class Plot3D
 	{
-		static readonly NPlotUtil.NPlotGradient gradient = new NPlotUtil.NPlotGradient ();
+		static readonly FlorenceUtil.FlorenceGradient gradient = new FlorenceUtil.FlorenceGradient ();
 
 		/// <summary>
-		/// Draws NPlot.ImagePlot.
+		/// Draws NPlot.ImagePlot (heatmap).
 		/// Does Clear(), axis are hidden.
 		/// Can be used for icons as well.
 		/// </summary>

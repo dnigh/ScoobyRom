@@ -26,6 +26,14 @@ namespace ScoobyRom
 {
 	public static class Config
 	{
+		const int DefaultIconWidth = 64;
+		const int DefaultIconHeight = 48;
+		const int IconMin = 10;
+		const int IconMax = 255;
+
+		const string key_IconWidthStr = "iconWidth";
+		const string key_IconHeightStr = "iconHeight";
+
 		const string key_iconsOnByDefault = "iconsOnByDefault";
 		// works on Linux at least, use this default name in case config entry cannot be found
 		const string gnuplotDefaultPath = "gnuplot";
@@ -33,6 +41,8 @@ namespace ScoobyRom
 		static string platformStr = Environment.OSVersion.Platform.ToString ();
 		static string gnuplotPath;
 		static bool iconsOnByDefault;
+		static int iconWidth = DefaultIconWidth;
+		static int iconHeight = DefaultIconHeight;
 
 		/// <summary>
 		/// Null if key not found!
@@ -49,6 +59,14 @@ namespace ScoobyRom
 			get { return iconsOnByDefault; }
 		}
 
+		public static int IconWidth {
+			get { return iconWidth; }
+		}
+
+		public static int IconHeight {
+			get { return iconHeight; }
+		}
+
 		// should work even if .config file is missing
 		static Config ()
 		{
@@ -57,13 +75,31 @@ namespace ScoobyRom
 			NameValueCollection appSettings = System.Configuration.ConfigurationManager.AppSettings;
 			// Value is null when key not found!
 
-			gnuplotPath = appSettings["gnuplot_" + Environment.OSVersion.Platform.ToString ()];
+			gnuplotPath = appSettings ["gnuplot_" + Environment.OSVersion.Platform.ToString ()];
 			if (gnuplotPath == null)
 				gnuplotPath = gnuplotDefaultPath;
 
-			string val = appSettings[key_iconsOnByDefault];
+			string val;
+			int intValue;
+
+			val = appSettings [key_iconsOnByDefault];
 			if (val != null)
 				bool.TryParse (val, out iconsOnByDefault);
+
+			val = appSettings [key_IconWidthStr];
+			if (val != null && int.TryParse (val, out intValue)) {
+				iconWidth = ValueInRange (intValue, IconMin, IconMax);
+			}
+
+			val = appSettings [key_IconHeightStr];
+			if (val != null && int.TryParse (val, out intValue)) {
+				iconHeight = ValueInRange (intValue, IconMin, IconMax);
+			}
+		}
+
+		static int ValueInRange (int value, int min, int max)
+		{
+			return Math.Min (max, Math.Max (min, value));
 		}
 	}
 }

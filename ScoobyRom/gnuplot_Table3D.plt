@@ -29,18 +29,27 @@
 # set xlabel "Engine Speed\n{/mono [1/min]}" ...
 # set ylabel ...
 # set title ...
-# load "this_template_file.plt"
+# call 'this_template_file.plt' 'pathToBinaryDataFile'
 # --------
 
 set macros
-dataFile = "\"gnuplot_data.tmp\""
-terminal = "wxt"
 
-# TERMINAL SPECIFIC !!! Must match currently used terminal!!!!
-# p.33; use default (platform specific) sans-serif font, font size 14
-set term @terminal font "sans,14"
+# first argument ARG1 to this script must be path of binary data file
+dataFile = ARG1
+#print dataFile
+# variable set by app: windowtitle = "..."
 
-# to allow inline text formatting. If fontname given it must follow '/'.
+# interactive terminals tested on Windows: qt, wxt, windows
+# override terminal if needed, better use default (i.e. OS environment variable GNUTERM)
+# set term qt
+
+# font and size
+# Gnuplot-defined variable GPVAL_TERM has currently active terminal i.e. "qt"
+set term GPVAL_TERM font "sans,12
+
+set term GPVAL_TERM title windowtitle
+
+# to allow inline text formatting
 set termoption enhanced
 
 # HSV color interpolation: min, max as HSV
@@ -104,7 +113,7 @@ bind Home "set view viewDefault; refresh"
 # app generates a binary data file on each plot action, basically a temporary file containing coordinates
 # mark as "volatile" so a single temporary data file can be shared, replot would re-read and could show wrong data
 
-splot @dataFile binary volatile title "" with pm3d
+splot dataFile binary volatile title "" with pm3d
 
 #set label 1 "Annotation Label" at screen 0.01,0.95 front left textcolor rgb "blue"
 

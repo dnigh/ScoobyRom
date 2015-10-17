@@ -48,7 +48,7 @@ namespace ScoobyRom
 		CellRendererText cellRendererText;
 		CellRendererPixbuf cellRendererPixbuf;
 
-		public ChecksumWindow () : base(Gtk.WindowType.Toplevel)
+		public ChecksumWindow () : base (Gtk.WindowType.Toplevel)
 		{
 			this.Build ();
 			this.Icon = MainClass.AppIcon;
@@ -65,7 +65,7 @@ namespace ScoobyRom
 
 			cellRendererText = new CellRendererText ();
 			Pango.FontDescription fontDesc = new Pango.FontDescription ();
-			fontDesc.Family = System.Environment.OSVersion.Platform == PlatformID.Win32NT ? "Monospace" : "DejaVu Sans Mono";
+			fontDesc.Family = System.Environment.OSVersion.Platform == PlatformID.Win32NT ? "Consolas" : "Monospace";
 
 			cellRendererText.FontDesc = fontDesc;
 
@@ -88,8 +88,8 @@ namespace ScoobyRom
 		{
 			// could use this.RenderIcon(...) but those icons can be less appealing (grey check mark, red cross)
 			Gtk.Image image = new Gtk.Image ();
-			pixbufs[0] = image.RenderIcon (Gtk.Stock.No, IconSize.SmallToolbar, null);
-			pixbufs[1] = image.RenderIcon (Gtk.Stock.Yes, IconSize.SmallToolbar, null);
+			pixbufs [0] = image.RenderIcon (Gtk.Stock.No, IconSize.SmallToolbar, null);
+			pixbufs [1] = image.RenderIcon (Gtk.Stock.Yes, IconSize.SmallToolbar, null);
 			image.Destroy ();
 		}
 
@@ -123,10 +123,10 @@ namespace ScoobyRom
 			rcs = rom.RomChecksumming;
 			var ilist = rcs.ReadTableRecords ();
 			for (int i = 0; i < ilist.Count; i++) {
-				var item = ilist[i];
+				var item = ilist [i];
 				int sum = rcs.CalcChecksumValue (item);
 				int iconIndex = item.Checksum == sum ? 1 : 0;
-				store.AppendValues (i, item.StartAddress, item.EndAddress, item.Checksum, pixbufs[iconIndex], sum);
+				store.AppendValues (i, item.StartAddress, item.EndAddress, item.Checksum, pixbufs [iconIndex], sum);
 			}
 
 			labelCVN8.Text = RomChecksumming.CVN8Str (rcs.CalcCVN8 ());
@@ -139,7 +139,7 @@ namespace ScoobyRom
 		void TreeCellDataFuncHex (TreeViewColumn treeViewColumn, CellRenderer renderer, TreeModel treeModel, TreeIter iter)
 		{
 			// need col number to get value from store
-			ColNr colNr = columnsDict[treeViewColumn];
+			ColNr colNr = columnsDict [treeViewColumn];
 			int nr = (int)store.GetValue (iter, (int)colNr);
 
 			string formatStr;

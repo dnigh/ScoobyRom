@@ -33,9 +33,26 @@ namespace ScoobyRom
 			get { return appIcon; }
 		}
 
+		static internal string AppName {
+			get { return "ScoobyRom"; }
+		}
+
+		static internal string AppVersion {
+			get {
+				System.Version version = System.Reflection.Assembly.GetExecutingAssembly ().GetName ().Version;
+				return string.Format ("{0}.{1}.{2}", version.Major.ToString (), version.Minor.ToString (), version.Build.ToString ());
+			}
+		}
+
 		public static void Main (string[] args)
 		{
-			Application.Init ();
+			try {
+				Application.Init ();
+			} catch (Exception ex) {
+				Console.WriteLine ("Error in Application.Init! Gtk# package not installed!?");
+				Console.WriteLine (ex);
+				throw ex;
+			}
 
 			// does not catch Exceptions in MainWindow constructor!
 			GLib.ExceptionManager.UnhandledException += OnUnhandledException;
@@ -45,6 +62,7 @@ namespace ScoobyRom
 				appIcon = Gdk.Pixbuf.LoadFromResource ("Images.AppIcon.png");
 			} catch (System.ArgumentException) {
 				// i.e. resource not found
+				Console.WriteLine ("Exception: loading resources");
 			}
 
 			// program arguments: if available, first argument is supposed to be ROM path
@@ -67,6 +85,8 @@ namespace ScoobyRom
 		static void ErrorMsg (string title, string text)
 		{
 			MessageDialog md = new MessageDialog (null, DialogFlags.Modal, MessageType.Error, ButtonsType.Close, null);
+			md.UseMarkup = false;
+			md.SecondaryUseMarkup = false;
 			md.Title = title;
 			md.Text = text;
 			md.Run ();
