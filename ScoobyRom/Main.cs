@@ -44,6 +44,16 @@ namespace ScoobyRom
 			}
 		}
 
+		static internal string AssemblyPath
+		{
+			get { return System.Reflection.Assembly.GetCallingAssembly ().Location; }
+		}
+
+		static internal string AssemblyFolder
+		{
+			get { return System.IO.Path.GetDirectoryName (AssemblyPath); }
+		}
+
 		public static void Main (string[] args)
 		{
 			try {

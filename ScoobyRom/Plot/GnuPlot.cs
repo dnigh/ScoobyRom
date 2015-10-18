@@ -118,17 +118,6 @@ namespace ScoobyRom
 				gnupDict.Remove (table);
 		}
 
-		public static string AssemblyPath
-		{
-			get { return System.Reflection.Assembly.GetCallingAssembly ().Location; }
-		}
-
-		public static string AssemblyFolder
-		{
-			get { return Path.GetDirectoryName (AssemblyPath); }
-		}
-
-
 		#endregion static
 
 		#region fields
@@ -257,7 +246,7 @@ namespace ScoobyRom
 			if (File.Exists (p)) {
 				return p;
 			} else {
-				p = Path.Combine (AssemblyFolder, filename);
+				p = Path.Combine (MainClass.AssemblyFolder, filename);
 				if (File.Exists (p)) {
 					return p;
 				} else {

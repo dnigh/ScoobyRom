@@ -308,7 +308,7 @@ public partial class MainWindow : Gtk.Window
 
 	void OnAbout (object sender, System.EventArgs e)
 	{
-		const string LicensePath = "COPYING.txt";
+		const string LicenseFilename = "COPYING.txt";
 
 		AboutDialog about = new AboutDialog {
 			ProgramName = MainClass.AppName,
@@ -326,10 +326,11 @@ public partial class MainWindow : Gtk.Window
 		about.Icon = about.Logo = MainClass.AppIcon;
 		about.Comments = "License: GPL v3";
 
+		string licensePath = System.IO.Path.Combine(MainClass.AssemblyFolder, LicenseFilename);
 		try {
-			about.License = System.IO.File.ReadAllText (LicensePath);
+			about.License = System.IO.File.ReadAllText (licensePath);
 		} catch (System.IO.FileNotFoundException) {
-			about.License = "Could not load license file '" + LicensePath + "'.\nGo to http://www.fsf.org";
+			about.License = "Could not load license file '" + licensePath + "'.\nGo to http://www.fsf.org";
 		}
 
 		about.Run ();
