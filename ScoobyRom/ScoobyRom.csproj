@@ -23,7 +23,7 @@
     <ConsolePause>false</ConsolePause>
     <AssemblyOriginatorKeyFile>keypair.snk</AssemblyOriginatorKeyFile>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>default_rom</Commandlineparameters>
+    <Commandlineparameters>defaultRom.rom</Commandlineparameters>
     <LangVersion>3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">

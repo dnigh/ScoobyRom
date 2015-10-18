@@ -173,14 +173,9 @@ namespace ScoobyRom
 			Subaru.File.RomRaiderEcuDefXml.WriteRRXmlFile (path, romMetadata.XElement, list2D, list3D);
 		}
 
-		public void ChangeTableType (Table2D table2D, TableType newType)
+		public void ChangeTableType (Table table, TableType newType)
 		{
-			table2D.ChangeTypeToAndReload (newType, rom.Stream);
-		}
-
-		public void ChangeTableType (Table3D table3D, TableType newType)
-		{
-			table3D.ChangeTypeToAndReload (newType, rom.Stream);
+			table.ChangeTypeToAndReload (newType, rom.Stream);
 		}
 
 		public void UpdateUI ()

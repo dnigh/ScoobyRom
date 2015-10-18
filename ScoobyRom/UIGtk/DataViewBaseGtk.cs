@@ -28,11 +28,14 @@ namespace ScoobyRom
 {
 	public abstract class DataViewBaseGtk
 	{
+		public event EventHandler<ActionEventArgs> Activated;
+
 		// needed model for ComboBox cells, sharable and const
 		protected static readonly ListStore tableTypesModel = new ListStore (typeof(string));
 
 		protected static readonly string[] AllowedHexPrefixes = new string[] { "0x", "$" };
 
+		protected DataViewModelBaseGtk viewModel;
 
 		protected Gtk.TreeModel treeModel;
 		protected Gtk.TreeView treeView;
@@ -57,6 +60,41 @@ namespace ScoobyRom
 
 		public DataViewBaseGtk ()
 		{
+		}
+
+		protected abstract int ColumnNrIcon { get; }
+		protected abstract int ColumnNrObj { get; }
+
+		public virtual bool ShowIcons {
+			get { return this.showIcons; }
+			set { }
+		}
+
+		public void IncreaseIconSize ()
+		{
+			this.viewModel.IncreaseIconSize ();
+		}
+
+		public void DecreaseIconSize ()
+		{
+			this.viewModel.DecreaseIconSize ();
+		}
+
+		public Subaru.Tables.Table Selected {
+			get {
+				Subaru.Tables.Table table = null;
+				TreeSelection selection = treeView.Selection;
+				TreeModel model;
+				TreeIter iter;
+
+				// The iter will point to the selected row
+				if (selection.GetSelected (out model, out iter)) {
+					// Depth begins at 1 !
+					//TreePath path = model.GetPath (iter);
+					table = (Subaru.Tables.Table)model.GetValue (iter, ColumnNrObj);
+				}
+				return table;
+			}
 		}
 
 		#region Tree Cell Data Functions
@@ -129,7 +167,12 @@ namespace ScoobyRom
 			}
 		}
 
-		protected abstract void OnTableTypeChanged (TreeIter iter, TableType newTableType);
+		protected void OnTableTypeChanged (TreeIter iter, TableType newTableType)
+		{
+			var table = (Subaru.Tables.Table)treeModel.GetValue (iter, ColumnNrObj);
+			viewModel.ChangeTableType (table, newTableType);
+			viewModel.SetNodeContentTypeChanged (iter, table);
+		}
 
 
 		#endregion CellRenderer event handlers
@@ -213,6 +256,15 @@ namespace ScoobyRom
 //				Console.WriteLine ("p");
 //		}
 
+		// double click or Enter key
+		protected void HandleTreeViewRowActivated (object o, RowActivatedArgs args)
+		{
+			Subaru.Tables.Table table = Selected;
+			if (table != null && Activated != null) {
+				Activated (this, new ActionEventArgs (table));
+			}
+		}
+
 		#endregion TreeView event handlers
 
 
@@ -257,7 +309,5 @@ namespace ScoobyRom
 				return column != null ? columnsDict[CursorColumn] : 0;
 			}
 		}
-
 	}
 }
-

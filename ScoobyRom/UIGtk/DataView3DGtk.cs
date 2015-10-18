@@ -28,10 +28,6 @@ namespace ScoobyRom
 	// TODO cleanup, sharing more code and objects
 	public sealed class DataView3DGtk : DataViewBaseGtk
 	{
-		public event EventHandler<ActionEventArgs> Activated;
-
-		DataView3DModelGtk viewModel;
-
 		private DataView3DGtk ()
 		{
 		}
@@ -51,8 +47,19 @@ namespace ScoobyRom
 			InitTreeView ();
 		}
 
-		public bool ShowIcons {
-			get { return this.showIcons; }
+		public DataViewModelBaseGtk DataViewModelGtk {
+			get { return this.viewModel; }
+		}
+
+		protected override int ColumnNrIcon {
+			get { return (int)ColumnNr3D.Icon; }
+		}
+
+		protected override int ColumnNrObj {
+			get { return (int)ColumnNr3D.Obj; }
+		}
+
+		public override bool ShowIcons {
 			set {
 				showIcons = value;
 				GetColumn ((int)ColumnNr3D.Icon).Visible = value;
@@ -71,23 +78,6 @@ namespace ScoobyRom
 					treeView.Model = null;
 					treeView.Model = viewModel.TreeModel;
 				}
-			}
-		}
-
-		public Table3D Selected {
-			get {
-				Table3D table3D = null;
-				TreeSelection selection = treeView.Selection;
-				TreeModel model;
-				TreeIter iter;
-
-				// The iter will point to the selected row
-				if (selection.GetSelected (out model, out iter)) {
-					// Depth begins at 1 !
-					//TreePath path = model.GetPath (iter);
-					table3D = (Table3D)model.GetValue (iter, (int)ColumnNr3D.Obj);
-				}
-				return table3D;
 			}
 		}
 
@@ -364,31 +354,6 @@ namespace ScoobyRom
 				// cannot search on icon column, must return true = no match.
 				return true;
 			}
-		}
-
-		#region event handlers
-
-
-		#region TreeView event handlers
-
-		void HandleTreeViewRowActivated (object o, RowActivatedArgs args)
-		{
-			Table3D table3D = Selected;
-			if (table3D != null && Activated != null) {
-				Activated (this, new ActionEventArgs (table3D));
-			}
-		}
-
-		#endregion TreeView event handlers
-
-
-		#endregion event handlers
-
-		protected override void OnTableTypeChanged (TreeIter iter, TableType newTableType)
-		{
-			Table3D table3D = (Table3D)treeModel.GetValue (iter, (int)ColumnNr3D.Obj);
-			viewModel.ChangeTableType (table3D, newTableType);
-			viewModel.SetNodeContentTypeChanged (iter, table3D);
 		}
 	}
 }

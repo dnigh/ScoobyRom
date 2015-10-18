@@ -121,15 +121,16 @@ namespace ScoobyRom
 			SetNodeContentTypeChanged (iter, table2D);
 		}
 
-		public void SetNodeContentTypeChanged (TreeIter iter, Table2D table2D)
+		public override void SetNodeContentTypeChanged (TreeIter iter, Subaru.Tables.Table table)
 		{
-			store.SetValue (iter, (int)ColumnNr2D.Type, (int)table2D.TableType);
-			store.SetValue (iter, (int)ColumnNr2D.Ymin, table2D.Ymin);
-			store.SetValue (iter, (int)ColumnNr2D.Yavg, table2D.Yavg);
-			store.SetValue (iter, (int)ColumnNr2D.Ymax, table2D.Ymax);
+			var t = (Subaru.Tables.Table2D)table;
+			store.SetValue (iter, (int)ColumnNr2D.Type, (int)t.TableType);
+			store.SetValue (iter, (int)ColumnNr2D.Ymin, t.Ymin);
+			store.SetValue (iter, (int)ColumnNr2D.Yavg, t.Yavg);
+			store.SetValue (iter, (int)ColumnNr2D.Ymax, t.Ymax);
 
 			if (iconsCached)
-				CreateSetNewIcon (iter, table2D);
+				CreateSetNewIcon (iter, t);
 		}
 
 		void CreateSetNewIcon (TreeIter iter, Table2D table2D)

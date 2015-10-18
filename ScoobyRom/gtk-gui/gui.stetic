@@ -6,7 +6,7 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../bin/Release/ScoobyRom.exe" internal="true" />
+    <widget-library name="../bin/Debug/ScoobyRom.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="938 702">
     <action-group name="Default">
@@ -133,6 +133,22 @@
         <property name="ShortLabel" translatable="yes">Export Table as CSV</property>
         <signal name="Activated" handler="OnExportTableAsCSVActionActivated" />
       </action>
+      <action id="zoomInAction">
+        <property name="Type">Action</property>
+        <property name="Accelerator">&lt;Primary&gt;&lt;Mod2&gt;KP_Add</property>
+        <property name="Label" translatable="yes">Increase Icon Size</property>
+        <property name="ShortLabel" translatable="yes">Increase Icon Size</property>
+        <property name="StockId">gtk-zoom-in</property>
+        <signal name="Activated" handler="OnIncreaseIconSizeActionActivated" />
+      </action>
+      <action id="zoomOutAction">
+        <property name="Type">Action</property>
+        <property name="Accelerator">&lt;Primary&gt;&lt;Mod2&gt;KP_Subtract</property>
+        <property name="Label" translatable="yes">Decrease Icon Size</property>
+        <property name="ShortLabel" translatable="yes">Decrease Icon Size</property>
+        <property name="StockId">gtk-zoom-out</property>
+        <signal name="Activated" handler="OnDecreaseIconSizeActionActivated" />
+      </action>
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">ScoobyRom</property>
@@ -158,7 +174,11 @@
               </node>
               <node type="Menu" action="ViewAction">
                 <node type="Menuitem" action="visualizationAction" />
+                <node type="Separator" />
                 <node type="Menuitem" action="iconsAction" />
+                <node type="Menuitem" action="zoomInAction" />
+                <node type="Menuitem" action="zoomOutAction" />
+                <node type="Separator" />
                 <node type="Menuitem" action="checksumWindowAction" />
                 <node type="Menuitem" action="statisticsWindowAction" />
               </node>
@@ -185,13 +205,13 @@
           <widget class="Gtk.Notebook" id="notebook1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="CurrentPage">0</property>
+            <property name="CurrentPage">1</property>
             <signal name="SwitchPage" handler="OnNotebook1SwitchPage" />
             <child>
               <widget class="Gtk.VPaned" id="vpaned2D">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Position">250</property>
+                <property name="Position">249</property>
                 <child>
                   <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindowTV2D">
                     <property name="MemberName" />

@@ -18,6 +18,7 @@
  * along with ScoobyRom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define UseBackGroundTask
 
 using System;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace ScoobyRom
 	public abstract class DataViewModelBaseGtk
 	{
 		// generates icons
-		protected readonly PlotIconBase plotIcon;
+		protected PlotIconBase plotIcon;
 
 		protected readonly Data data;
 
@@ -55,17 +56,49 @@ namespace ScoobyRom
 			PopulateData ();
 		}
 
+		public void ChangeTableType (Subaru.Tables.Table table, Subaru.Tables.TableType newType)
+		{
+			data.ChangeTableType (table, newType);
+		}
+
+
 		/// <summary>
 		/// Creates icons if not done already, otherwise returns immediatly.
 		/// Icon creation happens in background.
 		/// </summary>
 		public void RequestIcons ()
 		{
-			if (iconsCached)
-				return;
+//			if (iconsCached)
+//				return;
+			RefreshIcons ();
+		}
+
+		public void IncreaseIconSize ()
+		{
+			plotIcon.IncreaseIconSize ();
+			RefreshIcons ();
+		}
+
+		public void DecreaseIconSize ()
+		{
+			plotIcon.DecreaseIconSize ();
+			RefreshIcons ();
+		}
+
+		public void RefreshIcons ()
+		{
+			iconsCached = false;
+
+			#if !UseBackGroundTask
+			CreateAllIcons ();
+			iconsCached = true;
+
+			#else
+
 			Task task = new Task (() => CreateAllIcons ());
 			task.ContinueWith (t => iconsCached = true);
 			task.Start ();
+			#endif
 		}
 
 		protected void CreateAllIcons (int objColumnNr, int iconColumnNr)
@@ -78,12 +111,16 @@ namespace ScoobyRom
 				Gdk.Pixbuf pixbuf = plotIcon.CreateIcon (table);
 
 				// update model reference in GUI Thread to make sure UI display is ok
-				Application.Invoke (delegate {
+				// HACK Application.Invoke causes wrong iters ???
+				// IA__gtk_list_store_set_value: assertion 'VALID_ITER (iter, list_store)' failed
+				//Application.Invoke (delegate {
 					store.SetValue (iter, iconColumnNr, pixbuf);
-				});
+				//});
 			} while (store.IterNext (ref iter));
 			plotIcon.CleanupTemp ();
 		}
+
+		public abstract void SetNodeContentTypeChanged (TreeIter iter, Subaru.Tables.Table table);
 
 		#region TreeStore event handlers
 

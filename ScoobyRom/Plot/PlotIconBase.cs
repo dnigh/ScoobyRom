@@ -35,6 +35,8 @@ namespace ScoobyRom
 	/// </summary>
 	public abstract class PlotIconBase
 	{
+		const double ZoomFactor = 1.1;
+
 		protected const int MemoryStreamCapacity = 2048;
 		public const int FrameWidth = 1;
 		public const int Padding = FrameWidth;
@@ -58,10 +60,15 @@ namespace ScoobyRom
 
 		// reuse objects where possible to improve performance
 		protected readonly PlotSurface2D plotSurface = new PlotSurface2D ();
-		protected readonly System.Drawing.Bitmap bitmap_cache;
+		protected System.Drawing.Bitmap bitmap_cache;
 
 
 		public PlotIconBase (int width, int height)
+		{
+			Init (width, height);
+		}
+
+		void Init (int width, int height)
 		{
 			this.width = width;
 			this.height = height;
@@ -72,18 +79,25 @@ namespace ScoobyRom
 
 			// black/transparent (depending on image format) frame
 			this.padding = Padding;
+
+			constDataIcon = DrawConstDataIcon ();
 		}
 
 		abstract public Gdk.Pixbuf CreateIcon (Subaru.Tables.Table table);
 
+		public void IncreaseIconSize ()
+		{
+			Init ((int)System.Math.Round (ZoomFactor * width), (int)System.Math.Round (ZoomFactor * height));
+		}
+
+		public void DecreaseIconSize ()
+		{
+			Init ((int)System.Math.Round ((1.0 / ZoomFactor) * width), (int)System.Math.Round ((1.0 / ZoomFactor) * height));
+		}
+
 		// reuse icon, very useful for performance as many tables have const values
 		public Gdk.Pixbuf ConstDataIcon {
-			get {
-				if (constDataIcon == null) {
-					constDataIcon = DrawConstDataIcon ();
-				}
-				return constDataIcon;
-			}
+			get { return constDataIcon; }
 		}
 
 		protected Gdk.Pixbuf DrawConstDataIcon ()
@@ -124,8 +138,10 @@ namespace ScoobyRom
 		public void CleanupTemp ()
 		{
 			#if !BitmapToPixbufConversionRaw
-			memoryStream.Dispose ();
-			memoryStream = null;
+			if (memoryStream != null) {
+				memoryStream.Dispose ();
+				memoryStream = null;
+			}
 			#endif
 		}
 

@@ -133,6 +133,18 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 
+	DataViewBaseGtk CurrentView {
+		get {
+			switch (CurrentUI) {
+			case ActiveUI.View2D:
+				return dataView2DGtk;
+			case ActiveUI.View3D:
+				return dataView3DGtk;
+			}
+			return null;
+		}
+	}
+
 	void OpenRom (string path)
 	{
 		this.progressbar1.Adjustment.Lower = 0;
@@ -279,6 +291,8 @@ public partial class MainWindow : Gtk.Window
 	void OnNotebook1SwitchPage (object o, Gtk.SwitchPageArgs args)
 	{
 		bool iconsActive = false;
+		var view = CurrentView;
+
 		switch (CurrentUI) {
 		case ActiveUI.View2D:
 			iconsActive = dataView2DGtk.ShowIcons;
@@ -298,10 +312,10 @@ public partial class MainWindow : Gtk.Window
 		// Selection can be null - no row selected yet!
 		switch (CurrentUI) {
 		case ActiveUI.View2D:
-			Show2D (dataView2DGtk.Selected);
+			Show2D ((Table2D)dataView2DGtk.Selected);
 			break;
 		case ActiveUI.View3D:
-			Show3D (dataView3DGtk.Selected);
+			Show3D ((Table3D)dataView3DGtk.Selected);
 			break;
 		}
 	}
@@ -423,39 +437,42 @@ public partial class MainWindow : Gtk.Window
 	// icons ON/OFF
 	void OnIconsActionActivated (object sender, System.EventArgs e)
 	{
-		bool iconsActive = iconsAction.Active;
-		switch (CurrentUI) {
-		case ActiveUI.View2D:
-			dataView2DGtk.ShowIcons = iconsActive;
-			break;
-		case ActiveUI.View3D:
-			dataView3DGtk.ShowIcons = iconsActive;
-			break;
-		}
+		var view = CurrentView;
+		if (view == null)
+			return;
+		view.ShowIcons = iconsAction.Active;
+	}
+
+	void OnIncreaseIconSizeActionActivated (object sender, System.EventArgs e)
+	{
+		var view = CurrentView;
+		if (view == null)
+			return;
+		view.IncreaseIconSize ();
+	}
+
+	protected void OnDecreaseIconSizeActionActivated (object sender, EventArgs e)
+	{
+		var view = CurrentView;
+		if (view == null)
+			return;
+		view.DecreaseIconSize ();
 	}
 
 	// create or close gnuplot window
 	void OnPlotActionActivated (object sender, System.EventArgs e)
 	{
+		var view = CurrentView;
+		if (view == null)
+			return;
+		var table = view.Selected;
+		if (table == null)
+			return;
 		try {
 			// gnuplot process itself can be slow to startup
 			// so this does not prevent closing it immediatly when pressed twice
 			//plotExternalAction.Sensitive = false;
-
-			switch (CurrentUI) {
-			case ActiveUI.View2D:
-				Table2D table2D = dataView2DGtk.Selected;
-				if (table2D != null) {
-					GnuPlot.ToggleGnuPlot (table2D);
-				}
-				break;
-			case ActiveUI.View3D:
-				Table3D table3D = dataView3DGtk.Selected;
-				if (table3D != null) {
-					GnuPlot.ToggleGnuPlot (table3D);
-				}
-				break;
-			}
+			GnuPlot.ToggleGnuPlot (table);
 		} catch (GnuPlotProcessException ex) {
 			Console.Error.WriteLine (ex);
 			ErrorMsg ("Error launching gnuplot!", ex.Message + "\n\nHave you installed gnuplot?" + "\nYou also may need to edit file '" + MainClass.AppName + ".exe.config'." + "\nCurrent platform-ID is '" + System.Environment.OSVersion.Platform.ToString () + "'." + "\nSee 'README.txt' for details.");
@@ -625,7 +642,11 @@ public partial class MainWindow : Gtk.Window
 		exportAsRRAction.Sensitive = sensitive;
 
 		visualizationAction.Sensitive = sensitive;
+
 		iconsAction.Sensitive = sensitive;
+		zoomInAction.Sensitive = sensitive;
+		zoomOutAction.Sensitive = sensitive;
+
 		checksumWindowAction.Sensitive = sensitive;
 		statisticsWindowAction.Sensitive = sensitive;
 
