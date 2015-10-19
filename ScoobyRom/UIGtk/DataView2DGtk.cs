@@ -50,20 +50,6 @@ namespace ScoobyRom
 			get { return (int)ColumnNr2D.Obj; }
 		}
 
-		public override bool ShowIcons {
-			set {
-				showIcons = value;
-				GetColumn ((int)ColumnNr2D.Icon).Visible = value;
-				if (value) {
-					viewModel.RequestIcons ();
-				} else {
-					// HACK shrinking row heights - no better method found yet
-					treeView.Model = null;
-					treeView.Model = viewModel.TreeModel;
-				}
-			}
-		}
-
 		void InitTreeView ()
 		{
 			InitCellRenderers ();

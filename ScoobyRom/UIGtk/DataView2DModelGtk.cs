@@ -34,6 +34,14 @@ namespace ScoobyRom
 			data.ItemsChanged2D += OnDataItemsChanged;
 		}
 
+		protected override int ColumnNrIcon {
+			get { return (int)ColumnNr2D.Icon; }
+		}
+
+		protected override int ColumnNrObj {
+			get { return (int)ColumnNr2D.Obj; }
+		}
+
 		public void ChangeTableType (Table2D table2D, TableType newType)
 		{
 			data.ChangeTableType (table2D, newType);
@@ -108,7 +116,6 @@ namespace ScoobyRom
 			store.SetValue (iter, (int)ColumnNr2D.NameX, table2D.NameX);
 			store.SetValue (iter, (int)ColumnNr2D.UnitX, table2D.UnitX);
 
-
 			store.SetValue (iter, (int)ColumnNr2D.CountX, table2D.CountX);
 
 			store.SetValue (iter, (int)ColumnNr2D.Xmin, table2D.Xmin);
@@ -133,11 +140,6 @@ namespace ScoobyRom
 				CreateSetNewIcon (iter, t);
 		}
 
-		void CreateSetNewIcon (TreeIter iter, Table2D table2D)
-		{
-			store.SetValue (iter, (int)ColumnNr2D.Icon, plotIcon.CreateIcon (table2D));
-		}
-
 		protected override void UpdateModel (TreeIter iter)
 		{
 			Table2D table = store.GetValue (iter, (int)ColumnNr2D.Obj) as Table2D;
@@ -149,11 +151,6 @@ namespace ScoobyRom
 			table.NameX = (string)store.GetValue (iter, (int)ColumnNr2D.NameX);
 			table.UnitX = (string)store.GetValue (iter, (int)ColumnNr2D.UnitX);
 			table.Description = (string)store.GetValue (iter, (int)ColumnNr2D.Description);
-		}
-
-		protected override void CreateAllIcons ()
-		{
-			CreateAllIcons ((int)ColumnNr2D.Obj, (int)ColumnNr2D.Icon);
 		}
 	}
 }

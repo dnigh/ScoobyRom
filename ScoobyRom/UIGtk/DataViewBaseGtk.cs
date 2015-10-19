@@ -65,9 +65,27 @@ namespace ScoobyRom
 		protected abstract int ColumnNrIcon { get; }
 		protected abstract int ColumnNrObj { get; }
 
-		public virtual bool ShowIcons {
+		public bool ShowIcons {
 			get { return this.showIcons; }
-			set { }
+			set {
+				showIcons = value;
+				GetColumn (ColumnNrIcon).Visible = value;
+
+				if (value) {
+					//treeView.Sensitive = false;
+					viewModel.RequestIcons ();
+					//treeView.Sensitive = true;
+				} else {
+					// row heights won't shrink automatically, only after editing any column content
+					// no effect: treeView.SizeRequest (); treeView.QueueResize ();
+					// there is no treeView.RowsAutosize ()
+
+					// HACK shrinking row heights - no better method found yet
+					// disadvantage: does not maintain current selected row
+					treeView.Model = null;
+					treeView.Model = viewModel.TreeModel;
+				}
+			}
 		}
 
 		public void IncreaseIconSize ()
@@ -133,6 +151,7 @@ namespace ScoobyRom
 			TreeIter iter;
 			if (treeModel.GetIter (out iter, new TreePath (args.Path))) {
 				treeModel.SetValue (iter, CursorColNr, args.NewText);
+				// follow it in case this column is being sorted
 				ScrollTo (iter);
 			}
 		}

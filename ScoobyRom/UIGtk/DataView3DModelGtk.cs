@@ -34,6 +34,14 @@ namespace ScoobyRom
 			data.ItemsChanged3D += OnDataItemsChanged;
 		}
 
+		protected override int ColumnNrIcon {
+			get { return (int)ColumnNr3D.Icon; }
+		}
+
+		protected override int ColumnNrObj {
+			get { return (int)ColumnNr3D.Obj; }
+		}
+
 		override protected void InitStore ()
 		{
 			// TODO avoid reflection
@@ -144,11 +152,6 @@ namespace ScoobyRom
 				CreateSetNewIcon (iter, t);
 		}
 
-		void CreateSetNewIcon (TreeIter iter, Table3D table3D)
-		{
-			store.SetValue (iter, (int)ColumnNr3D.Icon, plotIcon.CreateIcon (table3D));
-		}
-
 		protected override void UpdateModel (TreeIter iter)
 		{
 			Table3D table = store.GetValue (iter, (int)ColumnNr3D.Obj) as Table3D;
@@ -162,11 +165,6 @@ namespace ScoobyRom
 			table.NameY = (string)store.GetValue (iter, (int)ColumnNr3D.NameY);
 			table.UnitY = (string)store.GetValue (iter, (int)ColumnNr3D.UnitY);
 			table.Description = (string)store.GetValue (iter, (int)ColumnNr3D.Description);
-		}
-
-		protected override void CreateAllIcons ()
-		{
-			CreateAllIcons ((int)ColumnNr3D.Obj, (int)ColumnNr3D.Icon);
 		}
 	}
 }

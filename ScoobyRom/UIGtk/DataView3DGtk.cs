@@ -59,28 +59,6 @@ namespace ScoobyRom
 			get { return (int)ColumnNr3D.Obj; }
 		}
 
-		public override bool ShowIcons {
-			set {
-				showIcons = value;
-				GetColumn ((int)ColumnNr3D.Icon).Visible = value;
-
-				if (value) {
-					//treeView.Sensitive = false;
-					viewModel.RequestIcons ();
-					//treeView.Sensitive = true;
-				} else {
-					// row heights won't shrink automatically, only after editing any column content
-					// no effect: treeView.SizeRequest (); treeView.QueueResize ();
-					// there is no treeView.RowsAutosize ()
-
-					// HACK shrinking row heights - no better method found yet
-					// disadvantage: does not maintain current selected row
-					treeView.Model = null;
-					treeView.Model = viewModel.TreeModel;
-				}
-			}
-		}
-
 		void InitTreeView ()
 		{
 			InitCellRenderers ();
@@ -113,7 +91,8 @@ namespace ScoobyRom
 				column.Resizable = true;
 
 				// GrowOnly really faster than Autosize?
-				//column.Sizing = TreeViewColumnSizing.Autosize;
+				// Autosize is slow!
+				// column.Sizing = TreeViewColumnSizing.Autosize;
 			}
 
 			#endregion Columns
@@ -208,7 +187,8 @@ namespace ScoobyRom
 			// Warning: icon size appears fixed, does not take DPI into account
 			// Verified on both Linux and Windows via screenshot.
 			cellRendererPixbuf = new CellRendererPixbuf ();
-			//cellRendererPixbuf.SetFixedSize (64, 48);
+			// SetFixedSize crops bitmaps if too small
+			// cellRendererPixbuf.SetFixedSize (64, 48);
 			// not useful here, follows mouse, darkens icon; default is false
 			// cellRendererPixbuf.FollowState = true;
 

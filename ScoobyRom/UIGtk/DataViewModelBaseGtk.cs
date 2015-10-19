@@ -18,9 +18,11 @@
  * along with ScoobyRom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #define UseBackGroundTask
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Gtk;
 
@@ -29,6 +31,9 @@ namespace ScoobyRom
 	// sort of ViewModel in M-V-VM (Model-View-ViewModel pattern)
 	public abstract class DataViewModelBaseGtk
 	{
+		protected CancellationTokenSource tokenSource = new CancellationTokenSource();
+		protected Task task;
+
 		// generates icons
 		protected PlotIconBase plotIcon;
 
@@ -42,6 +47,9 @@ namespace ScoobyRom
 		public TreeModel TreeModel {
 			get { return this.store; }
 		}
+
+		protected abstract int ColumnNrIcon { get; }
+		protected abstract int ColumnNrObj { get; }
 
 		public DataViewModelBaseGtk (Data data, PlotIconBase plotIcon)
 		{
@@ -68,8 +76,8 @@ namespace ScoobyRom
 		/// </summary>
 		public void RequestIcons ()
 		{
-//			if (iconsCached)
-//				return;
+			if (iconsCached)
+				return;
 			RefreshIcons ();
 		}
 
@@ -90,22 +98,42 @@ namespace ScoobyRom
 			iconsCached = false;
 
 			#if !UseBackGroundTask
+
 			CreateAllIcons ();
 			iconsCached = true;
 
 			#else
 
-			Task task = new Task (() => CreateAllIcons ());
-			task.ContinueWith (t => iconsCached = true);
-			task.Start ();
+			if (task != null && !task.IsCompleted)
+			{
+				tokenSource.Cancel ();
+				// "It is not necessary to wait on tasks that have canceled."
+				// https://msdn.microsoft.com/en-us/library/dd537607%28v=vs.100%29.aspx
+				//task.Wait (200);
+				task = null;
+			}
+
+			tokenSource = new CancellationTokenSource ();
+			var token = tokenSource.Token;
+			task = Task.Factory.StartNew (() => CreateAllIcons (token), token);
+
 			#endif
 		}
 
-		protected void CreateAllIcons (int objColumnNr, int iconColumnNr)
+		protected void CreateAllIcons (CancellationToken ct)
 		{
+			int objColumnNr = ColumnNrObj;
+			int iconColumnNr = ColumnNrIcon;
+
 			TreeIter iter;
 			if (!store.GetIterFirst (out iter))
 				return;
+
+			if (ct.IsCancellationRequested)
+			{
+				return;
+			}
+
 			do {
 				Subaru.Tables.Table table = (Subaru.Tables.Table)store.GetValue (iter, objColumnNr);
 				Gdk.Pixbuf pixbuf = plotIcon.CreateIcon (table);
@@ -116,11 +144,21 @@ namespace ScoobyRom
 				//Application.Invoke (delegate {
 					store.SetValue (iter, iconColumnNr, pixbuf);
 				//});
+				if (ct.IsCancellationRequested)
+				{
+					return;
+				}
 			} while (store.IterNext (ref iter));
+			iconsCached = true;
 			plotIcon.CleanupTemp ();
 		}
 
 		public abstract void SetNodeContentTypeChanged (TreeIter iter, Subaru.Tables.Table table);
+
+		protected void CreateSetNewIcon (TreeIter iter, Subaru.Tables.Table table)
+		{
+			store.SetValue (iter, ColumnNrIcon, plotIcon.CreateIcon (table));
+		}
 
 		#region TreeStore event handlers
 
@@ -139,8 +177,6 @@ namespace ScoobyRom
 		//		}
 
 		#endregion TreeStore event handlers
-
-		abstract protected void CreateAllIcons ();
 
 		abstract protected void InitStore ();
 
