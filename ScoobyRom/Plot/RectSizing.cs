@@ -28,6 +28,8 @@ namespace ScoobyRom
 	{
 		const double ZoomFactorMin = 1.1;
 		const double ZoomFactorMax = 2.0;
+		const int WidthMin = 12;
+		const int HeightMin = 10;
 
 		double zoomFactor = 1.2;
 		int width, height;
@@ -43,6 +45,7 @@ namespace ScoobyRom
 
 		public RectSizing (int width, int height)
 		{
+			this.aspectRatio = width / (double)height;
 			Calc (width, height);
 		}
 
@@ -79,16 +82,16 @@ namespace ScoobyRom
 
 		void CalcFromNewWidth (double newWidth)
 		{
-			double newHeight = newWidth / aspectRatio;
-			Calc ((int)System.Math.Round (newWidth), (int)System.Math.Round (newHeight));
+			int w = (int)System.Math.Round (newWidth);
+			int h = (int)System.Math.Round (newWidth / aspectRatio);
+			Calc (w, h);
 		}
 
 		void Calc (int width, int height)
 		{
-			this.width = width;
-			this.height = height;
+			this.width = Math.Max (width, WidthMin);
+			this.height = Math.Max (height, HeightMin);
 			this.bounds = new System.Drawing.Rectangle (0, 0, width, height);
-			this.aspectRatio = width / (double)height;
 		}
 	}
 }

@@ -32,11 +32,18 @@ namespace ScoobyRom
 		// Default = None
 		const System.Drawing.Drawing2D.SmoothingMode SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-		readonly System.Drawing.Pen pen;
+		System.Drawing.Pen pen;
 
 		public PlotIcon2D (int width, int height) : base (width, height)
 		{
-			pen = new System.Drawing.Pen (System.Drawing.Color.Red, width >= 32 ? 2f : 1f);
+		}
+
+		protected override void Init ()
+		{
+			base.Init ();
+
+			float penWidth = rectSizing.Width / 32f;
+			pen = new System.Drawing.Pen (System.Drawing.Color.Red, penWidth);
 		}
 
 		public override Gdk.Pixbuf CreateIcon (Subaru.Tables.Table t)

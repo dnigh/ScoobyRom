@@ -74,6 +74,7 @@ namespace ScoobyRom
 				column.Reorderable = true;
 				column.Resizable = true;
 			}
+			AjustIconCol ();
 
 			#endregion Columns
 
@@ -126,7 +127,7 @@ namespace ScoobyRom
 				break;
 			case ColumnNr2D.Icon:
 				col = new TreeViewColumn ("Icon", cellRendererPixbuf, "pixbuf", colNr);
-				col.Visible = false;
+				col.Visible = showIcons;
 				break;
 			case ColumnNr2D.Title:
 				col = new TreeViewColumn ("Title", cellRendererTextEditable, "text", colNr);

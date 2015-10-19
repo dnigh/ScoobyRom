@@ -104,8 +104,6 @@ namespace ScoobyRom
 
 		public void SetNodeContent (TreeIter iter, Table2D table2D)
 		{
-			// TODO optimize when columns are final
-
 			store.SetValue (iter, (int)ColumnNr2D.Obj, table2D);
 
 			store.SetValue (iter, (int)ColumnNr2D.Category, table2D.Category);
@@ -136,7 +134,7 @@ namespace ScoobyRom
 			store.SetValue (iter, (int)ColumnNr2D.Yavg, t.Yavg);
 			store.SetValue (iter, (int)ColumnNr2D.Ymax, t.Ymax);
 
-			if (iconsCached)
+			if (iconsVisible)
 				CreateSetNewIcon (iter, t);
 		}
 

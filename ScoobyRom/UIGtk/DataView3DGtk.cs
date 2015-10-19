@@ -94,6 +94,7 @@ namespace ScoobyRom
 				// Autosize is slow!
 				// column.Sizing = TreeViewColumnSizing.Autosize;
 			}
+			AjustIconCol ();
 
 			#endregion Columns
 
@@ -222,7 +223,7 @@ namespace ScoobyRom
 				break;
 			case ColumnNr3D.Icon:
 				col = new TreeViewColumn ("Icon", cellRendererPixbuf, "pixbuf", colNr);
-				col.Visible = false;
+				col.Visible = showIcons;
 				//col.MaxWidth = 64;
 				// might help perf
 				//col.Sizing = TreeViewColumnSizing.Fixed;

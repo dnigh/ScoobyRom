@@ -35,7 +35,7 @@ namespace ScoobyRom
 	/// </summary>
 	public abstract class PlotIconBase
 	{
-		readonly RectSizing rectSizing;
+		protected readonly RectSizing rectSizing;
 
 		protected const int MemoryStreamCapacity = 2048;
 		public const int FrameWidth = 1;
@@ -61,6 +61,10 @@ namespace ScoobyRom
 		protected readonly PlotSurface2D plotSurface = new PlotSurface2D ();
 		protected System.Drawing.Bitmap bitmap_cache;
 
+		public RectSizing IconSizing {
+			get { return rectSizing; }
+		}
+
 
 		public PlotIconBase (int width, int height)
 		{
@@ -68,7 +72,7 @@ namespace ScoobyRom
 			Init ();
 		}
 
-		void Init ()
+		protected virtual void Init ()
 		{
 			// could also use pre-defined wrapper with internal bitmap: NPlot.Bitmap.PlotSurface2D
 			this.bitmap_cache = new System.Drawing.Bitmap (rectSizing.Width, rectSizing.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);

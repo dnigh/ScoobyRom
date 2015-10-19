@@ -48,7 +48,7 @@ namespace ScoobyRom
 
 		// not worth taking enum, Gtk methods need int anyway
 		protected readonly Dictionary<TreeViewColumn, int> columnsDict = new Dictionary<TreeViewColumn, int> (25);
-		protected bool showIcons;
+		protected bool showIcons = false;
 
 		static DataViewBaseGtk ()
 		{
@@ -69,6 +69,8 @@ namespace ScoobyRom
 			get { return this.showIcons; }
 			set {
 				showIcons = value;
+				viewModel.IconsVisible = value;
+
 				GetColumn (ColumnNrIcon).Visible = value;
 
 				if (value) {
@@ -80,10 +82,11 @@ namespace ScoobyRom
 					// no effect: treeView.SizeRequest (); treeView.QueueResize ();
 					// there is no treeView.RowsAutosize ()
 
+					// hack not needed when using col.FixedWidth & cellRendererPixBuf.FixedSize
 					// HACK shrinking row heights - no better method found yet
 					// disadvantage: does not maintain current selected row
-					treeView.Model = null;
-					treeView.Model = viewModel.TreeModel;
+					//treeView.Model = null;
+					//treeView.Model = viewModel.TreeModel;
 				}
 			}
 		}
@@ -91,11 +94,27 @@ namespace ScoobyRom
 		public void IncreaseIconSize ()
 		{
 			this.viewModel.IncreaseIconSize ();
+			AjustIconCol ();
+			//ScrollToSelected ();
 		}
 
 		public void DecreaseIconSize ()
 		{
 			this.viewModel.DecreaseIconSize ();
+			AjustIconCol ();
+			//ScrollToSelected ();
+		}
+
+		protected void AjustIconCol ()
+		{
+			var iconSizing = this.viewModel.IconSizing;
+			cellRendererPixbuf.SetFixedSize (iconSizing.Width, iconSizing.Height);
+
+			var col = GetColumn (ColumnNrIcon);
+			// need some more width for PixBuf to be completely visible
+			// HACK icon column FixedWidth
+			col.FixedWidth = iconSizing.Width + 10;
+			col.Sizing = TreeViewColumnSizing.Fixed;
 		}
 
 		public Subaru.Tables.Table Selected {
@@ -311,6 +330,18 @@ namespace ScoobyRom
 			// ScrollToCell needs TreePath
 			// If column is null, then no horizontal scrolling occurs.
 			treeView.ScrollToCell (treeModel.GetPath (iter), null, false, 0, 0);
+		}
+
+		// not perfect yet, might have to wait after all icons have been updated
+		protected void ScrollToSelected ()
+		{
+			TreeSelection selection = treeView.Selection;
+			TreeModel model;
+			TreeIter iter;
+			// The iter will point to the selected row
+			if (selection.GetSelected (out model, out iter)) {
+				ScrollTo (iter);
+			}
 		}
 
 		protected TreeViewColumn CursorColumn {

@@ -109,12 +109,7 @@ public partial class MainWindow : Gtk.Window
 		this.hpaned2D.ShowAll ();
 
 		this.notebook1.Page = DefaultNotebookPageShown;
-
-		if (Config.IconsOnByDefault) {
-			iconsAction.Active = true;
-			dataView2DGtk.ShowIcons = true;
-			dataView3DGtk.ShowIcons = true;
-		}
+		OnNotebook1SwitchPage (null, null);
 
 		// program arguments: first argument is ROM path to auto-load
 		if (args != null && args.Length > 0 && !string.IsNullOrEmpty (args [0])) {
@@ -208,12 +203,23 @@ public partial class MainWindow : Gtk.Window
 				DoPendingEvents ();
 				Console.WriteLine (txt);
 
+				dataView2DGtk.ShowIcons = false;
+				dataView3DGtk.ShowIcons = false;
+				ClearVisualizations ();
+
 				data.UpdateUI ();
+
+				if (Config.IconsOnByDefault) {
+					dataView2DGtk.ShowIcons = true;
+					dataView3DGtk.ShowIcons = true;
+				}
 			}
 
 			this.statusbar1.Hide ();
 			this.statusbar1.Pop (0);
 			this.progressbar1.Text = string.Empty;
+
+			OnNotebook1SwitchPage (null, null);
 		});
 	}
 
@@ -227,6 +233,21 @@ public partial class MainWindow : Gtk.Window
 	void SetWindowTitle ()
 	{
 		this.Title = data.RomLoaded ? string.Format ("{0} - {1}", MainClass.AppName, data.CalID) : MainClass.AppName;
+	}
+
+	void ClearVisualizations ()
+	{
+		plotSurface.Clear ();
+		plotSurface.Refresh ();
+
+		Gtk.Widget widget;
+		widget = this.scrolledwindowTable2D.Child;
+		if (widget != null)
+			this.scrolledwindowTable2D.Remove (widget);
+
+		widget = this.scrolledwindowTable3D.Child;
+		if (widget != null)
+			this.scrolledwindowTable3D.Remove (widget);
 	}
 
 	void Show3D (Table3D table)
@@ -290,18 +311,11 @@ public partial class MainWindow : Gtk.Window
 
 	void OnNotebook1SwitchPage (object o, Gtk.SwitchPageArgs args)
 	{
-		bool iconsActive = false;
-		var view = CurrentView;
+		bool showIcons = CurrentView.ShowIcons;
+		iconsAction.Active = showIcons;
+		//CurrentView.ShowIcons = showIcons;
 
-		switch (CurrentUI) {
-		case ActiveUI.View2D:
-			iconsActive = dataView2DGtk.ShowIcons;
-			break;
-		case ActiveUI.View3D:
-			iconsActive = dataView3DGtk.ShowIcons;
-			break;
-		}
-		iconsAction.Active = iconsActive;
+		exportTableAsCSVAction.Sensitive = CurrentUI == ActiveUI.View2D;
 	}
 
 	void OnVisualizationAction (object sender, System.EventArgs e)
@@ -492,15 +506,7 @@ public partial class MainWindow : Gtk.Window
 		if (data.RomLoaded == false)
 			return;
 
-		Subaru.Tables.Table table = null;
-		switch (CurrentUI) {
-		case ActiveUI.View2D:
-			table = dataView2DGtk.Selected;
-			break;
-		case ActiveUI.View3D:
-			table = dataView3DGtk.Selected;
-			break;
-		}
+		Subaru.Tables.Table table = CurrentView.Selected;
 		if (table == null)
 			return;
 
@@ -584,11 +590,11 @@ public partial class MainWindow : Gtk.Window
 		case ActiveUI.View3D:
 			ErrorMsg ("Error", "Creating CSV for 3D table not implemented yet.");
 			return;
-		//table = dataView3DGtk.Selected;
-		//break;
 		}
-		if (table == null)
+		if (table == null) {
+			ErrorMsg ("Error", "No table selected.");
 			return;
+		}
 
 		string filenameSuggested = string.IsNullOrEmpty (table.Title) ? "table" : table.Title;
 		filenameSuggested += ".csv";
@@ -652,8 +658,6 @@ public partial class MainWindow : Gtk.Window
 
 		plotExternalAction.Sensitive = sensitive;
 		createSVGFileAction.Sensitive = sensitive;
-
-		exportTableAsCSVAction.Sensitive = sensitive;
 	}
 
 	/// <summary>

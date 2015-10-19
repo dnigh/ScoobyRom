@@ -42,10 +42,14 @@ namespace ScoobyRom
 		// main TreeStore, most of the core data is being copied into this
 		public ListStore store;
 
-		protected bool iconsCached;
+		protected bool iconsVisible, iconsCached;
 
 		public TreeModel TreeModel {
 			get { return this.store; }
+		}
+
+		public RectSizing IconSizing {
+			get { return this.plotIcon.IconSizing; }
 		}
 
 		protected abstract int ColumnNrIcon { get; }
@@ -61,12 +65,19 @@ namespace ScoobyRom
 		protected void OnDataItemsChanged (object sender, EventArgs e)
 		{
 			this.store.Clear ();
+			iconsCached = false;
 			PopulateData ();
 		}
 
 		public void ChangeTableType (Subaru.Tables.Table table, Subaru.Tables.TableType newType)
 		{
 			data.ChangeTableType (table, newType);
+		}
+
+		public bool IconsVisible
+		{
+			get { return iconsVisible; }
+			set { iconsVisible = value; }
 		}
 
 
@@ -134,6 +145,7 @@ namespace ScoobyRom
 				return;
 			}
 
+			Console.WriteLine ("CreateAllIcons Loop");
 			do {
 				Subaru.Tables.Table table = (Subaru.Tables.Table)store.GetValue (iter, objColumnNr);
 				Gdk.Pixbuf pixbuf = plotIcon.CreateIcon (table);

@@ -147,8 +147,7 @@ namespace ScoobyRom
 			store.SetValue (iter, (int)ColumnNr3D.Zmin, t.Zmin);
 			store.SetValue (iter, (int)ColumnNr3D.Zavg, t.Zavg);
 			store.SetValue (iter, (int)ColumnNr3D.Zmax, t.Zmax);
-
-			if (iconsCached)
+			if (iconsVisible)
 				CreateSetNewIcon (iter, t);
 		}
 

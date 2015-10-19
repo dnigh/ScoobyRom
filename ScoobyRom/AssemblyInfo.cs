@@ -37,7 +37,7 @@ using System.Runtime.CompilerServices;
 // The form "{Major}.{Minor}.*" will automatically update the build and revision,
 // and "{Major}.{Minor}.{Build}.*" will update just the revision.
 
-[assembly: AssemblyVersion("0.7.0.*")]
+[assembly: AssemblyVersion("0.7.1.*")]
 
 [assembly: System.CLSCompliant(false)]
 
