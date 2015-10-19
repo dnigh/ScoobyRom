@@ -130,6 +130,7 @@
     <Compile Include="GtkWidgets\TableWidget3D.cs" />
     <Compile Include="GtkWidgets\PlotWidget.cs" />
     <Compile Include="Plot\FlorenceUtil.cs" />
+    <Compile Include="Plot\RectSizing.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

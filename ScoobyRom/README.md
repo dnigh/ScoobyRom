@@ -683,7 +683,7 @@ You can use it to temporarily select and sort items if you want to. Might have m
 
 	For example, if *Title* "Engine Speed" exists on a table, focus title column if not done already, type "`eng`" and it will probably jump to the first matching row.
 
-	Column *Record*: you need to type in complete address in hex, i.e. "`8ddc4`" or "`0x8ddc4`".
+	Column *Record*: you need to type in complete address in hex, i.e. "`8ddc4`" or "`0x8ddc4`". Supported hexadecimal prefixes are "`0x`" and "`$`".
 
 *	Visualization (`Ctrl+Space`): Either displays coloured table values (3D) or 2D values + line graph in bottom tab pane.
 Any visualization (except icons) does not update on changed metadata (text, data type),
