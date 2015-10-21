@@ -140,6 +140,19 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 
+	Subaru.Tables.Table CurrentTable {
+		get {
+			var view = CurrentView;
+			if (view == null)
+				return null;
+			var table = view.Selected;
+			if (table == null) {
+				ErrorMsg ("Error", "No table selected.");
+			}
+			return table;
+		}
+	}
+
 	void OpenRom (string path)
 	{
 		this.progressbar1.Adjustment.Lower = 0;
@@ -254,6 +267,7 @@ public partial class MainWindow : Gtk.Window
 	{
 		if (table == null)
 			return;
+
 		var valuesZ = table.GetValuesZasFloats ();
 		var tableUI = new GtkWidgets.TableWidget3D (coloring, table.ValuesX, table.ValuesY, valuesZ,
 			              table.Xmin, table.Xmax, table.Ymin, table.Ymax, table.Zmin, table.Zmax);
@@ -273,6 +287,12 @@ public partial class MainWindow : Gtk.Window
 
 		this.scrolledwindowTable3D.Add (viewPort);
 		this.scrolledwindowTable3D.ShowAll ();
+	}
+
+	void SetClipboardText (string s)
+	{
+		var cb = this.GetClipboard (Gdk.Selection.Clipboard);
+		cb.Text = s;
 	}
 
 	void Show2D (Table2D table)
@@ -311,10 +331,7 @@ public partial class MainWindow : Gtk.Window
 
 	void OnNotebook1SwitchPage (object o, Gtk.SwitchPageArgs args)
 	{
-		bool showIcons = CurrentView.ShowIcons;
-		iconsAction.Active = showIcons;
-		//CurrentView.ShowIcons = showIcons;
-
+		iconsAction.Active = CurrentView.ShowIcons;
 		exportTableAsCSVAction.Sensitive = CurrentUI == ActiveUI.View2D;
 	}
 
@@ -322,15 +339,12 @@ public partial class MainWindow : Gtk.Window
 	{
 		if (!data.RomLoaded)
 			return;
-
-		// Selection can be null - no row selected yet!
-		switch (CurrentUI) {
-		case ActiveUI.View2D:
-			Show2D ((Table2D)dataView2DGtk.Selected);
-			break;
-		case ActiveUI.View3D:
-			Show3D ((Table3D)dataView3DGtk.Selected);
-			break;
+		
+		var table = CurrentTable;
+		if (table is Table2D) {
+			Show2D ((Table2D)table);
+		} else {
+			Show3D ((Table3D)table);
 		}
 	}
 
@@ -484,14 +498,9 @@ public partial class MainWindow : Gtk.Window
 	// create or close gnuplot window
 	void OnPlotActionActivated (object sender, System.EventArgs e)
 	{
-		var view = CurrentView;
-		if (view == null)
+		var table = CurrentTable;
+		if (table == null)
 			return;
-		var table = view.Selected;
-		if (table == null) {
-			ErrorMsg ("Error", "No table selected.");
-			return;
-		}
 
 		try {
 			// gnuplot process itself can be slow to startup
@@ -517,7 +526,7 @@ public partial class MainWindow : Gtk.Window
 		if (data.RomLoaded == false)
 			return;
 
-		Subaru.Tables.Table table = CurrentView.Selected;
+		var table = CurrentTable;
 		if (table == null)
 			return;
 
@@ -593,17 +602,12 @@ public partial class MainWindow : Gtk.Window
 		if (data.RomLoaded == false)
 			return;
 
-		Subaru.Tables.Table table = null;
-		switch (CurrentUI) {
-		case ActiveUI.View2D:
-			table = dataView2DGtk.Selected;
-			break;
-		case ActiveUI.View3D:
-			ErrorMsg ("Error", "Creating CSV for 3D table not implemented yet.");
+		Subaru.Tables.Table table = CurrentTable;
+		if (table == null)
 			return;
-		}
-		if (table == null) {
-			ErrorMsg ("Error", "No table selected.");
+		
+		if (table is Table3D) {
+			ErrorMsg ("Error", "Creating CSV for 3D table not implemented yet.");
 			return;
 		}
 
@@ -649,6 +653,14 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 
+	void OnCopyTableAction (object sender, EventArgs e)
+	{
+		var table = CurrentTable;
+		if (table == null)
+			return;
+		SetClipboardText (table.CopyTableRomRaider ());
+	}
+
 	#endregion UI Events
 
 	void SetActionsSensitiveForRomLoaded (bool sensitive)
@@ -670,6 +682,7 @@ public partial class MainWindow : Gtk.Window
 
 		plotExternalAction.Sensitive = sensitive;
 		createSVGFileAction.Sensitive = sensitive;
+		copyAction.Sensitive = sensitive;
 	}
 
 	/// <summary>

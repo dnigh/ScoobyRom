@@ -226,5 +226,31 @@ namespace Subaru.Tables
 				tw.WriteLine (valuesY[i].ToString (cultureInfo));
 			}
 		}
+
+		public override string CopyTableRomRaider ()
+		{
+			var cultureInfo = System.Globalization.CultureInfo.CurrentCulture;
+			var sb = new System.Text.StringBuilder ();
+
+			sb.AppendLine ("[Table2D]");
+
+			for (int i = 0; i < countX; i++) {
+				if (i > 0) {
+					sb.Append (DelimiterRomRaider);
+				}
+				sb.Append (valuesX [i].ToString (cultureInfo));
+			}
+
+			sb.AppendLine ();
+
+			float[] valuesY = GetValuesYasFloats ();
+			for (int i = 0; i < countX; i++) {
+				if (i > 0) {
+					sb.Append (DelimiterRomRaider);
+				}
+				sb.Append (valuesY[i].ToString (cultureInfo));
+			}
+			return sb.ToString ();
+		}
 	}
 }

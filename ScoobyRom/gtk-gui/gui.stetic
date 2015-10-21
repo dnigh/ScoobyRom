@@ -6,7 +6,7 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../bin/Release/ScoobyRom.exe" internal="true" />
+    <widget-library name="../bin/Debug/ScoobyRom.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="938 702">
     <action-group name="Default">
@@ -160,6 +160,21 @@
         <property name="StockId">gtk-zoom-100</property>
         <signal name="Activated" handler="OnZoomNormalActionActivated" />
       </action>
+      <action id="EditAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">_Edit</property>
+        <property name="ShortLabel" translatable="yes">_Edit</property>
+      </action>
+      <action id="copyAction">
+        <property name="Type">Action</property>
+        <property name="Accelerator">&lt;Primary&gt;&lt;Mod2&gt;c</property>
+        <property name="Label">Copy Table</property>
+        <property name="Sensitive">False</property>
+        <property name="ShortLabel">Copy Table</property>
+        <property name="StockId">gtk-copy</property>
+        <property name="Tooltip">i.e. for paste into spreadsheet application or RomRaider</property>
+        <signal name="Activated" handler="OnCopyTableAction" />
+      </action>
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">ScoobyRom</property>
@@ -182,6 +197,9 @@
                 </node>
                 <node type="Separator" />
                 <node type="Menuitem" action="quitAction" />
+              </node>
+              <node type="Menu" action="EditAction">
+                <node type="Menuitem" action="copyAction" />
               </node>
               <node type="Menu" action="ViewAction">
                 <node type="Menuitem" action="visualizationAction" />

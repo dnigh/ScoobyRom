@@ -294,5 +294,31 @@ namespace Subaru.Tables
 			return new XElement ("table", new XAttribute ("type", "3D"), new XAttribute ("name", title), new XAttribute ("category", category), new XAttribute ("storagetype", tableType.ToRRType ()), new XAttribute ("endian", endian), new XAttribute ("sizex", countX.ToString ()), new XAttribute ("sizey", countY.ToString ()), new XAttribute ("storageaddress", HexAddress (rangeZ.Pos)), new XComment (ValuesStats (valuesZmin, valuesZmax, valuesZavg)),
 			RRXmlScaling (unitZ, Expression, ExpressionBack, "0.000", 0.01f, 0.1f), RRXmlAxis ("X Axis", nameX, unitX, TableType.Float, rangeX, valuesX), RRXmlAxis ("Y Axis", nameY, unitY, TableType.Float, rangeY, valuesY), new XElement ("description", description));
 		}
+
+		public override string CopyTableRomRaider ()
+		{
+			var cultureInfo = System.Globalization.CultureInfo.CurrentCulture;
+			var sb = new System.Text.StringBuilder ();
+
+			sb.AppendLine ("[Table3D]");
+
+			for (int x = 0; x < countX; x++) {
+				// add additional delimiter, i.e. for spreadsheet application
+				sb.Append (DelimiterRomRaider);
+				sb.Append (valuesX [x].ToString (cultureInfo));
+			}
+
+			float[] valuesZ = GetValuesZasFloats ();
+			for (int y = 0; y < countY; y++) {
+				sb.AppendLine ();
+				sb.Append (valuesY [y].ToString (cultureInfo));
+
+				for (int x = 0; x < countX; x++) {
+					sb.Append (DelimiterRomRaider);
+					sb.Append (valuesZ [y * countX + x].ToString (cultureInfo));
+				}
+			}
+			return sb.ToString ();
+		}
 	}
 }

@@ -37,6 +37,8 @@ namespace Subaru.Tables
 		public const int CountMin = 2;
 		public const int CountMax = 255;
 
+		public const char DelimiterRomRaider = '\t';
+
 		// All 2D- and 3D-Table structs contain pointers. If a pointer points to a rather odd position,
 		// the suggested table struct will be discarded. This restriction helps avoiding false positives.
 		static protected int posMax = (1024 + 512) * 1024;
@@ -213,6 +215,8 @@ namespace Subaru.Tables
 		public abstract void ChangeTypeToAndReload (TableType newType, System.IO.Stream stream);
 
 		public abstract XElement RRXml ();
+
+		public abstract string CopyTableRomRaider ();
 
 		public virtual bool HasMetadata {
 			get { return !string.IsNullOrEmpty (title) || !string.IsNullOrEmpty (category) || !string.IsNullOrEmpty (description) || !string.IsNullOrEmpty (nameX) || !string.IsNullOrEmpty (unitX); }
