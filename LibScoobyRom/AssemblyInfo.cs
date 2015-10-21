@@ -25,7 +25,7 @@ using System.Runtime.CompilerServices;
 // Change them to the values specific to your project.
 
 [assembly: AssemblyTitle("LiScoobyRom")]
-[assembly: AssemblyDescription("Subaru ROM functionality.")]
+[assembly: AssemblyDescription("Denso ROM and misc related functionality.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
