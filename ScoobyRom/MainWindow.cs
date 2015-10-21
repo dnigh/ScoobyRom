@@ -109,12 +109,7 @@ public partial class MainWindow : Gtk.Window
 		this.hpaned2D.ShowAll ();
 
 		this.notebook1.Page = DefaultNotebookPageShown;
-
-		if (Config.IconsOnByDefault) {
-			iconsAction.Active = true;
-			dataView2DGtk.ShowIcons = true;
-			dataView3DGtk.ShowIcons = true;
-		}
+		OnNotebook1SwitchPage (null, null);
 
 		// program arguments: first argument is ROM path to auto-load
 		if (args != null && args.Length > 0 && !string.IsNullOrEmpty (args [0])) {
@@ -130,6 +125,31 @@ public partial class MainWindow : Gtk.Window
 				return ActiveUI.View3D;
 			else
 				return ActiveUI.Undefined;
+		}
+	}
+
+	DataViewBaseGtk CurrentView {
+		get {
+			switch (CurrentUI) {
+			case ActiveUI.View2D:
+				return dataView2DGtk;
+			case ActiveUI.View3D:
+				return dataView3DGtk;
+			}
+			return null;
+		}
+	}
+
+	Subaru.Tables.Table CurrentTable {
+		get {
+			var view = CurrentView;
+			if (view == null)
+				return null;
+			var table = view.Selected;
+			if (table == null) {
+				ErrorMsg ("Error", "No table selected.");
+			}
+			return table;
 		}
 	}
 
@@ -196,12 +216,23 @@ public partial class MainWindow : Gtk.Window
 				DoPendingEvents ();
 				Console.WriteLine (txt);
 
+				dataView2DGtk.ShowIcons = false;
+				dataView3DGtk.ShowIcons = false;
+				ClearVisualizations ();
+
 				data.UpdateUI ();
+
+				if (Config.IconsOnByDefault) {
+					dataView2DGtk.ShowIcons = true;
+					dataView3DGtk.ShowIcons = true;
+				}
 			}
 
 			this.statusbar1.Hide ();
 			this.statusbar1.Pop (0);
 			this.progressbar1.Text = string.Empty;
+
+			OnNotebook1SwitchPage (null, null);
 		});
 	}
 
@@ -217,10 +248,26 @@ public partial class MainWindow : Gtk.Window
 		this.Title = data.RomLoaded ? string.Format ("{0} - {1}", MainClass.AppName, data.CalID) : MainClass.AppName;
 	}
 
+	void ClearVisualizations ()
+	{
+		plotSurface.Clear ();
+		plotSurface.Refresh ();
+
+		Gtk.Widget widget;
+		widget = this.scrolledwindowTable2D.Child;
+		if (widget != null)
+			this.scrolledwindowTable2D.Remove (widget);
+
+		widget = this.scrolledwindowTable3D.Child;
+		if (widget != null)
+			this.scrolledwindowTable3D.Remove (widget);
+	}
+
 	void Show3D (Table3D table)
 	{
 		if (table == null)
 			return;
+
 		var valuesZ = table.GetValuesZasFloats ();
 		var tableUI = new GtkWidgets.TableWidget3D (coloring, table.ValuesX, table.ValuesY, valuesZ,
 			              table.Xmin, table.Xmax, table.Ymin, table.Ymax, table.Zmin, table.Zmax);
@@ -240,6 +287,12 @@ public partial class MainWindow : Gtk.Window
 
 		this.scrolledwindowTable3D.Add (viewPort);
 		this.scrolledwindowTable3D.ShowAll ();
+	}
+
+	void SetClipboardText (string s)
+	{
+		var cb = this.GetClipboard (Gdk.Selection.Clipboard);
+		cb.Text = s;
 	}
 
 	void Show2D (Table2D table)
@@ -278,31 +331,20 @@ public partial class MainWindow : Gtk.Window
 
 	void OnNotebook1SwitchPage (object o, Gtk.SwitchPageArgs args)
 	{
-		bool iconsActive = false;
-		switch (CurrentUI) {
-		case ActiveUI.View2D:
-			iconsActive = dataView2DGtk.ShowIcons;
-			break;
-		case ActiveUI.View3D:
-			iconsActive = dataView3DGtk.ShowIcons;
-			break;
-		}
-		iconsAction.Active = iconsActive;
+		iconsAction.Active = CurrentView.ShowIcons;
+		exportTableAsCSVAction.Sensitive = CurrentUI == ActiveUI.View2D;
 	}
 
 	void OnVisualizationAction (object sender, System.EventArgs e)
 	{
 		if (!data.RomLoaded)
 			return;
-
-		// Selection can be null - no row selected yet!
-		switch (CurrentUI) {
-		case ActiveUI.View2D:
-			Show2D (dataView2DGtk.Selected);
-			break;
-		case ActiveUI.View3D:
-			Show3D (dataView3DGtk.Selected);
-			break;
+		
+		var table = CurrentTable;
+		if (table is Table2D) {
+			Show2D ((Table2D)table);
+		} else {
+			Show3D ((Table3D)table);
 		}
 	}
 
@@ -423,39 +465,48 @@ public partial class MainWindow : Gtk.Window
 	// icons ON/OFF
 	void OnIconsActionActivated (object sender, System.EventArgs e)
 	{
-		bool iconsActive = iconsAction.Active;
-		switch (CurrentUI) {
-		case ActiveUI.View2D:
-			dataView2DGtk.ShowIcons = iconsActive;
-			break;
-		case ActiveUI.View3D:
-			dataView3DGtk.ShowIcons = iconsActive;
-			break;
-		}
+		var view = CurrentView;
+		if (view == null)
+			return;
+		view.ShowIcons = iconsAction.Active;
+	}
+
+	void OnIncreaseIconSizeActionActivated (object sender, System.EventArgs e)
+	{
+		var view = CurrentView;
+		if (view == null)
+			return;
+		view.IncreaseIconSize ();
+	}
+
+	void OnDecreaseIconSizeActionActivated (object sender, EventArgs e)
+	{
+		var view = CurrentView;
+		if (view == null)
+			return;
+		view.DecreaseIconSize ();
+	}
+
+	void OnZoomNormalActionActivated (object sender, EventArgs e)
+	{
+		var view = CurrentView;
+		if (view == null)
+			return;
+		view.ResetIconSize ();
 	}
 
 	// create or close gnuplot window
 	void OnPlotActionActivated (object sender, System.EventArgs e)
 	{
+		var table = CurrentTable;
+		if (table == null)
+			return;
+
 		try {
 			// gnuplot process itself can be slow to startup
 			// so this does not prevent closing it immediatly when pressed twice
 			//plotExternalAction.Sensitive = false;
-
-			switch (CurrentUI) {
-			case ActiveUI.View2D:
-				Table2D table2D = dataView2DGtk.Selected;
-				if (table2D != null) {
-					GnuPlot.ToggleGnuPlot (table2D);
-				}
-				break;
-			case ActiveUI.View3D:
-				Table3D table3D = dataView3DGtk.Selected;
-				if (table3D != null) {
-					GnuPlot.ToggleGnuPlot (table3D);
-				}
-				break;
-			}
+			GnuPlot.ToggleGnuPlot (table);
 		} catch (GnuPlotProcessException ex) {
 			Console.Error.WriteLine (ex);
 			ErrorMsg ("Error launching gnuplot!", ex.Message + "\n\nHave you installed gnuplot?" + "\nYou also may need to edit file '" + MainClass.AppName + ".exe.config'." + "\nCurrent platform-ID is '" + System.Environment.OSVersion.Platform.ToString () + "'." + "\nSee 'README.txt' for details.");
@@ -475,15 +526,7 @@ public partial class MainWindow : Gtk.Window
 		if (data.RomLoaded == false)
 			return;
 
-		Subaru.Tables.Table table = null;
-		switch (CurrentUI) {
-		case ActiveUI.View2D:
-			table = dataView2DGtk.Selected;
-			break;
-		case ActiveUI.View3D:
-			table = dataView3DGtk.Selected;
-			break;
-		}
+		var table = CurrentTable;
 		if (table == null)
 			return;
 
@@ -559,19 +602,14 @@ public partial class MainWindow : Gtk.Window
 		if (data.RomLoaded == false)
 			return;
 
-		Subaru.Tables.Table table = null;
-		switch (CurrentUI) {
-		case ActiveUI.View2D:
-			table = dataView2DGtk.Selected;
-			break;
-		case ActiveUI.View3D:
-			ErrorMsg ("Error", "Creating CSV for 3D table not implemented yet.");
-			return;
-		//table = dataView3DGtk.Selected;
-		//break;
-		}
+		Subaru.Tables.Table table = CurrentTable;
 		if (table == null)
 			return;
+		
+		if (table is Table3D) {
+			ErrorMsg ("Error", "Creating CSV for 3D table not implemented yet.");
+			return;
+		}
 
 		string filenameSuggested = string.IsNullOrEmpty (table.Title) ? "table" : table.Title;
 		filenameSuggested += ".csv";
@@ -615,6 +653,14 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 
+	void OnCopyTableAction (object sender, EventArgs e)
+	{
+		var table = CurrentTable;
+		if (table == null)
+			return;
+		SetClipboardText (table.CopyTableRomRaider ());
+	}
+
 	#endregion UI Events
 
 	void SetActionsSensitiveForRomLoaded (bool sensitive)
@@ -625,14 +671,18 @@ public partial class MainWindow : Gtk.Window
 		exportAsRRAction.Sensitive = sensitive;
 
 		visualizationAction.Sensitive = sensitive;
+
 		iconsAction.Sensitive = sensitive;
+		zoomInAction.Sensitive = sensitive;
+		zoomOutAction.Sensitive = sensitive;
+		zoomNormalAction.Sensitive = sensitive;
+
 		checksumWindowAction.Sensitive = sensitive;
 		statisticsWindowAction.Sensitive = sensitive;
 
 		plotExternalAction.Sensitive = sensitive;
 		createSVGFileAction.Sensitive = sensitive;
-
-		exportTableAsCSVAction.Sensitive = sensitive;
+		copyAction.Sensitive = sensitive;
 	}
 
 	/// <summary>

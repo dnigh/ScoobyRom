@@ -66,7 +66,7 @@ namespace Subaru.File
 		}
 
 		/// <summary>
-		/// Needed for loading (merging) as changing to a different TableTable needs values reload from ROM.
+		/// Needed for loading (merging) as changing to a different TableType needs values reload from ROM.
 		/// </summary>
 		public System.IO.Stream RomStream {
 			get { return this.romStream; }
@@ -91,7 +91,7 @@ namespace Subaru.File
 		{
 			XDocument doc = XDocument.Load (path, LoadOptions.SetLineInfo);
 			xml2D = new List<Table2D> (40);
-			xml3D = new List<Table3D> (40);
+			xml3D = new List<Table3D> (50);
 			ParseXml (doc.Root);
 		}
 
@@ -105,8 +105,7 @@ namespace Subaru.File
 				v = table.Location;
 				if (v > 0) {
 					found = toUpdate.Where (t => t.Location == v).FirstOrDefault ();
-				}
-				else {
+				} else {
 					v = table.RangeY.Pos;
 					found = toUpdate.Where (t => t.RangeY.Pos == v).FirstOrDefault ();
 
@@ -136,8 +135,7 @@ namespace Subaru.File
 				v = table.Location;
 				if (v > 0) {
 					found = toUpdate.Where (t => t.Location == v).FirstOrDefault ();
-				}
-				else {
+				} else {
 					v = table.RangeZ.Pos;
 					found = toUpdate.Where (t => t.RangeZ.Pos == v).FirstOrDefault ();
 
@@ -205,9 +203,11 @@ namespace Subaru.File
 			ParseTableSearch (root.Element (X_tableSearch));
 
 			foreach (XElement el in root.Elements ()) {
-				if (el.Name == X_table2D)
-					xml2D.Add (ParseTable2D (el)); else if (el.Name == X_table3D)
+				if (el.Name == X_table2D) {
+					xml2D.Add (ParseTable2D (el));
+				} else if (el.Name == X_table3D) {
 					xml3D.Add (ParseTable3D (el));
+				}
 			}
 		}
 
@@ -433,7 +433,7 @@ namespace Subaru.File
 		static XElement GetXElement (Table3D table3D)
 		{
 			return new XElement (X_table3D, new XAttribute (X_category, table3D.Category), new XAttribute (X_name, table3D.Title), new XAttribute (X_address, HexNum (table3D.Location)), ValueRangeComment (table3D.Xmin, table3D.Xmax), GetAxisXElement (X_axisX, table3D.RangeX.Pos, table3D.NameX, table3D.UnitX), ValueRangeComment (table3D.Ymin, table3D.Ymax), GetAxisXElement (X_axisY, table3D.RangeY.Pos, table3D.NameY, table3D.UnitY), ValueRangeComment (table3D.Zmin, table3D.Zmax), GetValuesElement (table3D.RangeZ.Pos, table3D.UnitZ, table3D.TableType),
-			new XElement (X_description, table3D.Description));
+				new XElement (X_description, table3D.Description));
 		}
 
 		static XElement GetAxisXElement (string axisType, int address, string name, string unit)

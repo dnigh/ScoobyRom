@@ -41,6 +41,16 @@ public partial class MainWindow
 	
 	private global::Gtk.Action exportTableAsCSVAction;
 	
+	private global::Gtk.Action zoomInAction;
+	
+	private global::Gtk.Action zoomOutAction;
+	
+	private global::Gtk.Action zoomNormalAction;
+	
+	private global::Gtk.Action EditAction;
+	
+	private global::Gtk.Action copyAction;
+	
 	private global::Gtk.VBox vbox1;
 	
 	private global::Gtk.MenuBar menubar1;
@@ -143,6 +153,25 @@ public partial class MainWindow
 		this.exportTableAsCSVAction.Sensitive = false;
 		this.exportTableAsCSVAction.ShortLabel = "Export Table as CSV";
 		w1.Add (this.exportTableAsCSVAction, null);
+		this.zoomInAction = new global::Gtk.Action ("zoomInAction", "Increase Icon Size", null, "gtk-zoom-in");
+		this.zoomInAction.Sensitive = false;
+		this.zoomInAction.ShortLabel = "Increase Icon Size";
+		w1.Add (this.zoomInAction, "<Primary><Mod2>KP_Add");
+		this.zoomOutAction = new global::Gtk.Action ("zoomOutAction", "Decrease Icon Size", null, "gtk-zoom-out");
+		this.zoomOutAction.Sensitive = false;
+		this.zoomOutAction.ShortLabel = "Decrease Icon Size";
+		w1.Add (this.zoomOutAction, "<Primary><Mod2>KP_Subtract");
+		this.zoomNormalAction = new global::Gtk.Action ("zoomNormalAction", "Normal Icon Size", null, "gtk-zoom-100");
+		this.zoomNormalAction.Sensitive = false;
+		this.zoomNormalAction.ShortLabel = "Normal Icon Size";
+		w1.Add (this.zoomNormalAction, "<Primary><Mod2>0");
+		this.EditAction = new global::Gtk.Action ("EditAction", "_Edit", null, null);
+		this.EditAction.ShortLabel = "_Edit";
+		w1.Add (this.EditAction, null);
+		this.copyAction = new global::Gtk.Action ("copyAction", "Copy Table", "i.e. for paste into spreadsheet application or RomRaider", "gtk-copy");
+		this.copyAction.Sensitive = false;
+		this.copyAction.ShortLabel = "Copy Table";
+		w1.Add (this.copyAction, "<Primary><Mod2>c");
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
@@ -153,7 +182,7 @@ public partial class MainWindow
 		this.vbox1.Name = "vbox1";
 		this.vbox1.Spacing = 6;
 		// Container child vbox1.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='FileAction' action='FileAction'><menuitem name='openAction' action='openAction'/><menuitem name='saveAction' action='saveAction'/><separator/><menu name='exportAsAction' action='exportAsAction'><menuitem name='exportAsRRAction' action='exportAsRRAction'/></menu><separator/><menuitem name='quitAction' action='quitAction'/></menu><menu name='ViewAction' action='ViewAction'><menuitem name='visualizationAction' action='visualizationAction'/><menuitem name='iconsAction' action='iconsAction'/><menuitem name='checksumWindowAction' action='checksumWindowAction'/><menuitem name='statisticsWindowAction' action='statisticsWindowAction'/></menu><menu name='PlotAction' action='PlotAction'><menuitem name='plotExternalAction' action='plotExternalAction'/><menuitem name='createSVGFileAction' action='createSVGFileAction'/></menu><menu name='DataAction' action='DataAction'><menuitem name='exportTableAsCSVAction' action='exportTableAsCSVAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='aboutAction' action='aboutAction'/></menu></menubar></ui>");
+		this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='FileAction' action='FileAction'><menuitem name='openAction' action='openAction'/><menuitem name='saveAction' action='saveAction'/><separator/><menu name='exportAsAction' action='exportAsAction'><menuitem name='exportAsRRAction' action='exportAsRRAction'/></menu><separator/><menuitem name='quitAction' action='quitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='copyAction' action='copyAction'/></menu><menu name='ViewAction' action='ViewAction'><menuitem name='visualizationAction' action='visualizationAction'/><separator/><menuitem name='iconsAction' action='iconsAction'/><menuitem name='zoomInAction' action='zoomInAction'/><menuitem name='zoomOutAction' action='zoomOutAction'/><menuitem name='zoomNormalAction' action='zoomNormalAction'/><separator/><menuitem name='checksumWindowAction' action='checksumWindowAction'/><menuitem name='statisticsWindowAction' action='statisticsWindowAction'/></menu><menu name='PlotAction' action='PlotAction'><menuitem name='plotExternalAction' action='plotExternalAction'/><menuitem name='createSVGFileAction' action='createSVGFileAction'/></menu><menu name='DataAction' action='DataAction'><menuitem name='exportTableAsCSVAction' action='exportTableAsCSVAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='aboutAction' action='aboutAction'/></menu></menubar></ui>");
 		this.menubar1 = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/menubar1")));
 		this.menubar1.Name = "menubar1";
 		this.vbox1.Add (this.menubar1);
@@ -165,12 +194,12 @@ public partial class MainWindow
 		this.notebook1 = new global::Gtk.Notebook ();
 		this.notebook1.CanFocus = true;
 		this.notebook1.Name = "notebook1";
-		this.notebook1.CurrentPage = 0;
+		this.notebook1.CurrentPage = 1;
 		// Container child notebook1.Gtk.Notebook+NotebookChild
 		this.vpaned2D = new global::Gtk.VPaned ();
 		this.vpaned2D.CanFocus = true;
 		this.vpaned2D.Name = "vpaned2D";
-		this.vpaned2D.Position = 250;
+		this.vpaned2D.Position = 249;
 		// Container child vpaned2D.Gtk.Paned+PanedChild
 		this.GtkScrolledWindowTV2D = new global::Gtk.ScrolledWindow ();
 		this.GtkScrolledWindowTV2D.Name = "GtkScrolledWindowTV2D";
@@ -212,7 +241,7 @@ public partial class MainWindow
 		this.vpaned3D = new global::Gtk.VPaned ();
 		this.vpaned3D.CanFocus = true;
 		this.vpaned3D.Name = "vpaned3D";
-		this.vpaned3D.Position = 250;
+		this.vpaned3D.Position = 249;
 		// Container child vpaned3D.Gtk.Paned+PanedChild
 		this.ScrolledWindowTV3D = new global::Gtk.ScrolledWindow ();
 		this.ScrolledWindowTV3D.Name = "ScrolledWindowTV3D";
@@ -283,6 +312,10 @@ public partial class MainWindow
 		this.createSVGFileAction.Activated += new global::System.EventHandler (this.OnCreateSVGFileActionActivated);
 		this.visualizationAction.Activated += new global::System.EventHandler (this.OnVisualizationAction);
 		this.exportTableAsCSVAction.Activated += new global::System.EventHandler (this.OnExportTableAsCSVActionActivated);
+		this.zoomInAction.Activated += new global::System.EventHandler (this.OnIncreaseIconSizeActionActivated);
+		this.zoomOutAction.Activated += new global::System.EventHandler (this.OnDecreaseIconSizeActionActivated);
+		this.zoomNormalAction.Activated += new global::System.EventHandler (this.OnZoomNormalActionActivated);
+		this.copyAction.Activated += new global::System.EventHandler (this.OnCopyTableAction);
 		this.notebook1.SwitchPage += new global::Gtk.SwitchPageHandler (this.OnNotebook1SwitchPage);
 	}
 }

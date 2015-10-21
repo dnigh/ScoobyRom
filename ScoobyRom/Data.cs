@@ -116,10 +116,10 @@ namespace ScoobyRom
 			// correct tableSearchEnd if necessary
 			tableSearchEnd = tableSearchEnd > tableSearchStart ? tableSearchEnd : int.MaxValue;
 
-			romMetadata.Filesize = (int)rom.Stream.Length;
-			//int calIDpos = romMetadata.CalibrationIDPos;
+			romMetadata.Filesize = rom.Size;
+			int calIDpos = romMetadata.CalibrationIDPos;
 
-			calIDfromRom = romMetadata.CalibrationIDPos != 0 ? rom.ReadASCII (romMetadata.CalibrationIDPos, 8) : "Unknown";
+			calIDfromRom = calIDpos != 0 ? rom.ReadASCII (calIDpos, 8) : "Unknown";
 			if (calIDfromRom != romMetadata.CalibrationID)
 				Console.Error.WriteLine ("WARNING: Calibration ID mismatch");
 
@@ -173,14 +173,9 @@ namespace ScoobyRom
 			Subaru.File.RomRaiderEcuDefXml.WriteRRXmlFile (path, romMetadata.XElement, list2D, list3D);
 		}
 
-		public void ChangeTableType (Table2D table2D, TableType newType)
+		public void ChangeTableType (Table table, TableType newType)
 		{
-			table2D.ChangeTypeToAndReload (newType, rom.Stream);
-		}
-
-		public void ChangeTableType (Table3D table3D, TableType newType)
-		{
-			table3D.ChangeTypeToAndReload (newType, rom.Stream);
+			table.ChangeTypeToAndReload (newType, rom.Stream);
 		}
 
 		public void UpdateUI ()

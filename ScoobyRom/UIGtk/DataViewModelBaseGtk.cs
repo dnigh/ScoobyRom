@@ -19,7 +19,10 @@
  */
 
 
+#define UseBackGroundTask
+
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Gtk;
 
@@ -28,19 +31,29 @@ namespace ScoobyRom
 	// sort of ViewModel in M-V-VM (Model-View-ViewModel pattern)
 	public abstract class DataViewModelBaseGtk
 	{
+		protected CancellationTokenSource tokenSource = new CancellationTokenSource();
+		protected Task task;
+
 		// generates icons
-		protected readonly PlotIconBase plotIcon;
+		protected PlotIconBase plotIcon;
 
 		protected readonly Data data;
 
 		// main TreeStore, most of the core data is being copied into this
 		public ListStore store;
 
-		protected bool iconsCached;
+		protected bool iconsVisible, iconsCached;
 
 		public TreeModel TreeModel {
 			get { return this.store; }
 		}
+
+		public RectSizing IconSizing {
+			get { return this.plotIcon.IconSizing; }
+		}
+
+		protected abstract int ColumnNrIcon { get; }
+		protected abstract int ColumnNrObj { get; }
 
 		public DataViewModelBaseGtk (Data data, PlotIconBase plotIcon)
 		{
@@ -52,8 +65,21 @@ namespace ScoobyRom
 		protected void OnDataItemsChanged (object sender, EventArgs e)
 		{
 			this.store.Clear ();
+			iconsCached = false;
 			PopulateData ();
 		}
+
+		public void ChangeTableType (Subaru.Tables.Table table, Subaru.Tables.TableType newType)
+		{
+			data.ChangeTableType (table, newType);
+		}
+
+		public bool IconsVisible
+		{
+			get { return iconsVisible; }
+			set { iconsVisible = value; }
+		}
+
 
 		/// <summary>
 		/// Creates icons if not done already, otherwise returns immediatly.
@@ -63,26 +89,93 @@ namespace ScoobyRom
 		{
 			if (iconsCached)
 				return;
-			Task task = new Task (() => CreateAllIcons ());
-			task.ContinueWith (t => iconsCached = true);
-			task.Start ();
+			RefreshIcons ();
 		}
 
-		protected void CreateAllIcons (int objColumnNr, int iconColumnNr)
+		public void IncreaseIconSize ()
 		{
+			plotIcon.ZoomIn ();
+			RefreshIcons ();
+		}
+
+		public void DecreaseIconSize ()
+		{
+			plotIcon.ZoomOut ();
+			RefreshIcons ();
+		}
+
+		public void ResetIconSize ()
+		{
+			plotIcon.ZoomReset ();
+			RefreshIcons ();
+		}
+
+		public void RefreshIcons ()
+		{
+			iconsCached = false;
+
+			#if !UseBackGroundTask
+
+			CreateAllIcons ();
+			iconsCached = true;
+
+			#else
+
+			if (task != null && !task.IsCompleted)
+			{
+				tokenSource.Cancel ();
+				// "It is not necessary to wait on tasks that have canceled."
+				// https://msdn.microsoft.com/en-us/library/dd537607%28v=vs.100%29.aspx
+				//task.Wait (200);
+				task = null;
+			}
+
+			tokenSource = new CancellationTokenSource ();
+			var token = tokenSource.Token;
+			task = Task.Factory.StartNew (() => CreateAllIcons (token), token);
+
+			#endif
+		}
+
+		protected void CreateAllIcons (CancellationToken ct)
+		{
+			int objColumnNr = ColumnNrObj;
+			int iconColumnNr = ColumnNrIcon;
+
 			TreeIter iter;
 			if (!store.GetIterFirst (out iter))
 				return;
+
+			if (ct.IsCancellationRequested)
+			{
+				return;
+			}
+
+			// Console.WriteLine ("CreateAllIcons Loop");
 			do {
 				Subaru.Tables.Table table = (Subaru.Tables.Table)store.GetValue (iter, objColumnNr);
 				Gdk.Pixbuf pixbuf = plotIcon.CreateIcon (table);
 
 				// update model reference in GUI Thread to make sure UI display is ok
-				Application.Invoke (delegate {
+				// HACK Application.Invoke causes wrong iters ???
+				// IA__gtk_list_store_set_value: assertion 'VALID_ITER (iter, list_store)' failed
+				//Application.Invoke (delegate {
 					store.SetValue (iter, iconColumnNr, pixbuf);
-				});
+				//});
+				if (ct.IsCancellationRequested)
+				{
+					return;
+				}
 			} while (store.IterNext (ref iter));
-			plotIcon.CleanupTemp ();
+			iconsCached = true;
+			//plotIcon.CleanupTemp ();
+		}
+
+		public abstract void SetNodeContentTypeChanged (TreeIter iter, Subaru.Tables.Table table);
+
+		protected void CreateSetNewIcon (TreeIter iter, Subaru.Tables.Table table)
+		{
+			store.SetValue (iter, ColumnNrIcon, plotIcon.CreateIcon (table));
 		}
 
 		#region TreeStore event handlers
@@ -102,8 +195,6 @@ namespace ScoobyRom
 		//		}
 
 		#endregion TreeStore event handlers
-
-		abstract protected void CreateAllIcons ();
 
 		abstract protected void InitStore ();
 

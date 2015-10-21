@@ -1,4 +1,4 @@
-// PlotIcon3D.cs: Create color bitmaps using NPlot.
+// PlotIcon3D.cs: Create color bitmaps using Florence/NPlot.
 
 /* Copyright (C) 2011-2015 SubaruDieselCrew
  *
@@ -24,7 +24,7 @@ using Florence;
 namespace ScoobyRom
 {
 	/// <summary>
-	/// Creates NPlot ImagePlots (heatmap) without any annotation, useful for icons.
+	/// Creates Florence/NPlot ImagePlots (heatmap) without any annotation, useful for icons.
 	/// Methods are not thread safe!
 	/// </summary>
 	public sealed class PlotIcon3D : PlotIconBase

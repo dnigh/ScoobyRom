@@ -28,11 +28,14 @@ namespace ScoobyRom
 {
 	public abstract class DataViewBaseGtk
 	{
+		public event EventHandler<ActionEventArgs> Activated;
+
 		// needed model for ComboBox cells, sharable and const
 		protected static readonly ListStore tableTypesModel = new ListStore (typeof(string));
 
 		protected static readonly string[] AllowedHexPrefixes = new string[] { "0x", "$" };
 
+		protected DataViewModelBaseGtk viewModel;
 
 		protected Gtk.TreeModel treeModel;
 		protected Gtk.TreeView treeView;
@@ -45,7 +48,7 @@ namespace ScoobyRom
 
 		// not worth taking enum, Gtk methods need int anyway
 		protected readonly Dictionary<TreeViewColumn, int> columnsDict = new Dictionary<TreeViewColumn, int> (25);
-		protected bool showIcons;
+		protected bool showIcons = false;
 
 		static DataViewBaseGtk ()
 		{
@@ -57,6 +60,101 @@ namespace ScoobyRom
 
 		public DataViewBaseGtk ()
 		{
+		}
+
+		protected void TreeView_KeyPressEvent (object o, KeyPressEventArgs args)
+		{
+			const Gdk.ModifierType modifier = Gdk.ModifierType.ControlMask;
+			Gdk.Key key = args.Event.Key;
+
+			if ((args.Event.State & modifier) != 0) {
+				if (key == Gdk.Key.Key_0 || key == Gdk.Key.KP_0) {
+					ResetIconSize ();
+					return;
+				} else if (key == Gdk.Key.plus || key == Gdk.Key.KP_Add) {
+					IncreaseIconSize ();
+					return;
+				} else if (key == Gdk.Key.minus || key == Gdk.Key.KP_Subtract) {
+					DecreaseIconSize ();
+					return;
+				}
+			}
+		}
+
+		protected abstract int ColumnNrIcon { get; }
+		protected abstract int ColumnNrObj { get; }
+
+		public bool ShowIcons {
+			get { return this.showIcons; }
+			set {
+				showIcons = value;
+				viewModel.IconsVisible = value;
+
+				GetColumn (ColumnNrIcon).Visible = value;
+
+				if (value) {
+					//treeView.Sensitive = false;
+					viewModel.RequestIcons ();
+					//treeView.Sensitive = true;
+				} else {
+					// row heights won't shrink automatically, only after editing any column content
+					// no effect: treeView.SizeRequest (); treeView.QueueResize ();
+					// there is no treeView.RowsAutosize ()
+
+					// hack not needed when using col.FixedWidth & cellRendererPixBuf.FixedSize
+					// HACK shrinking row heights - no better method found yet
+					// disadvantage: does not maintain current selected row
+					//treeView.Model = null;
+					//treeView.Model = viewModel.TreeModel;
+				}
+			}
+		}
+
+		public void IncreaseIconSize ()
+		{
+			this.viewModel.IncreaseIconSize ();
+			AjustIconCol ();
+		}
+
+		public void DecreaseIconSize ()
+		{
+			this.viewModel.DecreaseIconSize ();
+			AjustIconCol ();
+		}
+
+		public void ResetIconSize ()
+		{
+			this.viewModel.ResetIconSize ();
+			AjustIconCol ();
+		}
+
+		protected void AjustIconCol ()
+		{
+			var iconSizing = this.viewModel.IconSizing;
+			cellRendererPixbuf.SetFixedSize (iconSizing.Width, iconSizing.Height);
+
+			var col = GetColumn (ColumnNrIcon);
+			// need some more width for PixBuf to be completely visible
+			// HACK icon column FixedWidth
+			col.FixedWidth = iconSizing.Width + 10;
+			col.Sizing = TreeViewColumnSizing.Fixed;
+		}
+
+		public Subaru.Tables.Table Selected {
+			get {
+				Subaru.Tables.Table table = null;
+				TreeSelection selection = treeView.Selection;
+				TreeModel model;
+				TreeIter iter;
+
+				// The iter will point to the selected row
+				if (selection.GetSelected (out model, out iter)) {
+					// Depth begins at 1 !
+					//TreePath path = model.GetPath (iter);
+					table = (Subaru.Tables.Table)model.GetValue (iter, ColumnNrObj);
+				}
+				return table;
+			}
 		}
 
 		#region Tree Cell Data Functions
@@ -95,6 +193,7 @@ namespace ScoobyRom
 			TreeIter iter;
 			if (treeModel.GetIter (out iter, new TreePath (args.Path))) {
 				treeModel.SetValue (iter, CursorColNr, args.NewText);
+				// follow it in case this column is being sorted
 				ScrollTo (iter);
 			}
 		}
@@ -129,7 +228,12 @@ namespace ScoobyRom
 			}
 		}
 
-		protected abstract void OnTableTypeChanged (TreeIter iter, TableType newTableType);
+		protected void OnTableTypeChanged (TreeIter iter, TableType newTableType)
+		{
+			var table = (Subaru.Tables.Table)treeModel.GetValue (iter, ColumnNrObj);
+			viewModel.ChangeTableType (table, newTableType);
+			viewModel.SetNodeContentTypeChanged (iter, table);
+		}
 
 
 		#endregion CellRenderer event handlers
@@ -213,6 +317,15 @@ namespace ScoobyRom
 //				Console.WriteLine ("p");
 //		}
 
+		// double click or Enter key
+		protected void HandleTreeViewRowActivated (object o, RowActivatedArgs args)
+		{
+			Subaru.Tables.Table table = Selected;
+			if (table != null && Activated != null) {
+				Activated (this, new ActionEventArgs (table));
+			}
+		}
+
 		#endregion TreeView event handlers
 
 
@@ -242,6 +355,18 @@ namespace ScoobyRom
 			treeView.ScrollToCell (treeModel.GetPath (iter), null, false, 0, 0);
 		}
 
+		// not perfect yet, might have to wait after all icons have been updated
+		protected void ScrollToSelected ()
+		{
+			TreeSelection selection = treeView.Selection;
+			TreeModel model;
+			TreeIter iter;
+			// The iter will point to the selected row
+			if (selection.GetSelected (out model, out iter)) {
+				ScrollTo (iter);
+			}
+		}
+
 		protected TreeViewColumn CursorColumn {
 			get {
 				TreePath path;
@@ -257,7 +382,5 @@ namespace ScoobyRom
 				return column != null ? columnsDict[CursorColumn] : 0;
 			}
 		}
-
 	}
 }
-

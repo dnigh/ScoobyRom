@@ -406,12 +406,11 @@ Applies to icon column in both 2D and 3D table lists.
 *	`"False"`: Icons are created on first demand. UI row heights are smaller without icons. Perhaps use this in case you rarely want icons visible.
 
 #### Icon size
-New in v0.7.x. Errors or missing entries will result in default size (64 x 48) pixels.
+Errors or missing entries will result in default size (48 x 32) pixels.
 
-	<add key="iconWidth" value="64"/>
-	<add key="iconHeight" value="48"/>
+	<add key="iconWidth" value="48"/>
+	<add key="iconHeight" value="32"/>
 
-Planned feature for upcoming versions: increase/decrease icon sizes via GUI on the fly.
 
 ### 5.2) ScoobyRom XML
 
@@ -683,7 +682,7 @@ You can use it to temporarily select and sort items if you want to. Might have m
 
 	For example, if *Title* "Engine Speed" exists on a table, focus title column if not done already, type "`eng`" and it will probably jump to the first matching row.
 
-	Column *Record*: you need to type in complete address in hex, i.e. "`8ddc4`" or "`0x8ddc4`".
+	Column *Record*: you need to type in complete address in hex, i.e. "`8ddc4`" or "`0x8ddc4`". Supported hexadecimal prefixes are "`0x`" and "`$`".
 
 *	Visualization (`Ctrl+Space`): Either displays coloured table values (3D) or 2D values + line graph in bottom tab pane.
 Any visualization (except icons) does not update on changed metadata (text, data type),
@@ -712,3 +711,10 @@ Often these are valid tables and are actually used in ROM firmware logic.
 	*	stretch axis (click and drag in axis area)
 	*	(`Home` / `Pos1`) key to reset plot (auto-scale both axes)
 	*	(`Alt`) in addition to other keys for finer operation
+
+*	*"Edit -> Copy Table"* (`Ctrl+C`)
+
+	*	Copies table values as text into clipboard.
+	*	The format is *RomRaider*-compatible but also works well for pasting into spreadsheet applications (*LibreOffice Calc, Microsoft Excel*). You can easily verify the output by pasting into a text editor.
+	*	Values only, no annotations (text)
+	*	The number format (decimal separator) depends on current operating system region settings.

@@ -25,13 +25,8 @@ using Subaru.Tables;
 
 namespace ScoobyRom
 {
-	// TODO cleanup, sharing more code and objects
 	public sealed class DataView3DGtk : DataViewBaseGtk
 	{
-		public event EventHandler<ActionEventArgs> Activated;
-
-		DataView3DModelGtk viewModel;
-
 		private DataView3DGtk ()
 		{
 		}
@@ -49,46 +44,20 @@ namespace ScoobyRom
 			this.treeView = treeView;
 
 			InitTreeView ();
+
+			treeView.KeyPressEvent += TreeView_KeyPressEvent;
 		}
 
-		public bool ShowIcons {
-			get { return this.showIcons; }
-			set {
-				showIcons = value;
-				GetColumn ((int)ColumnNr3D.Icon).Visible = value;
-
-				if (value) {
-					//treeView.Sensitive = false;
-					viewModel.RequestIcons ();
-					//treeView.Sensitive = true;
-				} else {
-					// row heights won't shrink automatically, only after editing any column content
-					// no effect: treeView.SizeRequest (); treeView.QueueResize ();
-					// there is no treeView.RowsAutosize ()
-
-					// HACK shrinking row heights - no better method found yet
-					// disadvantage: does not maintain current selected row
-					treeView.Model = null;
-					treeView.Model = viewModel.TreeModel;
-				}
-			}
+		public DataViewModelBaseGtk DataViewModelGtk {
+			get { return this.viewModel; }
 		}
 
-		public Table3D Selected {
-			get {
-				Table3D table3D = null;
-				TreeSelection selection = treeView.Selection;
-				TreeModel model;
-				TreeIter iter;
+		protected override int ColumnNrIcon {
+			get { return (int)ColumnNr3D.Icon; }
+		}
 
-				// The iter will point to the selected row
-				if (selection.GetSelected (out model, out iter)) {
-					// Depth begins at 1 !
-					//TreePath path = model.GetPath (iter);
-					table3D = (Table3D)model.GetValue (iter, (int)ColumnNr3D.Obj);
-				}
-				return table3D;
-			}
+		protected override int ColumnNrObj {
+			get { return (int)ColumnNr3D.Obj; }
 		}
 
 		void InitTreeView ()
@@ -123,8 +92,10 @@ namespace ScoobyRom
 				column.Resizable = true;
 
 				// GrowOnly really faster than Autosize?
-				//column.Sizing = TreeViewColumnSizing.Autosize;
+				// Autosize is slow!
+				// column.Sizing = TreeViewColumnSizing.Autosize;
 			}
+			AjustIconCol ();
 
 			#endregion Columns
 
@@ -177,7 +148,6 @@ namespace ScoobyRom
 			treeView.RowActivated += HandleTreeViewRowActivated;
 			//treeView.KeyPressEvent += HandleTreeViewKeyPressEvent;
 
-
 			treeView.Model = treeModel;
 
 			#endregion TreeView
@@ -218,7 +188,8 @@ namespace ScoobyRom
 			// Warning: icon size appears fixed, does not take DPI into account
 			// Verified on both Linux and Windows via screenshot.
 			cellRendererPixbuf = new CellRendererPixbuf ();
-			//cellRendererPixbuf.SetFixedSize (64, 48);
+			// SetFixedSize crops bitmaps if too small
+			// cellRendererPixbuf.SetFixedSize (64, 48);
 			// not useful here, follows mouse, darkens icon; default is false
 			// cellRendererPixbuf.FollowState = true;
 
@@ -252,7 +223,7 @@ namespace ScoobyRom
 				break;
 			case ColumnNr3D.Icon:
 				col = new TreeViewColumn ("Icon", cellRendererPixbuf, "pixbuf", colNr);
-				col.Visible = false;
+				col.Visible = showIcons;
 				//col.MaxWidth = 64;
 				// might help perf
 				//col.Sizing = TreeViewColumnSizing.Fixed;
@@ -364,31 +335,6 @@ namespace ScoobyRom
 				// cannot search on icon column, must return true = no match.
 				return true;
 			}
-		}
-
-		#region event handlers
-
-
-		#region TreeView event handlers
-
-		void HandleTreeViewRowActivated (object o, RowActivatedArgs args)
-		{
-			Table3D table3D = Selected;
-			if (table3D != null && Activated != null) {
-				Activated (this, new ActionEventArgs (table3D));
-			}
-		}
-
-		#endregion TreeView event handlers
-
-
-		#endregion event handlers
-
-		protected override void OnTableTypeChanged (TreeIter iter, TableType newTableType)
-		{
-			Table3D table3D = (Table3D)treeModel.GetValue (iter, (int)ColumnNr3D.Obj);
-			viewModel.ChangeTableType (table3D, newTableType);
-			viewModel.SetNodeContentTypeChanged (iter, table3D);
 		}
 	}
 }

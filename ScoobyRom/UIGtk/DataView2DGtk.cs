@@ -25,15 +25,8 @@ using Subaru.Tables;
 
 namespace ScoobyRom
 {
-	// TODO cleanup, sharing more code and objects
-	// Code file for 3D is similar and has more comments.
 	public sealed class DataView2DGtk : DataViewBaseGtk
 	{
-		public event EventHandler<ActionEventArgs> Activated;
-
-		DataView2DModelGtk viewModel;
-
-
 		private DataView2DGtk ()
 		{
 		}
@@ -45,35 +38,16 @@ namespace ScoobyRom
 			this.treeView = treeView;
 
 			InitTreeView ();
+
+			treeView.KeyPressEvent += TreeView_KeyPressEvent;
 		}
 
-		public bool ShowIcons {
-			get { return this.showIcons; }
-			set {
-				showIcons = value;
-				GetColumn ((int)ColumnNr2D.Icon).Visible = value;
-				if (value) {
-					viewModel.RequestIcons ();
-				} else {
-					// HACK shrinking row heights - no better method found yet
-					treeView.Model = null;
-					treeView.Model = viewModel.TreeModel;
-				}
-			}
+		protected override int ColumnNrIcon {
+			get { return (int)ColumnNr2D.Icon; }
 		}
 
-		public Table2D Selected {
-			get {
-				Table2D table2D = null;
-				TreeSelection selection = treeView.Selection;
-				TreeModel model;
-				TreeIter iter;
-
-				if (selection.GetSelected (out model, out iter)) {
-					table2D = (Table2D)model.GetValue (iter, (int)ColumnNr2D.Obj);
-				}
-				return table2D;
-			}
+		protected override int ColumnNrObj {
+			get { return (int)ColumnNr2D.Obj; }
 		}
 
 		void InitTreeView ()
@@ -100,6 +74,7 @@ namespace ScoobyRom
 				column.Reorderable = true;
 				column.Resizable = true;
 			}
+			AjustIconCol ();
 
 			#endregion Columns
 
@@ -152,7 +127,7 @@ namespace ScoobyRom
 				break;
 			case ColumnNr2D.Icon:
 				col = new TreeViewColumn ("Icon", cellRendererPixbuf, "pixbuf", colNr);
-				col.Visible = false;
+				col.Visible = showIcons;
 				break;
 			case ColumnNr2D.Title:
 				col = new TreeViewColumn ("Title", cellRendererTextEditable, "text", colNr);
@@ -238,33 +213,6 @@ namespace ScoobyRom
 				// cannot search on icon column, must signal true = no match.
 				return true;
 			}
-		}
-
-		#region event handlers
-
-
-		#region TreeView event handlers
-
-		// double click or Enter key
-		void HandleTreeViewRowActivated (object o, RowActivatedArgs args)
-		{
-			Table2D table2D = Selected;
-			if (table2D != null && Activated != null) {
-				Activated (this, new ActionEventArgs (table2D));
-			}
-		}
-
-		#endregion TreeView event handlers
-
-
-		#endregion event handlers
-
-
-		protected override void OnTableTypeChanged (TreeIter iter, TableType newTableType)
-		{
-			Table2D table2D = (Table2D)treeModel.GetValue (iter, (int)ColumnNr2D.Obj);
-			viewModel.ChangeTableType (table2D, newTableType);
-			viewModel.SetNodeContentTypeChanged (iter, table2D);
 		}
 	}
 }

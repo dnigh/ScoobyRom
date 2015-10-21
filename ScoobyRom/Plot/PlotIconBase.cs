@@ -35,6 +35,8 @@ namespace ScoobyRom
 	/// </summary>
 	public abstract class PlotIconBase
 	{
+		protected readonly RectSizing rectSizing;
+
 		protected const int MemoryStreamCapacity = 2048;
 		public const int FrameWidth = 1;
 		public const int Padding = FrameWidth;
@@ -51,44 +53,64 @@ namespace ScoobyRom
 		static readonly System.Drawing.Imaging.ImageFormat imageFormat = System.Drawing.Imaging.ImageFormat.Bmp;
 		#endif
 
-		protected int width, height, padding;
-		protected System.Drawing.Rectangle bounds;
+		protected int padding;
 		protected Pen framePen = new Pen(System.Drawing.Color.Black, FrameWidth);
 		protected Gdk.Pixbuf constDataIcon;
 
 		// reuse objects where possible to improve performance
 		protected readonly PlotSurface2D plotSurface = new PlotSurface2D ();
-		protected readonly System.Drawing.Bitmap bitmap_cache;
+		protected System.Drawing.Bitmap bitmap_cache;
+
+		public RectSizing IconSizing {
+			get { return rectSizing; }
+		}
 
 
 		public PlotIconBase (int width, int height)
 		{
-			this.width = width;
-			this.height = height;
-			this.bounds = new System.Drawing.Rectangle (0, 0, width, height);
+			rectSizing = new RectSizing (width, height);
+			Init ();
+		}
 
+		protected virtual void Init ()
+		{
 			// could also use pre-defined wrapper with internal bitmap: NPlot.Bitmap.PlotSurface2D
-			this.bitmap_cache = new System.Drawing.Bitmap (width, height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+			this.bitmap_cache = new System.Drawing.Bitmap (rectSizing.Width, rectSizing.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
 			// black/transparent (depending on image format) frame
 			this.padding = Padding;
+
+			constDataIcon = DrawConstDataIcon ();
 		}
 
 		abstract public Gdk.Pixbuf CreateIcon (Subaru.Tables.Table table);
 
+		public void ZoomIn ()
+		{
+			rectSizing.ZoomIn ();
+			Init ();
+		}
+
+		public void ZoomOut ()
+		{
+			rectSizing.ZoomOut ();
+			Init ();
+		}
+
+		public void ZoomReset ()
+		{
+			rectSizing.ZoomReset ();
+			Init ();
+		}
+
 		// reuse icon, very useful for performance as many tables have const values
 		public Gdk.Pixbuf ConstDataIcon {
-			get {
-				if (constDataIcon == null) {
-					constDataIcon = DrawConstDataIcon ();
-				}
-				return constDataIcon;
-			}
+			get { return constDataIcon; }
 		}
 
 		protected Gdk.Pixbuf DrawConstDataIcon ()
 		{
-			using (var surface = new Cairo.ImageSurface (Cairo.Format.Argb32, width, height)) {
+			using (var surface = new Cairo.ImageSurface (Cairo.Format.Argb32, rectSizing.Width, rectSizing.Height)) {
 				using (Cairo.Context cr = new Cairo.Context (surface)) {
 					// background
 					cr.SetSourceRGB (0.7, 0.7, 0.7);
@@ -103,20 +125,20 @@ namespace ScoobyRom
 
 					using (var layout = Pango.CairoHelper.CreateLayout (cr)) {
 						// font size 12 seems suitable for iconHeight 48 pixels
-						float fontSize = 12 * height / 48f;
+						float fontSize = 12 * rectSizing.Height / 48f;
 						layout.FontDescription = Pango.FontDescription.FromString ("Sans " + fontSize.ToString ());
 						layout.SetText ("const");
-						layout.Width = width;
+						layout.Width = rectSizing.Width;
 						layout.Alignment = Pango.Alignment.Center;
 						int lwidth, lheight;
 						layout.GetPixelSize (out lwidth, out lheight);
 						// 0, 0 = left top
 						//cr.MoveTo (0.5 * (width - lwidth), 0.5 * (height - lheight));
-						cr.MoveTo (0.5 * width, 0.5 * (height - lheight));
+						cr.MoveTo (0.5 * rectSizing.Width, 0.5 * (rectSizing.Height - lheight));
 						Pango.CairoHelper.ShowLayout (cr, layout);
 					}
 				}
-				return new Gdk.Pixbuf (surface.Data, Gdk.Colorspace.Rgb, true, 8, width, height, surface.Stride, null);
+				return new Gdk.Pixbuf (surface.Data, Gdk.Colorspace.Rgb, true, 8, rectSizing.Width, rectSizing.Height, surface.Stride, null);
 			}
 		}
 
@@ -124,8 +146,10 @@ namespace ScoobyRom
 		public void CleanupTemp ()
 		{
 			#if !BitmapToPixbufConversionRaw
-			memoryStream.Dispose ();
-			memoryStream = null;
+			if (memoryStream != null) {
+				memoryStream.Dispose ();
+				memoryStream = null;
+			}
 			#endif
 		}
 
@@ -135,11 +159,13 @@ namespace ScoobyRom
 			plotSurface.SurfacePadding = padding;
 
 			using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage (bitmap_cache)) {
-				plotSurface.Draw (g, bounds);
-				g.DrawRectangle (framePen, 0, 0, width - FrameWidth, height - FrameWidth);
+				plotSurface.Draw (g, rectSizing.Bounds);
+				// draw frame
+				g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+				g.DrawRectangle (framePen, 0, 0, rectSizing.Width - FrameWidth, rectSizing.Height - FrameWidth);
 			}
 
-			// NPlot library uses System.Drawing (.NET Base Class Library) types
+			// Florence/NPlot library uses System.Drawing (.NET Base Class Library) types
 			// have to convert result (System.Drawing.Bitmap) to Gdk.Pixbuf for Gtk usage
 
 			#if BitmapToPixbufConversionRaw

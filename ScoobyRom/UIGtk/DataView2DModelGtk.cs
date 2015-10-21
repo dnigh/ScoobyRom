@@ -34,6 +34,14 @@ namespace ScoobyRom
 			data.ItemsChanged2D += OnDataItemsChanged;
 		}
 
+		protected override int ColumnNrIcon {
+			get { return (int)ColumnNr2D.Icon; }
+		}
+
+		protected override int ColumnNrObj {
+			get { return (int)ColumnNr2D.Obj; }
+		}
+
 		public void ChangeTableType (Table2D table2D, TableType newType)
 		{
 			data.ChangeTableType (table2D, newType);
@@ -96,8 +104,6 @@ namespace ScoobyRom
 
 		public void SetNodeContent (TreeIter iter, Table2D table2D)
 		{
-			// TODO optimize when columns are final
-
 			store.SetValue (iter, (int)ColumnNr2D.Obj, table2D);
 
 			store.SetValue (iter, (int)ColumnNr2D.Category, table2D.Category);
@@ -107,7 +113,6 @@ namespace ScoobyRom
 
 			store.SetValue (iter, (int)ColumnNr2D.NameX, table2D.NameX);
 			store.SetValue (iter, (int)ColumnNr2D.UnitX, table2D.UnitX);
-
 
 			store.SetValue (iter, (int)ColumnNr2D.CountX, table2D.CountX);
 
@@ -121,20 +126,16 @@ namespace ScoobyRom
 			SetNodeContentTypeChanged (iter, table2D);
 		}
 
-		public void SetNodeContentTypeChanged (TreeIter iter, Table2D table2D)
+		public override void SetNodeContentTypeChanged (TreeIter iter, Subaru.Tables.Table table)
 		{
-			store.SetValue (iter, (int)ColumnNr2D.Type, (int)table2D.TableType);
-			store.SetValue (iter, (int)ColumnNr2D.Ymin, table2D.Ymin);
-			store.SetValue (iter, (int)ColumnNr2D.Yavg, table2D.Yavg);
-			store.SetValue (iter, (int)ColumnNr2D.Ymax, table2D.Ymax);
+			var t = (Subaru.Tables.Table2D)table;
+			store.SetValue (iter, (int)ColumnNr2D.Type, (int)t.TableType);
+			store.SetValue (iter, (int)ColumnNr2D.Ymin, t.Ymin);
+			store.SetValue (iter, (int)ColumnNr2D.Yavg, t.Yavg);
+			store.SetValue (iter, (int)ColumnNr2D.Ymax, t.Ymax);
 
-			if (iconsCached)
-				CreateSetNewIcon (iter, table2D);
-		}
-
-		void CreateSetNewIcon (TreeIter iter, Table2D table2D)
-		{
-			store.SetValue (iter, (int)ColumnNr2D.Icon, plotIcon.CreateIcon (table2D));
+			if (iconsVisible)
+				CreateSetNewIcon (iter, t);
 		}
 
 		protected override void UpdateModel (TreeIter iter)
@@ -148,11 +149,6 @@ namespace ScoobyRom
 			table.NameX = (string)store.GetValue (iter, (int)ColumnNr2D.NameX);
 			table.UnitX = (string)store.GetValue (iter, (int)ColumnNr2D.UnitX);
 			table.Description = (string)store.GetValue (iter, (int)ColumnNr2D.Description);
-		}
-
-		protected override void CreateAllIcons ()
-		{
-			CreateAllIcons ((int)ColumnNr2D.Obj, (int)ColumnNr2D.Icon);
 		}
 	}
 }

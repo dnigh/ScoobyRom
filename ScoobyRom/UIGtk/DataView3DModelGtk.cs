@@ -34,9 +34,12 @@ namespace ScoobyRom
 			data.ItemsChanged3D += OnDataItemsChanged;
 		}
 
-		public void ChangeTableType (Table3D table3D, TableType newType)
-		{
-			data.ChangeTableType (table3D, newType);
+		protected override int ColumnNrIcon {
+			get { return (int)ColumnNr3D.Icon; }
+		}
+
+		protected override int ColumnNrObj {
+			get { return (int)ColumnNr3D.Obj; }
 		}
 
 		override protected void InitStore ()
@@ -137,20 +140,15 @@ namespace ScoobyRom
 			SetNodeContentTypeChanged (iter, table3D);
 		}
 
-		public void SetNodeContentTypeChanged (TreeIter iter, Table3D table3D)
+		public override void SetNodeContentTypeChanged (TreeIter iter, Subaru.Tables.Table table)
 		{
-			store.SetValue (iter, (int)ColumnNr3D.Type, (int)table3D.TableType);
-			store.SetValue (iter, (int)ColumnNr3D.Zmin, table3D.Zmin);
-			store.SetValue (iter, (int)ColumnNr3D.Zavg, table3D.Zavg);
-			store.SetValue (iter, (int)ColumnNr3D.Zmax, table3D.Zmax);
-
-			if (iconsCached)
-				CreateSetNewIcon (iter, table3D);
-		}
-
-		void CreateSetNewIcon (TreeIter iter, Table3D table3D)
-		{
-			store.SetValue (iter, (int)ColumnNr3D.Icon, plotIcon.CreateIcon (table3D));
+			var t = (Subaru.Tables.Table3D)table;
+			store.SetValue (iter, (int)ColumnNr3D.Type, (int)t.TableType);
+			store.SetValue (iter, (int)ColumnNr3D.Zmin, t.Zmin);
+			store.SetValue (iter, (int)ColumnNr3D.Zavg, t.Zavg);
+			store.SetValue (iter, (int)ColumnNr3D.Zmax, t.Zmax);
+			if (iconsVisible)
+				CreateSetNewIcon (iter, t);
 		}
 
 		protected override void UpdateModel (TreeIter iter)
@@ -166,11 +164,6 @@ namespace ScoobyRom
 			table.NameY = (string)store.GetValue (iter, (int)ColumnNr3D.NameY);
 			table.UnitY = (string)store.GetValue (iter, (int)ColumnNr3D.UnitY);
 			table.Description = (string)store.GetValue (iter, (int)ColumnNr3D.Description);
-		}
-
-		protected override void CreateAllIcons ()
-		{
-			CreateAllIcons ((int)ColumnNr3D.Obj, (int)ColumnNr3D.Icon);
 		}
 	}
 }
