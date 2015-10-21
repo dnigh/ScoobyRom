@@ -25,7 +25,6 @@ using Subaru.Tables;
 
 namespace ScoobyRom
 {
-	// TODO cleanup, sharing more code and objects
 	public sealed class DataView3DGtk : DataViewBaseGtk
 	{
 		private DataView3DGtk ()
@@ -45,6 +44,8 @@ namespace ScoobyRom
 			this.treeView = treeView;
 
 			InitTreeView ();
+
+			treeView.KeyPressEvent += TreeView_KeyPressEvent;
 		}
 
 		public DataViewModelBaseGtk DataViewModelGtk {
@@ -146,7 +147,6 @@ namespace ScoobyRom
 			//treeView.ScrollEvent += HandleTreeViewScrollEvent;
 			treeView.RowActivated += HandleTreeViewRowActivated;
 			//treeView.KeyPressEvent += HandleTreeViewKeyPressEvent;
-
 
 			treeView.Model = treeModel;
 

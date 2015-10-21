@@ -80,6 +80,7 @@ namespace Subaru.Tables
 		public const float FloatMin = (float)1E-12;
 		public const float FloatMax = (float)1E+12;
 		public static string endian = "big";
+
 		#region Fields
 
 		protected int countX;
@@ -205,18 +206,15 @@ namespace Subaru.Tables
 			offset = float.NaN;
 		}
 
-		public abstract bool IsRecordValid ()
+		public abstract bool IsRecordValid ();
 
-;
-		public abstract bool ReadValidateValues (System.IO.Stream stream)
+		public abstract bool ReadValidateValues (System.IO.Stream stream);
 
-;
-		public abstract void ChangeTypeToAndReload (TableType newType, System.IO.Stream stream)
+		public abstract void ChangeTypeToAndReload (TableType newType, System.IO.Stream stream);
 
-;
 		public abstract XElement RRXml ();
 
-		public bool HasMetadata {
+		public virtual bool HasMetadata {
 			get { return !string.IsNullOrEmpty (title) || !string.IsNullOrEmpty (category) || !string.IsNullOrEmpty (description) || !string.IsNullOrEmpty (nameX) || !string.IsNullOrEmpty (unitX); }
 		}
 

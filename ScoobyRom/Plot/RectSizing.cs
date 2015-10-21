@@ -32,7 +32,7 @@ namespace ScoobyRom
 		const int HeightMin = 10;
 
 		double zoomFactor = 1.2;
-		int width, height;
+		int width, height, originalWidth;
 		System.Drawing.Rectangle bounds;
 		/// <summary>
 		/// height / width
@@ -46,6 +46,7 @@ namespace ScoobyRom
 		public RectSizing (int width, int height)
 		{
 			this.aspectRatio = width / (double)height;
+			this.originalWidth = width;
 			Calc (width, height);
 		}
 
@@ -70,14 +71,19 @@ namespace ScoobyRom
 			get { return bounds; }
 		}
 
-		public void IncreaseIconSize ()
+		public void ZoomIn ()
 		{
 			CalcFromNewWidth (zoomFactor * width);
 		}
 
-		public void DecreaseIconSize ()
+		public void ZoomOut ()
 		{
 			CalcFromNewWidth (1.0 / zoomFactor * width);
+		}
+
+		public void ZoomReset ()
+		{
+			CalcFromNewWidth (originalWidth);
 		}
 
 		void CalcFromNewWidth (double newWidth)

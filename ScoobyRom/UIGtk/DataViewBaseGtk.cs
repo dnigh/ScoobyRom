@@ -62,6 +62,25 @@ namespace ScoobyRom
 		{
 		}
 
+		protected void TreeView_KeyPressEvent (object o, KeyPressEventArgs args)
+		{
+			const Gdk.ModifierType modifier = Gdk.ModifierType.ControlMask;
+			Gdk.Key key = args.Event.Key;
+
+			if ((args.Event.State & modifier) != 0) {
+				if (key == Gdk.Key.Key_0 || key == Gdk.Key.KP_0) {
+					ResetIconSize ();
+					return;
+				} else if (key == Gdk.Key.plus || key == Gdk.Key.KP_Add) {
+					IncreaseIconSize ();
+					return;
+				} else if (key == Gdk.Key.minus || key == Gdk.Key.KP_Subtract) {
+					DecreaseIconSize ();
+					return;
+				}
+			}
+		}
+
 		protected abstract int ColumnNrIcon { get; }
 		protected abstract int ColumnNrObj { get; }
 
@@ -95,14 +114,18 @@ namespace ScoobyRom
 		{
 			this.viewModel.IncreaseIconSize ();
 			AjustIconCol ();
-			//ScrollToSelected ();
 		}
 
 		public void DecreaseIconSize ()
 		{
 			this.viewModel.DecreaseIconSize ();
 			AjustIconCol ();
-			//ScrollToSelected ();
+		}
+
+		public void ResetIconSize ()
+		{
+			this.viewModel.ResetIconSize ();
+			AjustIconCol ();
 		}
 
 		protected void AjustIconCol ()

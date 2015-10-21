@@ -94,13 +94,19 @@ namespace ScoobyRom
 
 		public void IncreaseIconSize ()
 		{
-			plotIcon.IncreaseIconSize ();
+			plotIcon.ZoomIn ();
 			RefreshIcons ();
 		}
 
 		public void DecreaseIconSize ()
 		{
-			plotIcon.DecreaseIconSize ();
+			plotIcon.ZoomOut ();
+			RefreshIcons ();
+		}
+
+		public void ResetIconSize ()
+		{
+			plotIcon.ZoomReset ();
 			RefreshIcons ();
 		}
 
@@ -145,7 +151,7 @@ namespace ScoobyRom
 				return;
 			}
 
-			Console.WriteLine ("CreateAllIcons Loop");
+			// Console.WriteLine ("CreateAllIcons Loop");
 			do {
 				Subaru.Tables.Table table = (Subaru.Tables.Table)store.GetValue (iter, objColumnNr);
 				Gdk.Pixbuf pixbuf = plotIcon.CreateIcon (table);
@@ -162,7 +168,7 @@ namespace ScoobyRom
 				}
 			} while (store.IterNext (ref iter));
 			iconsCached = true;
-			plotIcon.CleanupTemp ();
+			//plotIcon.CleanupTemp ();
 		}
 
 		public abstract void SetNodeContentTypeChanged (TreeIter iter, Subaru.Tables.Table table);

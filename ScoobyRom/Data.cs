@@ -116,10 +116,10 @@ namespace ScoobyRom
 			// correct tableSearchEnd if necessary
 			tableSearchEnd = tableSearchEnd > tableSearchStart ? tableSearchEnd : int.MaxValue;
 
-			romMetadata.Filesize = (int)rom.Stream.Length;
-			//int calIDpos = romMetadata.CalibrationIDPos;
+			romMetadata.Filesize = rom.Size;
+			int calIDpos = romMetadata.CalibrationIDPos;
 
-			calIDfromRom = romMetadata.CalibrationIDPos != 0 ? rom.ReadASCII (romMetadata.CalibrationIDPos, 8) : "Unknown";
+			calIDfromRom = calIDpos != 0 ? rom.ReadASCII (calIDpos, 8) : "Unknown";
 			if (calIDfromRom != romMetadata.CalibrationID)
 				Console.Error.WriteLine ("WARNING: Calibration ID mismatch");
 

@@ -85,15 +85,21 @@ namespace ScoobyRom
 
 		abstract public Gdk.Pixbuf CreateIcon (Subaru.Tables.Table table);
 
-		public void IncreaseIconSize ()
+		public void ZoomIn ()
 		{
-			rectSizing.IncreaseIconSize ();
+			rectSizing.ZoomIn ();
 			Init ();
 		}
 
-		public void DecreaseIconSize ()
+		public void ZoomOut ()
 		{
-			rectSizing.DecreaseIconSize ();
+			rectSizing.ZoomOut ();
+			Init ();
+		}
+
+		public void ZoomReset ()
+		{
+			rectSizing.ZoomReset ();
 			Init ();
 		}
 

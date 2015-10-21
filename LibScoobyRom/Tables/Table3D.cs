@@ -205,6 +205,10 @@ namespace Subaru.Tables
 		{
 		}
 
+		public override bool HasMetadata {
+			get { return base.HasMetadata || !string.IsNullOrEmpty (nameY) || !string.IsNullOrEmpty (unitY); }
+		}
+
 		public override string ToString ()
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder (200);

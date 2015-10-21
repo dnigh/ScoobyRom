@@ -465,12 +465,20 @@ public partial class MainWindow : Gtk.Window
 		view.IncreaseIconSize ();
 	}
 
-	protected void OnDecreaseIconSizeActionActivated (object sender, EventArgs e)
+	void OnDecreaseIconSizeActionActivated (object sender, EventArgs e)
 	{
 		var view = CurrentView;
 		if (view == null)
 			return;
 		view.DecreaseIconSize ();
+	}
+
+	void OnZoomNormalActionActivated (object sender, EventArgs e)
+	{
+		var view = CurrentView;
+		if (view == null)
+			return;
+		view.ResetIconSize ();
 	}
 
 	// create or close gnuplot window
@@ -480,8 +488,11 @@ public partial class MainWindow : Gtk.Window
 		if (view == null)
 			return;
 		var table = view.Selected;
-		if (table == null)
+		if (table == null) {
+			ErrorMsg ("Error", "No table selected.");
 			return;
+		}
+
 		try {
 			// gnuplot process itself can be slow to startup
 			// so this does not prevent closing it immediatly when pressed twice
@@ -652,6 +663,7 @@ public partial class MainWindow : Gtk.Window
 		iconsAction.Sensitive = sensitive;
 		zoomInAction.Sensitive = sensitive;
 		zoomOutAction.Sensitive = sensitive;
+		zoomNormalAction.Sensitive = sensitive;
 
 		checksumWindowAction.Sensitive = sensitive;
 		statisticsWindowAction.Sensitive = sensitive;
