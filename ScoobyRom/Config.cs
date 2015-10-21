@@ -26,8 +26,8 @@ namespace ScoobyRom
 {
 	public static class Config
 	{
-		const int DefaultIconWidth = 64;
-		const int DefaultIconHeight = 48;
+		const int DefaultIconWidth = 48;
+		const int DefaultIconHeight = 32;
 		const int IconMin = 10;
 		const int IconMax = 255;
 

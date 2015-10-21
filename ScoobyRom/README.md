@@ -406,12 +406,11 @@ Applies to icon column in both 2D and 3D table lists.
 *	`"False"`: Icons are created on first demand. UI row heights are smaller without icons. Perhaps use this in case you rarely want icons visible.
 
 #### Icon size
-New in v0.7.x. Errors or missing entries will result in default size (64 x 48) pixels.
+New in v0.7.x. Errors or missing entries will result in default size (48 x 32) pixels.
 
-	<add key="iconWidth" value="64"/>
-	<add key="iconHeight" value="48"/>
+	<add key="iconWidth" value="48"/>
+	<add key="iconHeight" value="32"/>
 
-Planned feature for upcoming versions: increase/decrease icon sizes via GUI on the fly.
 
 ### 5.2) ScoobyRom XML
 
