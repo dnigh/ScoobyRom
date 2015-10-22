@@ -33,10 +33,12 @@ namespace ScoobyRom
 
 		const string key_IconWidthStr = "iconWidth";
 		const string key_IconHeightStr = "iconHeight";
-
 		const string key_iconsOnByDefault = "iconsOnByDefault";
-		// works on Linux at least, use this default name in case config entry cannot be found
-		const string gnuplotDefaultPath = "gnuplot";
+
+		// works on Linux at least
+		const string gnuplotDefaultPath_Other = "gnuplot";
+		// works on Windows when gnuplot EXE is in path (gnuplot installer can do this)
+		const string gnuplotDefaultPath_Win32NT = "gnuplot.exe";
 
 		static string platformStr = Environment.OSVersion.Platform.ToString ();
 		static string gnuplotPath;
@@ -76,8 +78,16 @@ namespace ScoobyRom
 			// Value is null when key not found!
 
 			gnuplotPath = appSettings ["gnuplot_" + Environment.OSVersion.Platform.ToString ()];
-			if (gnuplotPath == null)
-				gnuplotPath = gnuplotDefaultPath;
+			if (gnuplotPath == null) {
+				switch (Environment.OSVersion.Platform) {
+				case PlatformID.Win32NT:
+					gnuplotPath = gnuplotDefaultPath_Win32NT;
+					break;
+				default:
+					gnuplotPath = gnuplotDefaultPath_Other;
+					break;
+				}
+			}
 
 			string val;
 			int intValue;

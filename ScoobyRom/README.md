@@ -378,21 +378,32 @@ Use any text (or even XML) editor to view/edit the file.
 Recommendation for Windows: **Notepad++** (free OSS, lots of features) 	<http://notepad-plus-plus.org/>
 
 #### gnuplot
+
+##### Linux/Unix
+Will probably just work by using default command "`gnuplot`":
+
+	<add key="gnuplot_Unix" value="gnuplot"/>
+
+You can test this by launching gnuplot manually via terminal.
+
+##### Windows
 Especially on Windows the appropriate path for gnuplot is important!
 ScoobyRom does not try to find required **`gnuplot.exe`** on its own - very time consuming to search entire disks.
 
-In case the gnuplot installer added gnuplot binary dir into system PATH, just `gnuplot.exe` will work.
-You can test this by launching gnuplot manually via *command prompt* (Windows) or terminal (Unix systems).
+In case the **gnuplot installer** added gnuplot binary dir into system PATH, or you did this manually by yourself, just "`gnuplot.exe`" will work. Specifying full path does not hurt, though.
+You can test this by launching gnuplot via *Command Prompt Window*.
 
-##### Tested example:
+###### Tested examples:
 
-Windows 8.1 x64 + gnuplot 5.0.1 x64 (`gp501-win64-mingw.exe`) using default install path (`C:\Program Files\gnuplot`)
+a)	Windows 8.1 x64 + gnuplot 5.0.1 x64 (`gp501-win64-mingw.exe`) using default install path (`C:\Program Files\gnuplot`)
 
 --> full path of gnuplot.exe is `"C:\Program Files\gnuplot\bin\gnuplot.exe"`
 
 Edit .config line to:
 
 `<add key="gnuplot_Win32NT" value="C:\Program Files\gnuplot\bin\gnuplot.exe"/>`
+
+b)	Windows 10 x64 + gnuplot 5.0.1 x64: workes exactly like a)
 
 #### Icons on by default
 Applies to icon column in both 2D and 3D table lists.
@@ -406,7 +417,7 @@ Applies to icon column in both 2D and 3D table lists.
 *	`"False"`: Icons are created on first demand. UI row heights are smaller without icons. Perhaps use this in case you rarely want icons visible.
 
 #### Icon size
-Errors or missing entries will result in default size (48 x 32) pixels.
+Errors or missing entries will result in default size (48 x 32) pixels. Both, width and height values are clamped to range 10..255. Larger icons are allowed via UI, though.
 
 	<add key="iconWidth" value="48"/>
 	<add key="iconHeight" value="32"/>
