@@ -50,7 +50,7 @@ namespace ScoobyRom
 		{
 			Subaru.Tables.Table2D table = t as Subaru.Tables.Table2D;
 
-			if (table.Ymin == table.Ymax)
+			if (table.IsDataConst)
 				return ConstDataIcon;
 
 			plotSurface.Clear ();

@@ -89,6 +89,10 @@ namespace Subaru.Tables
 			get { return valuesYavg; }
 		}
 
+		public override bool IsDataConst {
+			get { return this.valuesYmin == this.valuesYmax; }
+		}
+
 		public float[] GetValuesYasFloats ()
 		{
 			return valuesYasFloats;

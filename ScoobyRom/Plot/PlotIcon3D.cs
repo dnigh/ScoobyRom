@@ -37,7 +37,7 @@ namespace ScoobyRom
 		{
 			Subaru.Tables.Table3D table = t as Subaru.Tables.Table3D;
 
-			if (table.Zmin == table.Zmax)
+			if (table.IsDataConst)
 				return ConstDataIcon;
 
 			Plot3D.Draw (plotSurface, table);

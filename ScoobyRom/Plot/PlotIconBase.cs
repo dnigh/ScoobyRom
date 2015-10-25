@@ -1,4 +1,4 @@
-﻿// PlotIconBase.cs: Common functionality for drawing icons using NPlot.
+﻿// PlotIconBase.cs: Common functionality for drawing icons using Florence/NPlot.
 
 /* Copyright (C) 2011-2015 SubaruDieselCrew
  *
@@ -21,7 +21,7 @@
 // measured on Linux x64, mono, Release build 2015-08: ~600 ms vs. ~680 ms using MemoryStream
 // --> raw conversion not worth the effort, also depends on internal bitmap data representation
 // Small performance difference does not matter as background task can be used.
-//#define BitmapToPixbufConversionRaw
+#define BitmapToPixbufConversionRaw
 
 using System.Drawing;
 using Florence;
@@ -54,7 +54,7 @@ namespace ScoobyRom
 		#endif
 
 		protected int padding;
-		protected Pen framePen = new Pen(System.Drawing.Color.Black, FrameWidth);
+		protected Pen framePen = new Pen (System.Drawing.Color.Black, FrameWidth);
 		protected Gdk.Pixbuf constDataIcon;
 
 		// reuse objects where possible to improve performance
@@ -190,22 +190,29 @@ namespace ScoobyRom
 			int width = bitmap.Width;
 			int height = bitmap.Height;
 
-			System.Drawing.Imaging.BitmapData bitmapData = bitmap.LockBits (new System.Drawing.Rectangle (0, 0, width, height), System.Drawing.Imaging.ImageLockMode.ReadOnly,
+			System.Drawing.Imaging.BitmapData bitmapData = bitmap.LockBits (new System.Drawing.Rectangle (0, 0, width, height),
+				                                               System.Drawing.Imaging.ImageLockMode.ReadOnly,
 				                                               System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-			int size = width * height * 3;
+
+			int stride = bitmapData.Stride;
+			int size = height * stride;
 			byte[] rawData = new byte[size];
+			// using unsafe pointers on locked bitmap data would avoid copy
 			System.Runtime.InteropServices.Marshal.Copy (bitmapData.Scan0, rawData, 0, size);
 			bitmap.UnlockBits (bitmapData);
 
 			// BGR (Microsoft's internal format) to RGB conversion necessary
-			for (int i = 0; i < size; i += 3) {
-				byte tmp = rawData [i];
-				rawData [i] = rawData [i + 2];
-				rawData [i + 2] = tmp;
+			// following conversion does not slow down processing many icons noticably - no need to use unsafe pointers etc.
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					int i = y * stride + 3 * x;
+					byte tmp = rawData [i];
+					rawData [i] = rawData [i + 2];
+					rawData [i + 2] = tmp;
+				}
 			}
 
-			Gdk.Pixbuf pixbuf = new Gdk.Pixbuf (rawData, Colorspace.Rgb, false, 8, width, height, bitmapData.Stride);
-			return pixbuf;
+			return new Gdk.Pixbuf (rawData, Colorspace.Rgb, false, 8, width, height, stride);
 		}
 
 		#endif

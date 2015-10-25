@@ -209,6 +209,10 @@ namespace Subaru.Tables
 			get { return base.HasMetadata || !string.IsNullOrEmpty (nameY) || !string.IsNullOrEmpty (unitY); }
 		}
 
+		public override bool IsDataConst {
+			get { return this.valuesZmin == this.valuesZmax; }
+		}
+
 		public override string ToString ()
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder (200);

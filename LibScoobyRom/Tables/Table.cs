@@ -222,6 +222,8 @@ namespace Subaru.Tables
 			get { return !string.IsNullOrEmpty (title) || !string.IsNullOrEmpty (category) || !string.IsNullOrEmpty (description) || !string.IsNullOrEmpty (nameX) || !string.IsNullOrEmpty (unitX); }
 		}
 
+		public abstract bool IsDataConst { get; }
+
 		protected static void ThrowInvalidTableType (TableType tableType)
 		{
 			throw new ArgumentOutOfRangeException ("Invalid TableType: " + tableType.ToString ());

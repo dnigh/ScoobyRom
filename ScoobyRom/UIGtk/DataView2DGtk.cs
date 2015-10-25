@@ -27,6 +27,27 @@ namespace ScoobyRom
 {
 	public sealed class DataView2DGtk : DataViewBaseGtk
 	{
+		static ColumnNr2D[] ColumnsOrder = new ColumnNr2D[] {
+			ColumnNr2D.Category,
+			ColumnNr2D.Toggle,
+			ColumnNr2D.Icon,
+			ColumnNr2D.Title,
+			ColumnNr2D.UnitY,
+			ColumnNr2D.Type,
+			ColumnNr2D.Location,
+			ColumnNr2D.NameX,
+			ColumnNr2D.UnitX,
+			ColumnNr2D.CountX,
+			ColumnNr2D.Xmin,
+			ColumnNr2D.Xmax,
+			ColumnNr2D.Ymin,
+			ColumnNr2D.Yavg,
+			ColumnNr2D.Ymax,
+			ColumnNr2D.YPos,
+			ColumnNr2D.Description,
+			ColumnNr2D.Obj
+		};
+
 		private DataView2DGtk ()
 		{
 		}
@@ -56,11 +77,8 @@ namespace ScoobyRom
 
 			#region Columns
 
-			// TODO avoid reflection
-			ColumnNr2D[] columns = (ColumnNr2D[])Enum.GetValues (typeof(ColumnNr2D));
-
 			// must be appended/inserted in correct order
-			foreach (ColumnNr2D colNr in columns) {
+			foreach (ColumnNr2D colNr in ColumnsOrder) {
 				TreeViewColumn column = CreateColumn (colNr);
 				// null means column is not being used on view
 				if (column == null)
@@ -197,7 +215,8 @@ namespace ScoobyRom
 
 			GLib.GType gt = model.GetColumnType (column);
 			if (gt == GLib.GType.Float)
-				return EqualFuncFloat (key, (float)content); else if (gt == GLib.GType.String)
+				return EqualFuncFloat (key, (float)content);
+			else if (gt == GLib.GType.String)
 				return EqualFuncString (key, (string)content);
 
 			// type int needs further info!

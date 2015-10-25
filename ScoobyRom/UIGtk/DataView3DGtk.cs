@@ -27,6 +27,33 @@ namespace ScoobyRom
 {
 	public sealed class DataView3DGtk : DataViewBaseGtk
 	{
+		static ColumnNr3D[] ColumnsOrder = new ColumnNr3D[] {
+			ColumnNr3D.Category,
+			ColumnNr3D.Toggle,
+			ColumnNr3D.Icon,
+			ColumnNr3D.Title,
+			ColumnNr3D.UnitZ,
+			ColumnNr3D.Type,
+			ColumnNr3D.Location,
+			ColumnNr3D.NameX,
+			ColumnNr3D.UnitX,
+			ColumnNr3D.NameY,
+			ColumnNr3D.UnitY,
+			ColumnNr3D.CountX,
+			ColumnNr3D.CountY,
+			ColumnNr3D.CountZ,
+			ColumnNr3D.Xmin,
+			ColumnNr3D.Xmax,
+			ColumnNr3D.Ymin,
+			ColumnNr3D.Ymax,
+			ColumnNr3D.Zmin,
+			ColumnNr3D.Zavg,
+			ColumnNr3D.Zmax,
+			ColumnNr3D.ZPos,
+			ColumnNr3D.Description,
+			ColumnNr3D.Obj
+		};
+
 		private DataView3DGtk ()
 		{
 		}
@@ -66,11 +93,8 @@ namespace ScoobyRom
 
 			#region Columns
 
-			// TODO avoid reflection
-			ColumnNr3D[] columns = (ColumnNr3D[])Enum.GetValues (typeof(ColumnNr3D));
-
 			// must be appended/inserted in correct order
-			foreach (ColumnNr3D colNr in columns) {
+			foreach (ColumnNr3D colNr in ColumnsOrder) {
 				TreeViewColumn column = CreateColumn (colNr);
 				// null means column is not being used on view
 				if (column == null)
@@ -103,7 +127,7 @@ namespace ScoobyRom
 			#region TreeView
 
 			// FixedHeightMode is not feasable here though it would improve performance.
-						/* Gtk+ doc: Fixed height mode speeds up GtkTreeView by assuming that all rows have the same height.
+			/* Gtk+ doc: Fixed height mode speeds up GtkTreeView by assuming that all rows have the same height.
 				Only enable this option if all rows are the same height and all columns are of
 				 type GTK_TREE_VIEW_COLUMN_FIXED. */
 			// TreeViewColumnSizing.Fixed needed is required by TreeView.FixedHeightMode.
@@ -317,7 +341,8 @@ namespace ScoobyRom
 
 			GLib.GType gt = model.GetColumnType (column);
 			if (gt == GLib.GType.Float)
-				return EqualFuncFloat (key, (float)content); else if (gt == GLib.GType.String)
+				return EqualFuncFloat (key, (float)content);
+			else if (gt == GLib.GType.String)
 				return EqualFuncString (key, (string)content);
 
 			// type int needs further info!
