@@ -272,8 +272,8 @@ public partial class MainWindow : Gtk.Window
 		var tableUI = new GtkWidgets.TableWidget3D (coloring, table.ValuesX, table.ValuesY, valuesZ,
 			              table.Xmin, table.Xmax, table.Ymin, table.Ymax, table.Zmin, table.Zmax);
 		tableUI.TitleMarkup = Util.Markup.NameUnit_Large (table.Title, table.UnitZ);
-		tableUI.AxisMarkupX = Util.Markup.NameUnit (table.NameX, table.UnitX);
-		tableUI.AxisMarkupY = Util.Markup.NameUnit (table.NameY, table.UnitY);
+		tableUI.AxisXMarkup = Util.Markup.NameUnit (table.NameX, table.UnitX);
+		tableUI.AxisYMarkup = Util.Markup.NameUnit (table.NameY, table.UnitY);
 		tableUI.FormatValues = ScoobyRom.Data.AutomaticValueFormat (valuesZ, table.Zmin, table.Zmax);
 
 		// Viewport needed for ScrolledWindow to work as generated table widget has no scroll support
@@ -309,7 +309,7 @@ public partial class MainWindow : Gtk.Window
 		var tableUI = new GtkWidgets.TableWidget2D (coloring, table.ValuesX, values, table.Xmin, table.Xmax, table.Ymin, table.Ymax);
 		tableUI.HeaderAxisMarkup = Util.Markup.Unit (table.UnitX);
 		tableUI.HeaderValuesMarkup = Util.Markup.Unit (table.UnitY);
-		tableUI.AxisMarkup = Util.Markup.NameUnit (table.NameX, table.UnitX);
+		tableUI.AxisXMarkup = Util.Markup.NameUnit (table.NameX, table.UnitX);
 		tableUI.ValuesMarkup = Util.Markup.NameUnit (table.Title, table.UnitY);
 		tableUI.FormatValues = ScoobyRom.Data.AutomaticValueFormat (values, table.Ymin, table.Ymax);
 
