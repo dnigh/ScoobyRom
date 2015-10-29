@@ -70,6 +70,9 @@ namespace GtkWidgets
 		{
 			var table = new Gtk.Table ((uint)rows, (uint)cols, false);
 
+			//var fontDescription = new Pango.FontDescription ();
+			//fontDescription.Family = "mono";
+
 			Gtk.Label title = new Label ();
 			title.Markup = this.titleMarkup;
 			// label starting at left with SetAlignment also needs AttachOptions.Fill for it to work
@@ -112,6 +115,8 @@ namespace GtkWidgets
 			for (uint i = 0; i < countZ; i++) {
 				float val = values [i];
 				Gtk.Widget label = new Label (val.ToString (this.formatValues));
+				//label.ModifyFont (fontDescription);
+
 				BorderWidget widget = new BorderWidget (CalcValueColor (val));
 
 				// ShadowType differences might be minimal

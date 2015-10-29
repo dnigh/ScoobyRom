@@ -21,7 +21,8 @@
 // measured on Linux x64, mono, Release build 2015-08: ~600 ms vs. ~680 ms using MemoryStream
 // --> raw conversion not worth the effort, also depends on internal bitmap data representation
 // Small performance difference does not matter as background task can be used.
-#define BitmapToPixbufConversionRaw
+// Tested working fine on Linux x64 and Windows 10 x64.
+//#define BitmapToPixbufConversionRaw
 
 using System.Drawing;
 using Florence;

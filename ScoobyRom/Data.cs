@@ -41,8 +41,7 @@ namespace ScoobyRom
 		string calIDfromRom;
 
 		// proper values can speed up searching a lot - e.g. 300 ms instead of several seconds
-		int tableSearchStart = 0;
-		int tableSearchEnd = int.MaxValue;
+		Util.Range? tableSearchRange;
 
 		IList<Table2D> list2D = new List<Table2D> (0);
 		IList<Table3D> list3D = new List<Table3D> (0);
@@ -80,6 +79,9 @@ namespace ScoobyRom
 			get { return this.calIDfromRom; }
 		}
 
+		public Util.Range? TableSearchRange {
+			get { return this.tableSearchRange; }
+		}
 
 		public Data ()
 		{
@@ -101,20 +103,13 @@ namespace ScoobyRom
 				romXml = new Subaru.File.RomXml ();
 				romXml.Load (xmlPath);
 				romMetadata = romXml.RomMetadata;
-
-				tableSearchStart = romXml.TableSearchStart;
-				tableSearchEnd = romXml.TableSearchEnd > romXml.TableSearchStart ? romXml.TableSearchEnd : int.MaxValue;
+				tableSearchRange = romXml.TableSearchRange;
 			} else {
 				Console.WriteLine ("No existing XML file has been found!");
 				romXml = null;
 				romMetadata = new RomMetadata ();
-				// search through whole ROM file
-				tableSearchStart = 0;
-				tableSearchEnd = int.MaxValue;
+				tableSearchRange = null;
 			}
-
-			// correct tableSearchEnd if necessary
-			tableSearchEnd = tableSearchEnd > tableSearchStart ? tableSearchEnd : int.MaxValue;
 
 			romMetadata.Filesize = rom.Size;
 			int calIDpos = romMetadata.CalibrationIDPos;
@@ -126,7 +121,7 @@ namespace ScoobyRom
 			if (this.ProgressChanged != null)
 				rom.ProgressChanged += OnProgressChanged;
 
-			rom.FindMaps (tableSearchStart, tableSearchEnd, out list2D, out list3D);
+			rom.FindMaps (tableSearchRange, out list2D, out list3D);
 
 			rom.ProgressChanged -= OnProgressChanged;
 
@@ -152,9 +147,7 @@ namespace ScoobyRom
 		public void SaveXml (string path)
 		{
 			var romXml = new Subaru.File.RomXml ();
-			romXml.TableSearchStart = tableSearchStart;
-			romXml.TableSearchEnd = tableSearchEnd;
-
+			romXml.TableSearchRange = tableSearchRange;
 			romXml.WriteXml (path, romMetadata, list2D, list3D);
 		}
 

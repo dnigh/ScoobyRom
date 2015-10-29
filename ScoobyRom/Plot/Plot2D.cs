@@ -19,8 +19,8 @@
  */
 
 
+using System.Drawing;
 using Florence;
-using Subaru.Tables;
 
 namespace ScoobyRom
 {
@@ -29,26 +29,24 @@ namespace ScoobyRom
 		const float PenWidth = 3f;
 		const int MarkerSize = 6;
 
-		// Default = no antialiasing!
+		// not specifying results in SmoothingMode.Default = no antialiasing!
 		const System.Drawing.Drawing2D.SmoothingMode SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-		//readonly IPlotSurface2D plotSurface2D;
 		readonly InteractivePlotSurface2D plotSurface2D;
 
-		// FontFamily.GenericSansSerif -> "Arial" on Linux
-		readonly System.Drawing.Font titleFont = new System.Drawing.Font (System.Drawing.FontFamily.GenericSansSerif, 20, System.Drawing.GraphicsUnit.Point);
-		readonly System.Drawing.Font labelFont = new System.Drawing.Font (System.Drawing.FontFamily.GenericSansSerif, 16, System.Drawing.GraphicsUnit.Point);
-		readonly System.Drawing.Font tickTextFont = new System.Drawing.Font (System.Drawing.FontFamily.GenericSansSerif, 14, System.Drawing.GraphicsUnit.Point);
+		readonly Font titleFont = new Font (FontFamily.GenericSansSerif, 14, GraphicsUnit.Point);
+		readonly Font labelFont = new Font (FontFamily.GenericSansSerif, 13, GraphicsUnit.Point);
+		readonly Font tickTextFont = new Font (FontFamily.GenericSansSerif, 12, GraphicsUnit.Point);
 
 		readonly Marker marker;
-		readonly System.Drawing.Pen pen;
+		readonly Pen pen;
 
 		public Plot2D (InteractivePlotSurface2D plotSurface)
 		{
 			this.plotSurface2D = plotSurface;
 
-			pen = new System.Drawing.Pen (System.Drawing.Color.Red, PenWidth);
-			marker = new Marker (Marker.MarkerType.FilledCircle, MarkerSize, System.Drawing.Color.Blue);
+			pen = new Pen (Color.Red, PenWidth);
+			marker = new Marker (Marker.MarkerType.FilledCircle, MarkerSize, Color.Blue);
 		}
 
 		/// <summary>
@@ -57,7 +55,7 @@ namespace ScoobyRom
 		/// <param name="table2D">
 		/// A <see cref="Table2D"/>
 		/// </param>
-		public void Draw (Table2D table2D)
+		public void Draw (Subaru.Tables.Table2D table2D)
 		{
 			float[] valuesY = table2D.GetValuesYasFloats ();
 
@@ -65,12 +63,12 @@ namespace ScoobyRom
 			// including Florence interactions
 			this.plotSurface2D.Clear ();
 
-			// Florence
-			// for correct Guideline display (Linux) need plotWidget.DoubleBuffered = false;
-			plotSurface2D.AddInteraction (new VerticalGuideline (System.Drawing.Color.Gray));
-			plotSurface2D.AddInteraction (new HorizontalGuideline (System.Drawing.Color.Gray));
+			// Florence interactions, N/A in original NPlot library
+			// guideline disadvantage: not optimized - does not use bitmap buffer, refreshes every time a line has to move
+			plotSurface2D.AddInteraction (new VerticalGuideline (Color.Gray));
+			plotSurface2D.AddInteraction (new HorizontalGuideline (Color.Gray));
 
-			//plotSurface2D.AddInteraction (new PlotSelection (System.Drawing.Color.Green));
+			//plotSurface2D.AddInteraction (new PlotSelection (Color.Green));
 			plotSurface2D.AddInteraction (new PlotDrag (true, true));
 
 			plotSurface2D.AddInteraction (new AxisDrag ());
@@ -109,7 +107,8 @@ namespace ScoobyRom
 			plotSurface2D.YAxis1.Label = AxisText (table2D.Title, table2D.UnitY);
 			plotSurface2D.YAxis1.TickTextFont = tickTextFont;
 
-			// NPlot: Refresh () not part of interface!
+			// Florence surface has Refresh () method vs. NPlot: Refresh () not part of surface interface
+			plotSurface2D.Refresh ();
 		}
 
 		// "Axisname [Unit]"

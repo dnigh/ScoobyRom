@@ -142,7 +142,7 @@ namespace ScoobyRom
 						WriteGnuPlotBinary (bw, (Table2D)table);
 				}
 			} catch (Exception ex) {
-				throw new GnuPlotException ("Could not write binary data file.\n" + ex.Message);
+				throw new GnuPlotException ("Could not create temporary binary data file for GnuPlot:\n" + BinaryFile + "\n\n" + ex.Message);
 			}
 
 			try {

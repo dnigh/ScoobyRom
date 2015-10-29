@@ -107,5 +107,24 @@ namespace Util
 		}
 
 		#endif
+
+		static Cairo.Color RegionColorAxisX = new Cairo.Color (0, 0, 1);
+		static Cairo.Color RegionColorAxisY = new Cairo.Color (0, 1, 0);
+		static Cairo.Color RegionColorValues = new Cairo.Color (1, 0, 1);
+
+		public static Cairo.Color RegionColor (RegionType regionType)
+		{
+			switch (regionType) {
+			case RegionType.AxisX:
+				return RegionColorAxisX;
+			case RegionType.AxisY:
+				return RegionColorAxisY;
+			case RegionType.Values:
+				return RegionColorValues;
+			default:
+				return invalidCol;
+			}
+
+		}
 	}
 }

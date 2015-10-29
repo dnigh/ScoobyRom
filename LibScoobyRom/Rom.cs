@@ -190,6 +190,20 @@ namespace Subaru.File
 		}
 		*/
 
+		public void FindMaps (Util.Range? tableSearchRange, out IList<Table2D> list2D, out IList<Table3D> list3D)
+		{
+			int startPos, lastPos;
+			if (tableSearchRange.HasValue) {
+				startPos = tableSearchRange.Value.Pos;
+				lastPos = tableSearchRange.Value.Last;
+			} else {
+				// search through whole ROM file
+				startPos = 0;
+				lastPos = this.Size - 1;
+			}
+			FindMaps (startPos, lastPos, out list2D, out list3D);
+		}
+
 		public void FindMaps (int startPos, int lastPos, out IList<Table2D> list2D, out IList<Table3D> list3D)
 		{
 			this.startPos = startPos;

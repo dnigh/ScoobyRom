@@ -59,7 +59,7 @@ namespace Subaru.File
 		// table objects in here will only contain parsed metadata for merging into real data objects
 		List<Table2D> xml2D = new List<Table2D> (0);
 		List<Table3D> xml3D = new List<Table3D> (0);
-		int tableSearchStart, tableSearchEnd;
+		Util.Range? tableSearchRange;
 
 		public RomMetadata RomMetadata {
 			get { return romMetadata; }
@@ -73,14 +73,9 @@ namespace Subaru.File
 			set { romStream = value; }
 		}
 
-		public int TableSearchEnd {
-			get { return tableSearchEnd; }
-			set { tableSearchEnd = value; }
-		}
-
-		public int TableSearchStart {
-			get { return tableSearchStart; }
-			set { tableSearchStart = value; }
+		public Util.Range? TableSearchRange {
+			get { return tableSearchRange; }
+			set { tableSearchRange = value; }
 		}
 
 		public RomXml ()
@@ -213,18 +208,29 @@ namespace Subaru.File
 
 		void ParseTableSearch (XElement el)
 		{
-			if (el == null)
+			if (el == null) {
+				TableSearchRange = null;
 				return;
+			}
 
+			int tableSearchStart, tableSearchEnd;
 			XAttribute at = el.Attribute (X_tableSearchStart);
 			tableSearchStart = ParseHexInt ((string)at, at);
 			at = el.Attribute (X_tableSearchEnd);
 			tableSearchEnd = ParseHexInt ((string)at, at);
+			TableSearchRange = Util.Range.FromPositions (tableSearchStart, tableSearchEnd);
 		}
 
 		XElement TableSearchXElement ()
 		{
-			return new XElement (X_tableSearch, new XAttribute (X_tableSearchStart, HexNum (TableSearchStart)), new XAttribute (X_tableSearchEnd, HexNum (TableSearchEnd)));
+			if (tableSearchRange.HasValue) {
+				return new XElement (X_tableSearch,
+					new XAttribute (X_tableSearchStart, HexNum (tableSearchRange.Value.Pos)),
+					new XAttribute (X_tableSearchEnd, HexNum (tableSearchRange.Value.Last))
+				);
+			} else {
+				return null;
+			}
 		}
 
 		public void WriteXml (string path, RomMetadata romMetadata, IList<Table2D> list2D, IList<Table3D> list3D)

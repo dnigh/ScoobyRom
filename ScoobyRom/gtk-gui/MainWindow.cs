@@ -51,9 +51,13 @@ public partial class MainWindow
 	
 	private global::Gtk.Action copyAction;
 	
+	private global::Gtk.ToggleAction navigationBarAction;
+	
 	private global::Gtk.VBox vbox1;
 	
 	private global::Gtk.MenuBar menubar1;
+	
+	private global::GtkWidgets.NavBarWidget navbarwidget;
 	
 	private global::Gtk.Notebook notebook1;
 	
@@ -172,6 +176,10 @@ public partial class MainWindow
 		this.copyAction.Sensitive = false;
 		this.copyAction.ShortLabel = "Copy Table";
 		w1.Add (this.copyAction, "<Primary><Mod2>c");
+		this.navigationBarAction = new global::Gtk.ToggleAction ("navigationBarAction", "_Navigation Bar", null, null);
+		this.navigationBarAction.Active = true;
+		this.navigationBarAction.ShortLabel = "_Navigation Bar";
+		w1.Add (this.navigationBarAction, null);
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
@@ -182,7 +190,7 @@ public partial class MainWindow
 		this.vbox1.Name = "vbox1";
 		this.vbox1.Spacing = 6;
 		// Container child vbox1.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='FileAction' action='FileAction'><menuitem name='openAction' action='openAction'/><menuitem name='saveAction' action='saveAction'/><separator/><menu name='exportAsAction' action='exportAsAction'><menuitem name='exportAsRRAction' action='exportAsRRAction'/></menu><separator/><menuitem name='quitAction' action='quitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='copyAction' action='copyAction'/></menu><menu name='ViewAction' action='ViewAction'><menuitem name='visualizationAction' action='visualizationAction'/><separator/><menuitem name='iconsAction' action='iconsAction'/><menuitem name='zoomInAction' action='zoomInAction'/><menuitem name='zoomOutAction' action='zoomOutAction'/><menuitem name='zoomNormalAction' action='zoomNormalAction'/><separator/><menuitem name='checksumWindowAction' action='checksumWindowAction'/><menuitem name='statisticsWindowAction' action='statisticsWindowAction'/></menu><menu name='PlotAction' action='PlotAction'><menuitem name='plotExternalAction' action='plotExternalAction'/><menuitem name='createSVGFileAction' action='createSVGFileAction'/></menu><menu name='DataAction' action='DataAction'><menuitem name='exportTableAsCSVAction' action='exportTableAsCSVAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='aboutAction' action='aboutAction'/></menu></menubar></ui>");
+		this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='FileAction' action='FileAction'><menuitem name='openAction' action='openAction'/><menuitem name='saveAction' action='saveAction'/><separator/><menu name='exportAsAction' action='exportAsAction'><menuitem name='exportAsRRAction' action='exportAsRRAction'/></menu><separator/><menuitem name='quitAction' action='quitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='copyAction' action='copyAction'/></menu><menu name='ViewAction' action='ViewAction'><menuitem name='visualizationAction' action='visualizationAction'/><separator/><menuitem name='iconsAction' action='iconsAction'/><menuitem name='zoomInAction' action='zoomInAction'/><menuitem name='zoomOutAction' action='zoomOutAction'/><menuitem name='zoomNormalAction' action='zoomNormalAction'/><separator/><menuitem name='checksumWindowAction' action='checksumWindowAction'/><menuitem name='statisticsWindowAction' action='statisticsWindowAction'/><separator/><menuitem name='navigationBarAction' action='navigationBarAction'/></menu><menu name='PlotAction' action='PlotAction'><menuitem name='plotExternalAction' action='plotExternalAction'/><menuitem name='createSVGFileAction' action='createSVGFileAction'/></menu><menu name='DataAction' action='DataAction'><menuitem name='exportTableAsCSVAction' action='exportTableAsCSVAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='aboutAction' action='aboutAction'/></menu></menubar></ui>");
 		this.menubar1 = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/menubar1")));
 		this.menubar1.Name = "menubar1";
 		this.vbox1.Add (this.menubar1);
@@ -190,6 +198,17 @@ public partial class MainWindow
 		w2.Position = 0;
 		w2.Expand = false;
 		w2.Fill = false;
+		// Container child vbox1.Gtk.Box+BoxChild
+		this.navbarwidget = new global::GtkWidgets.NavBarWidget ();
+		this.navbarwidget.Name = "navbarwidget";
+		this.navbarwidget.FirstPos = 0;
+		this.navbarwidget.LastPos = 0;
+		this.navbarwidget.CurrentPos = 0;
+		this.vbox1.Add (this.navbarwidget);
+		global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.navbarwidget]));
+		w3.Position = 1;
+		w3.Expand = false;
+		w3.Fill = false;
 		// Container child vbox1.Gtk.Box+BoxChild
 		this.notebook1 = new global::Gtk.Notebook ();
 		this.notebook1.CanFocus = true;
@@ -199,7 +218,7 @@ public partial class MainWindow
 		this.vpaned2D = new global::Gtk.VPaned ();
 		this.vpaned2D.CanFocus = true;
 		this.vpaned2D.Name = "vpaned2D";
-		this.vpaned2D.Position = 249;
+		this.vpaned2D.Position = 245;
 		// Container child vpaned2D.Gtk.Paned+PanedChild
 		this.GtkScrolledWindowTV2D = new global::Gtk.ScrolledWindow ();
 		this.GtkScrolledWindowTV2D.Name = "GtkScrolledWindowTV2D";
@@ -210,9 +229,9 @@ public partial class MainWindow
 		this.treeview2D.Name = "treeview2D";
 		this.GtkScrolledWindowTV2D.Add (this.treeview2D);
 		this.vpaned2D.Add (this.GtkScrolledWindowTV2D);
-		global::Gtk.Paned.PanedChild w4 = ((global::Gtk.Paned.PanedChild)(this.vpaned2D [this.GtkScrolledWindowTV2D]));
-		w4.Resize = false;
-		w4.Shrink = false;
+		global::Gtk.Paned.PanedChild w5 = ((global::Gtk.Paned.PanedChild)(this.vpaned2D [this.GtkScrolledWindowTV2D]));
+		w5.Resize = false;
+		w5.Shrink = false;
 		// Container child vpaned2D.Gtk.Paned+PanedChild
 		this.hpaned2D = new global::Gtk.HPaned ();
 		this.hpaned2D.CanFocus = true;
@@ -224,12 +243,12 @@ public partial class MainWindow
 		this.scrolledwindowTable2D.Name = "scrolledwindowTable2D";
 		this.scrolledwindowTable2D.ShadowType = ((global::Gtk.ShadowType)(1));
 		this.hpaned2D.Add (this.scrolledwindowTable2D);
-		global::Gtk.Paned.PanedChild w5 = ((global::Gtk.Paned.PanedChild)(this.hpaned2D [this.scrolledwindowTable2D]));
-		w5.Resize = false;
-		this.vpaned2D.Add (this.hpaned2D);
-		global::Gtk.Paned.PanedChild w6 = ((global::Gtk.Paned.PanedChild)(this.vpaned2D [this.hpaned2D]));
+		global::Gtk.Paned.PanedChild w6 = ((global::Gtk.Paned.PanedChild)(this.hpaned2D [this.scrolledwindowTable2D]));
 		w6.Resize = false;
-		w6.Shrink = false;
+		this.vpaned2D.Add (this.hpaned2D);
+		global::Gtk.Paned.PanedChild w7 = ((global::Gtk.Paned.PanedChild)(this.vpaned2D [this.hpaned2D]));
+		w7.Resize = false;
+		w7.Shrink = false;
 		this.notebook1.Add (this.vpaned2D);
 		// Notebook tab
 		this.label1 = new global::Gtk.Label ();
@@ -241,7 +260,7 @@ public partial class MainWindow
 		this.vpaned3D = new global::Gtk.VPaned ();
 		this.vpaned3D.CanFocus = true;
 		this.vpaned3D.Name = "vpaned3D";
-		this.vpaned3D.Position = 249;
+		this.vpaned3D.Position = 245;
 		// Container child vpaned3D.Gtk.Paned+PanedChild
 		this.ScrolledWindowTV3D = new global::Gtk.ScrolledWindow ();
 		this.ScrolledWindowTV3D.Name = "ScrolledWindowTV3D";
@@ -252,21 +271,21 @@ public partial class MainWindow
 		this.treeview3D.Name = "treeview3D";
 		this.ScrolledWindowTV3D.Add (this.treeview3D);
 		this.vpaned3D.Add (this.ScrolledWindowTV3D);
-		global::Gtk.Paned.PanedChild w9 = ((global::Gtk.Paned.PanedChild)(this.vpaned3D [this.ScrolledWindowTV3D]));
-		w9.Resize = false;
-		w9.Shrink = false;
+		global::Gtk.Paned.PanedChild w10 = ((global::Gtk.Paned.PanedChild)(this.vpaned3D [this.ScrolledWindowTV3D]));
+		w10.Resize = false;
+		w10.Shrink = false;
 		// Container child vpaned3D.Gtk.Paned+PanedChild
 		this.scrolledwindowTable3D = new global::Gtk.ScrolledWindow ();
 		this.scrolledwindowTable3D.CanFocus = true;
 		this.scrolledwindowTable3D.Name = "scrolledwindowTable3D";
 		this.scrolledwindowTable3D.ShadowType = ((global::Gtk.ShadowType)(1));
 		this.vpaned3D.Add (this.scrolledwindowTable3D);
-		global::Gtk.Paned.PanedChild w10 = ((global::Gtk.Paned.PanedChild)(this.vpaned3D [this.scrolledwindowTable3D]));
-		w10.Resize = false;
-		w10.Shrink = false;
+		global::Gtk.Paned.PanedChild w11 = ((global::Gtk.Paned.PanedChild)(this.vpaned3D [this.scrolledwindowTable3D]));
+		w11.Resize = false;
+		w11.Shrink = false;
 		this.notebook1.Add (this.vpaned3D);
-		global::Gtk.Notebook.NotebookChild w11 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vpaned3D]));
-		w11.Position = 1;
+		global::Gtk.Notebook.NotebookChild w12 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vpaned3D]));
+		w12.Position = 1;
 		// Notebook tab
 		this.label2 = new global::Gtk.Label ();
 		this.label2.Name = "label2";
@@ -274,8 +293,8 @@ public partial class MainWindow
 		this.notebook1.SetTabLabel (this.vpaned3D, this.label2);
 		this.label2.ShowAll ();
 		this.vbox1.Add (this.notebook1);
-		global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.notebook1]));
-		w12.Position = 1;
+		global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.notebook1]));
+		w13.Position = 2;
 		// Container child vbox1.Gtk.Box+BoxChild
 		this.statusbar1 = new global::Gtk.Statusbar ();
 		this.statusbar1.Name = "statusbar1";
@@ -284,14 +303,14 @@ public partial class MainWindow
 		this.progressbar1 = new global::Gtk.ProgressBar ();
 		this.progressbar1.Name = "progressbar1";
 		this.statusbar1.Add (this.progressbar1);
-		global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.statusbar1 [this.progressbar1]));
-		w13.Position = 2;
-		this.vbox1.Add (this.statusbar1);
-		global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.statusbar1]));
-		w14.PackType = ((global::Gtk.PackType)(1));
+		global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.statusbar1 [this.progressbar1]));
 		w14.Position = 2;
-		w14.Expand = false;
-		w14.Fill = false;
+		this.vbox1.Add (this.statusbar1);
+		global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.statusbar1]));
+		w15.PackType = ((global::Gtk.PackType)(1));
+		w15.Position = 3;
+		w15.Expand = false;
+		w15.Fill = false;
 		this.Add (this.vbox1);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();
@@ -316,6 +335,7 @@ public partial class MainWindow
 		this.zoomOutAction.Activated += new global::System.EventHandler (this.OnDecreaseIconSizeActionActivated);
 		this.zoomNormalAction.Activated += new global::System.EventHandler (this.OnZoomNormalActionActivated);
 		this.copyAction.Activated += new global::System.EventHandler (this.OnCopyTableAction);
+		this.navigationBarAction.Activated += new global::System.EventHandler (this.OnNavigationBarActionActivated);
 		this.notebook1.SwitchPage += new global::Gtk.SwitchPageHandler (this.OnNotebook1SwitchPage);
 	}
 }

@@ -132,6 +132,9 @@
     <Compile Include="Plot\FlorenceUtil.cs" />
     <Compile Include="Plot\RectSizing.cs" />
     <Compile Include="GtkWidgets\TableWidgetBase.cs" />
+    <Compile Include="GtkWidgets\NavBarWidget.cs" />
+    <Compile Include="Util\Region.cs" />
+    <Compile Include="Util\RegionType.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
