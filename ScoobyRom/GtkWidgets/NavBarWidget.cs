@@ -11,13 +11,14 @@ namespace GtkWidgets
 	{
 		//public event EventHandler<EventArgs> Changed;
 
-		const double LineWidth = 1.0;
-		const int minWidth = 50;
-		const int minRectHeight = 14;
+		const double LineWidth = 1;
+		int minWidth = 50;
+		const int minRectHeight = 16;
 		const int padLeft = 10;
 		const int padRight = padLeft;
 		const int padTop = 4;
 		const int padBottom = padTop;
+		const int minHeight = padTop + minRectHeight + padBottom;
 
 		// necessary for getting overridden OnXXX methods called
 		//const int EventsUsed = (int)Gdk.EventMask.ButtonPressMask;
@@ -34,18 +35,45 @@ namespace GtkWidgets
 		Cairo.Color ColorFrame = new Cairo.Color (0, 0, 0);
 		Cairo.Color ColorCurrentPos = new Cairo.Color (1, 0, 0, 0.9);
 		Cairo.Color ColorMarkedPos = new Cairo.Color (0, 0.6, 0, 0.7);
-		Cairo.Color ColorRange = new Cairo.Color (0.6, 0.6, 0.6, 0.5);
 		//Cairo.Color ColorMarker1 = new Cairo.Color (0, 0, 1);
 		//Cairo.Color ColorMarker2 = new Cairo.Color (0, 0.5, 0);
 
 		public NavBarWidget ()
 		{
-			ClearMarkedPositions ();
+			Clear ();
+			KeyPressEvent += OnKeyPressEvent;
 			//this.CanFocus = true;
 			//this.AddEvents (EventsUsed);
 		}
 
 		#region public properties and methods
+
+		public void Clear ()
+		{
+			firstPos = 0;
+			lastPos = 0;
+			regions = null;
+			markedPositions = null;
+			QueueDraw ();
+		}
+
+		public void ZoomIn ()
+		{
+			this.minWidth = 2 * width;
+			QueueResize ();
+		}
+
+		public void ZoomOut ()
+		{
+			this.minWidth = width / 2;
+			QueueResize ();
+		}
+
+		public void ZoomReset ()
+		{
+			this.minWidth = 50;
+			QueueResize ();
+		}
 
 		public int FirstPos {
 			get { return firstPos; }
@@ -85,6 +113,14 @@ namespace GtkWidgets
 
 		public void SetRegions (IList<Util.Region> regions)
 		{
+			/*
+			var r = new List<Util.Region> ();
+			r.Add (regions [regions.Count - 300]);
+			r.Add (regions [regions.Count - 200]);
+			r.Add (regions [regions.Count - 1]);
+			
+			this.regions = r;
+			*/
 			this.regions = regions;
 			QueueDraw ();
 		}
@@ -161,6 +197,7 @@ namespace GtkWidgets
 		{
 			width = allocation.Width;
 			height = allocation.Height;
+			Console.WriteLine ("OnSizeAllocated: {0}x{1}", width, height);
 
 			backWidth = width - padLeft - padRight;
 			backHeight = height - padTop - padBottom;
@@ -178,7 +215,27 @@ namespace GtkWidgets
 		{
 			// Calculate desired size here.
 			requisition.Width = minWidth;
-			requisition.Height = padTop + minRectHeight + padBottom;
+			requisition.Height = minHeight;
+			Console.WriteLine ("OnSizeRequested -> Requisition: {0}x{1}", requisition.Width, requisition.Height);
+		}
+
+		void OnKeyPressEvent (object o, KeyPressEventArgs args)
+		{
+			const Gdk.ModifierType modifier = Gdk.ModifierType.Button1Mask;
+			Gdk.Key key = args.Event.Key;
+
+			if ((args.Event.State & modifier) != 0) {
+				if (key == Gdk.Key.Key_0 || key == Gdk.Key.KP_0) {
+					ZoomReset ();
+					return;
+				} else if (key == Gdk.Key.plus || key == Gdk.Key.KP_Add) {
+					ZoomIn ();
+					return;
+				} else if (key == Gdk.Key.minus || key == Gdk.Key.KP_Subtract) {
+					ZoomOut ();
+					return;
+				}
+			}
 		}
 
 		#endregion events
@@ -194,8 +251,9 @@ namespace GtkWidgets
 		{
 			// using combination of Gtk.Style.Paint... and Cairo commands
 
-			cr.LineCap = LineCap.Square;
+			cr.LineCap = LineCap.Butt;
 			cr.LineJoin = LineJoin.Miter;
+			cr.LineWidth = LineWidth;
 			// Cairo: black is default, like cr.SetSourceRGB (0, 0, 0);
 			DrawBack (cr);
 
@@ -205,7 +263,7 @@ namespace GtkWidgets
 			if (RegionsToDisplay) {
 				foreach (var r in this.regions) {
 					Cairo.Color color = Util.Coloring.RegionColor (r.RegionType);
-					DrawRange (cr, ref color, r.Pos1, r.Pos2);
+					DrawRegion (cr, ref color, r.Pos1, r.Pos2);
 					//DrawRangeMarker (cr, ref ColorMarker2, index2, ArrowType.Left);
 					//DrawRangeMarker (pos2, ArrowType.Left);
 
@@ -214,6 +272,7 @@ namespace GtkWidgets
 				}
 			}
 
+			cr.LineWidth = LineWidth;
 			if (MarkedPositionsToDisplay) {
 				SetColor (cr, ref ColorMarkedPos);
 				if (markedPositions.Length == PosSize) {
@@ -249,8 +308,6 @@ namespace GtkWidgets
 
 		void DrawBack (Cairo.Context cr)
 		{
-			cr.LineWidth = LineWidth;
-
 			Rectangle (cr, ref totalRect);
 			if (!NoData && Sensitive) {
 				SetColor (cr, ref ColorBack);
@@ -353,20 +410,23 @@ namespace GtkWidgets
 		}
 		*/
 
-		void DrawRange (Cairo.Context cr, ref Cairo.Color color, int index1, int index2)
+		void DrawRegion (Cairo.Context cr, ref Cairo.Color color, int pos1, int pos2)
 		{
-			double left = PosXLeft (index1);
-			double right = PosXLeft (index2);
-			double width = Math.Max (LineWidth, right - left);
+			const double LineWidthRegion = 0;
 
+			double left = PosXLeft (pos1);
+			double right = PosXLeft (pos2);
+			double width = Math.Max (LineWidthRegion, right - left);
+
+			cr.LineWidth = LineWidthRegion;
 			SetColor (cr, ref color);
-			cr.Rectangle (left, totalRect.Y + LineWidth, width, totalRect.Height - 2 * LineWidth);
+			cr.Rectangle (left, totalRect.Y + LineWidth, width, totalRect.Height - (2 * LineWidth));
 			cr.Fill ();
 		}
 
-		double PosXLeft (int sampleIndex)
+		double PosXLeft (int pos)
 		{
-			return padLeft + posFactor * sampleIndex;
+			return padLeft + posFactor * pos;
 		}
 	}
 }

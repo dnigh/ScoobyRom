@@ -242,6 +242,11 @@ public partial class MainWindow : Gtk.Window
 
 	void UpdateNavBar ()
 	{
+		if (!data.RomLoaded) {
+			navbarwidget.Clear ();
+			return;
+		}
+		
 		var regions = new List<Util.Region> (256);
 
 		navbarwidget.FirstPos = 0;
@@ -256,14 +261,14 @@ public partial class MainWindow : Gtk.Window
 		var tables2D = data.List2D;
 		foreach (var t in tables2D) {
 			regions.Add (new Util.Region (t.RangeX.Pos, t.RangeX.Last, Util.RegionType.AxisX));
-			regions.Add (new Util.Region (t.RangeY.Pos, t.RangeY.Last, Util.RegionType.Values));
+			regions.Add (new Util.Region (t.RangeY.Pos, t.RangeY.Last, Util.RegionType.ValuesY));
 		}
 
 		var tables3D = data.List3D;
 		foreach (var t in tables3D) {
 			regions.Add (new Util.Region (t.RangeX.Pos, t.RangeX.Last, Util.RegionType.AxisX));
 			regions.Add (new Util.Region (t.RangeY.Pos, t.RangeY.Last, Util.RegionType.AxisY));
-			regions.Add (new Util.Region (t.RangeZ.Pos, t.RangeZ.Last, Util.RegionType.Values));
+			regions.Add (new Util.Region (t.RangeZ.Pos, t.RangeZ.Last, Util.RegionType.ValuesZ));
 		}
 
 		int[] positions;
@@ -538,7 +543,13 @@ public partial class MainWindow : Gtk.Window
 
 	void OnNavigationBarActionActivated (object sender, EventArgs e)
 	{
-		navbarwidget.Visible = navigationBarAction.Active;
+		navbarwidget.ZoomIn ();
+		return;
+
+		navScrolledWindow.Visible = navigationBarAction.Active;
+		// tested: child .Visible keeps true
+		// probably not necessary:
+		navbarwidget.Visible = navScrolledWindow.Visible;
 	}
 
 	// create or close gnuplot window

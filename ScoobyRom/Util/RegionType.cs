@@ -7,7 +7,8 @@ namespace Util
 		Undefined,
 		AxisX,
 		AxisY,
-		Values,
+		ValuesY,
+		ValuesZ,
 		TableSearch,
 	}
 }

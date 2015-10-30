@@ -38,7 +38,7 @@ namespace Util
 		#region Constructors
 
 		// Initialize with a good rainbow color range
-		public Coloring () : this(new Cairo.Color (0.6, 0.6, 1.0), new Cairo.Color (1.0, 0.4, 0.4))
+		public Coloring () : this (new Cairo.Color (0.6, 0.6, 1.0), new Cairo.Color (1.0, 0.4, 0.4))
 		{
 		}
 
@@ -109,8 +109,10 @@ namespace Util
 		#endif
 
 		static Cairo.Color RegionColorAxisX = new Cairo.Color (0, 0, 1);
-		static Cairo.Color RegionColorAxisY = new Cairo.Color (0, 1, 0);
-		static Cairo.Color RegionColorValues = new Cairo.Color (1, 0, 1);
+		static Cairo.Color RegionColorAxisY = new Cairo.Color (0, 0.5, 0);
+		static Cairo.Color RegionColorValuesY = new Cairo.Color (1, 0.65, 0);
+		static Cairo.Color RegionColorValuesZ = new Cairo.Color (1, 0, 1);
+		static Cairo.Color RegionColorTableSearch = new Cairo.Color (0.8, 0.8, 0.8);
 
 		public static Cairo.Color RegionColor (RegionType regionType)
 		{
@@ -119,8 +121,12 @@ namespace Util
 				return RegionColorAxisX;
 			case RegionType.AxisY:
 				return RegionColorAxisY;
-			case RegionType.Values:
-				return RegionColorValues;
+			case RegionType.ValuesY:
+				return RegionColorValuesY;
+			case RegionType.ValuesZ:
+				return RegionColorValuesZ;
+			case RegionType.TableSearch:
+				return RegionColorTableSearch;
 			default:
 				return invalidCol;
 			}
