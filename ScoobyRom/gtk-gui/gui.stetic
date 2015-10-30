@@ -244,8 +244,7 @@
         <child>
           <widget class="Gtk.ScrolledWindow" id="navScrolledWindow">
             <property name="MemberName" />
-            <property name="VscrollbarPolicy">Never</property>
-            <property name="HscrollbarPolicy">Always</property>
+            <property name="HeightRequest">38</property>
             <child>
               <widget class="Gtk.Viewport" id="GtkViewport2">
                 <property name="MemberName" />
@@ -253,7 +252,7 @@
                 <child>
                   <widget class="GtkWidgets.NavBarWidget" id="navbarwidget">
                     <property name="MemberName" />
-                    <property name="Events">ButtonMotionMask, ButtonPressMask, KeyPressMask, FocusChangeMask, ScrollMask</property>
+                    <property name="CanFocus">True</property>
                     <property name="ShowScrollbars">True</property>
                     <property name="FirstPos">0</property>
                     <property name="LastPos">0</property>
@@ -279,7 +278,7 @@
               <widget class="Gtk.VPaned" id="vpaned2D">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Position">229</property>
+                <property name="Position">235</property>
                 <child>
                   <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindowTV2D">
                     <property name="MemberName" />
@@ -345,7 +344,7 @@
               <widget class="Gtk.VPaned" id="vpaned3D">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Position">207</property>
+                <property name="Position">213</property>
                 <child>
                   <widget class="Gtk.ScrolledWindow" id="ScrolledWindowTV3D">
                     <property name="MemberName" />

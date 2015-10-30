@@ -543,9 +543,6 @@ public partial class MainWindow : Gtk.Window
 
 	void OnNavigationBarActionActivated (object sender, EventArgs e)
 	{
-		navbarwidget.ZoomIn ();
-		return;
-
 		navScrolledWindow.Visible = navigationBarAction.Active;
 		// tested: child .Visible keeps true
 		// probably not necessary:

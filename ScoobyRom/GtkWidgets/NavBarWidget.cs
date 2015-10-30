@@ -5,8 +5,11 @@ using System.Collections.Generic;
 
 namespace GtkWidgets
 {
-	// .Sensitive works out of the box - does not accept e.g. ButtonPress event
-	[System.ComponentModel.ToolboxItem(true)]
+	/// <summary>
+	/// Nav bar widget.
+	/// In GUI designer leave this empty: "Common Widget Properties" -> "Events", otherwise some events may not work
+	/// </summary>
+	[System.ComponentModel.ToolboxItem (true)]
 	public sealed class NavBarWidget : Gtk.DrawingArea
 	{
 		//public event EventHandler<EventArgs> Changed;
@@ -38,12 +41,46 @@ namespace GtkWidgets
 		//Cairo.Color ColorMarker1 = new Cairo.Color (0, 0, 1);
 		//Cairo.Color ColorMarker2 = new Cairo.Color (0, 0.5, 0);
 
-		public NavBarWidget ()
+		#region boilerplate constructors
+
+		public NavBarWidget () : base ()
 		{
+			Init ();
+		}
+
+		public NavBarWidget (IntPtr raw) : base (raw)
+		{
+			Init ();
+		}
+
+		#endregion
+
+		void Init ()
+		{
+			this.CanFocus = true;
+			//this.SizeAllocated += new SizeAllocatedHandler(SizeAllocated);
+			//this.ExposeEvent += new ExposeEventHandler(ExposeEvent);
+			this.EnterNotifyEvent += new EnterNotifyEventHandler (OnEnterNotifyEvent);
+			this.LeaveNotifyEvent += new LeaveNotifyEventHandler (OnLeaveNotifyEvent);
+//			this.ButtonPressEvent += new ButtonPressEventHandler(ButtonPressEvent);
+//			this.MotionNotifyEvent += new MotionNotifyEventHandler(MotionNotifyEvent);
+//			this.ButtonReleaseEvent += new ButtonReleaseEventHandler(ButtonReleaseEvent);
+//			this.ScrollEvent += new ScrollEventHandler(ScrollEvent);
+			this.KeyPressEvent += new KeyPressEventHandler (OnKeyPressEvent);
+//			this.KeyReleaseEvent += new KeyReleaseEventHandler (OnKeyReleaseEvent);
+
+			// Subscribe to DrawingArea mouse movement and button press events.
+			// Enter and Leave notification is necessary to make ToolTips work.
+			// Specify PointerMotionHint to prevent being deluged with motion events.
+			this.AddEvents ((int)Gdk.EventMask.EnterNotifyMask);
+			this.AddEvents ((int)Gdk.EventMask.LeaveNotifyMask);
+			this.AddEvents ((int)Gdk.EventMask.ButtonPressMask);
+			this.AddEvents ((int)Gdk.EventMask.ButtonReleaseMask);
+			this.AddEvents ((int)Gdk.EventMask.PointerMotionMask);
+			this.AddEvents ((int)Gdk.EventMask.PointerMotionHintMask);
+			this.AddEvents ((int)Gdk.EventMask.ScrollMask);
+
 			Clear ();
-			KeyPressEvent += OnKeyPressEvent;
-			//this.CanFocus = true;
-			//this.AddEvents (EventsUsed);
 		}
 
 		#region public properties and methods
@@ -118,7 +155,7 @@ namespace GtkWidgets
 			r.Add (regions [regions.Count - 300]);
 			r.Add (regions [regions.Count - 200]);
 			r.Add (regions [regions.Count - 1]);
-			
+
 			this.regions = r;
 			*/
 			this.regions = regions;
@@ -221,21 +258,48 @@ namespace GtkWidgets
 
 		void OnKeyPressEvent (object o, KeyPressEventArgs args)
 		{
+			Console.WriteLine ("OnKeyPressEvent");
 			const Gdk.ModifierType modifier = Gdk.ModifierType.Button1Mask;
 			Gdk.Key key = args.Event.Key;
 
 			if ((args.Event.State & modifier) != 0) {
 				if (key == Gdk.Key.Key_0 || key == Gdk.Key.KP_0) {
 					ZoomReset ();
+					args.RetVal = true;     // Prevents further key processing
 					return;
 				} else if (key == Gdk.Key.plus || key == Gdk.Key.KP_Add) {
 					ZoomIn ();
+					args.RetVal = true;
 					return;
 				} else if (key == Gdk.Key.minus || key == Gdk.Key.KP_Subtract) {
 					ZoomOut ();
+					args.RetVal = true;
 					return;
 				}
 			}
+		}
+
+		//		void OnKeyReleaseEvent (object o, KeyReleaseEventArgs args)
+		//		{
+		//			args.RetVal = true;
+		//		}
+
+		void OnLeaveNotifyEvent (object o, LeaveNotifyEventArgs args)
+		{
+			Console.WriteLine ("OnLeaveNotifyEvent");
+			if (this.HasFocus) {
+				HasFocus = false;
+				//Console.WriteLine ("  had focus");
+			}
+			args.RetVal = true;
+		}
+
+		void OnEnterNotifyEvent (object o, EnterNotifyEventArgs args)
+		{
+			Console.WriteLine ("OnEnterNotifyEvent");
+			if (!this.HasFocus)
+				this.GrabFocus ();
+			args.RetVal = true;
 		}
 
 		#endregion events

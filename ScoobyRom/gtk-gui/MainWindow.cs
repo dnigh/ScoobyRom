@@ -202,15 +202,14 @@ public partial class MainWindow
 		w2.Fill = false;
 		// Container child vbox1.Gtk.Box+BoxChild
 		this.navScrolledWindow = new global::Gtk.ScrolledWindow ();
+		this.navScrolledWindow.HeightRequest = 38;
 		this.navScrolledWindow.Name = "navScrolledWindow";
-		this.navScrolledWindow.VscrollbarPolicy = ((global::Gtk.PolicyType)(2));
-		this.navScrolledWindow.HscrollbarPolicy = ((global::Gtk.PolicyType)(0));
 		// Container child navScrolledWindow.Gtk.Container+ContainerChild
 		global::Gtk.Viewport w3 = new global::Gtk.Viewport ();
 		w3.ShadowType = ((global::Gtk.ShadowType)(0));
 		// Container child GtkViewport2.Gtk.Container+ContainerChild
 		this.navbarwidget = new global::GtkWidgets.NavBarWidget ();
-		this.navbarwidget.Events = ((global::Gdk.EventMask)(2114832));
+		this.navbarwidget.CanFocus = true;
 		this.navbarwidget.Name = "navbarwidget";
 		this.navbarwidget.FirstPos = 0;
 		this.navbarwidget.LastPos = 0;
@@ -230,7 +229,7 @@ public partial class MainWindow
 		this.vpaned2D = new global::Gtk.VPaned ();
 		this.vpaned2D.CanFocus = true;
 		this.vpaned2D.Name = "vpaned2D";
-		this.vpaned2D.Position = 229;
+		this.vpaned2D.Position = 235;
 		// Container child vpaned2D.Gtk.Paned+PanedChild
 		this.GtkScrolledWindowTV2D = new global::Gtk.ScrolledWindow ();
 		this.GtkScrolledWindowTV2D.Name = "GtkScrolledWindowTV2D";
@@ -272,7 +271,7 @@ public partial class MainWindow
 		this.vpaned3D = new global::Gtk.VPaned ();
 		this.vpaned3D.CanFocus = true;
 		this.vpaned3D.Name = "vpaned3D";
-		this.vpaned3D.Position = 207;
+		this.vpaned3D.Position = 213;
 		// Container child vpaned3D.Gtk.Paned+PanedChild
 		this.ScrolledWindowTV3D = new global::Gtk.ScrolledWindow ();
 		this.ScrolledWindowTV3D.Name = "ScrolledWindowTV3D";
