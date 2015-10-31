@@ -199,7 +199,7 @@ namespace Subaru.File
 			} else {
 				// search through whole ROM file
 				startPos = 0;
-				lastPos = this.Size - 1;
+				lastPos = int.MaxValue;
 			}
 			FindMaps (startPos, lastPos, out list2D, out list3D);
 		}
@@ -207,10 +207,11 @@ namespace Subaru.File
 		public void FindMaps (int startPos, int lastPos, out IList<Table2D> list2D, out IList<Table3D> list3D)
 		{
 			this.startPos = startPos;
-			lastPos = Math.Min (lastPos, Size - 1);
+			// smallest 2D table record size is 12 bytes
+			lastPos = Math.Min (lastPos, Size - 1 - 12);
 			this.lastPos = lastPos;
 
-			// Restricting pointers to a range can improve detection accuracy.
+			// Restricting pointers to a realistic range improves detection accuracy.
 			// Using conservative settings here:
 			// In Subaru ROMs at least first 8 KiB usually contain low level stuff, no maps.
 			Table.PosMin = 8 * KiB;
@@ -223,10 +224,9 @@ namespace Subaru.File
 			OnProgressChanged (0);
 			this.percentDoneLastReport = 0;
 
-			for (long pos = startPos; pos <= lastPos;) {
-				// check for end of file
-				if (pos >= stream.Length)
-					break;
+			// records need to be 4-byte-aligned anyway
+			// --> much faster than just ++pos, also skips a few false positives
+			for (long pos = startPos; pos <= lastPos; pos = NextAlignedPos (pos, 4)) {
 				stream.Position = pos;
 				CheckProgress (pos);
 
@@ -234,6 +234,7 @@ namespace Subaru.File
 				Table3D info3D = Table3D.TryParseValid (this.stream);
 				if (info3D != null) {
 					list3D.Add (info3D);
+					// this is often a valid next pos, already aligned
 					pos = stream.Position;
 				} else {
 					// must back off
@@ -242,6 +243,7 @@ namespace Subaru.File
 					Table2D info2D = Table2D.TryParseValid (this.stream);
 					if (info2D != null) {
 						list2D.Add (info2D);
+						// this is often a valid next pos, already aligned
 						pos = stream.Position;
 					} else {
 						// nothing valid, try at next possible location
@@ -250,6 +252,20 @@ namespace Subaru.File
 				}
 			}
 			OnProgressChanged (100);
+		}
+
+		/// <summary>
+		/// Calculates the next aligned position, which is greater than or equal given position.
+		/// </summary>
+		/// <returns>The aligned position.</returns>
+		/// <param name="pos">Position or memory address.</param>
+		/// <param name="align">Alignment in bytes, &gt; 0, i.e. 4 for many 32 bit architectures.</param>
+		public static long NextAlignedPos (long pos, int align)
+		{
+			if (align < 0)
+				throw new ArgumentOutOfRangeException ("align");
+			long mod = pos % align;
+			return mod == 0 ? pos : pos - mod + align;
 		}
 
 		static bool IsASCIIPrintable (char c)
@@ -271,9 +287,9 @@ namespace Subaru.File
 			return true;
 		}
 
-		void PrintStringInfo (string s, long pos)
+		static void PrintStringInfo (string s, long pos)
 		{
-			Console.WriteLine ("ASCII [{0}] \"{1}\" pos: 0x{2:X}", s.Length.ToString (), s, pos);
+			Console.WriteLine ("ASCII [{0}] \"{1}\" @ 0x{2:X}", s.Length.ToString (), s, pos);
 		}
 
 		bool FindExtendASCII (Stream stream, string find, out string found, out long position)
@@ -293,12 +309,25 @@ namespace Subaru.File
 
 		public void FindMetadata ()
 		{
+			const string DensoASCII = "DENSO";
 			// Euro5 (not Euro4) diesel as well as newer petrol models have System String
 			const string DieselASCII = "DIESEL";
 			const string TurboASCII = "TURBO";
 
+			long posDenso = 0;
 			long pos;
 			string strFound;
+
+			stream.Position = 0;
+			if (FindExtendASCII (stream, DensoASCII, out strFound, out pos)) {
+				PrintStringInfo (strFound, pos);
+				// sometimes i.e. first char is ASCII but wrong, should start with 'C', for "Copr." or similar
+				posDenso = pos;
+				int i = strFound.IndexOf ('C');
+				if (i > 0 && i < 4) {
+					posDenso += i;
+				}
+			}
 
 			stream.Position = 0;
 			if (FindExtendASCII (stream, DieselASCII, out strFound, out pos)) {
@@ -336,15 +365,28 @@ namespace Subaru.File
 				Console.WriteLine ("CID: {0}", CID);
 			}
 
-			try {
-				stream.Position = pos + RomIDlongLength;
-				int year = stream.ReadByte () + 2000;
-				int month = stream.ReadByte ();
-				int day = stream.ReadByte ();
-				this.romDate = new DateTime (year, month, day);
-				Console.WriteLine ("RomDate: {0}", RomDateStr);
-			} catch (Exception) {
-				Console.Error.WriteLine ("RomDate failed");
+			bool isDiesel = posDenso > 0x4000;
+
+			if (posDenso > 0) {
+				try {
+					stream.Position = posDenso - 3;
+					int year, month, day;
+
+					if (isDiesel) {
+						year = stream.ReadByte () + 2000;
+						month = stream.ReadByte ();
+						day = stream.ReadByte ();
+					} else {
+						year = ParsePackedNaturalBCD ((byte)stream.ReadByte ()) + 2000;
+						month = ParsePackedNaturalBCD ((byte)stream.ReadByte ());
+						day = ParsePackedNaturalBCD ((byte)stream.ReadByte ());
+					}
+
+					this.romDate = new DateTime (year, month, day);
+					Console.WriteLine ("RomDate: {0}", RomDateStr);
+				} catch (Exception) {
+					Console.Error.WriteLine ("RomDate failed");
+				}
 			}
 
 			byte[] searchBytes = new byte[] { 0xA2, 0x10, 0x14 };
@@ -363,6 +405,25 @@ namespace Subaru.File
 					Console.WriteLine ("ROMID: {0}", romid.ToString ("X10"));
 				}
 			}
+		}
+
+
+		/// <summary>
+		/// Parses a packed BCD byte.
+		/// "Natural BCD (NBCD) (Binary Coded Decimal)", also called "8421" encoding.
+		/// http://en.wikipedia.org/wiki/Binary-coded_decimal
+		/// Example: input hex 0x98 yields decimal 98.
+		/// </summary>
+		/// <returns>The parsed value.</returns>
+		/// <param name="hexValue">source value, must be in range 0x00..0x99</param>
+		public static byte ParsePackedNaturalBCD (byte hexValue)
+		{
+			byte nibbleLow = (byte)(hexValue & 0x0F);
+			byte nibbleHigh = (byte)((hexValue >> 4) & 0x0F);
+			if (nibbleLow > 9 || nibbleHigh > 9)
+				throw new ArgumentOutOfRangeException ("hexValue", "not a valid packed natural BCD byte");
+			//return int.Parse (hexValue.ToString ("X"));
+			return (byte)(10 * nibbleHigh + nibbleLow);
 		}
 
 		#region IDisposable implementation

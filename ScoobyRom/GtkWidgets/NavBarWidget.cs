@@ -234,7 +234,7 @@ namespace GtkWidgets
 		{
 			width = allocation.Width;
 			height = allocation.Height;
-			Console.WriteLine ("OnSizeAllocated: {0}x{1}", width, height);
+			//Console.WriteLine ("OnSizeAllocated: {0}x{1}", width, height);
 
 			backWidth = width - padLeft - padRight;
 			backHeight = height - padTop - padBottom;
@@ -253,12 +253,12 @@ namespace GtkWidgets
 			// Calculate desired size here.
 			requisition.Width = minWidth;
 			requisition.Height = minHeight;
-			Console.WriteLine ("OnSizeRequested -> Requisition: {0}x{1}", requisition.Width, requisition.Height);
+			//Console.WriteLine ("OnSizeRequested -> Requisition: {0}x{1}", requisition.Width, requisition.Height);
 		}
 
 		void OnKeyPressEvent (object o, KeyPressEventArgs args)
 		{
-			Console.WriteLine ("OnKeyPressEvent");
+			//Console.WriteLine ("OnKeyPressEvent");
 			const Gdk.ModifierType modifier = Gdk.ModifierType.Button1Mask;
 			Gdk.Key key = args.Event.Key;
 
@@ -286,7 +286,7 @@ namespace GtkWidgets
 
 		void OnLeaveNotifyEvent (object o, LeaveNotifyEventArgs args)
 		{
-			Console.WriteLine ("OnLeaveNotifyEvent");
+			//Console.WriteLine ("OnLeaveNotifyEvent");
 			if (this.HasFocus) {
 				HasFocus = false;
 				//Console.WriteLine ("  had focus");
@@ -296,7 +296,8 @@ namespace GtkWidgets
 
 		void OnEnterNotifyEvent (object o, EnterNotifyEventArgs args)
 		{
-			Console.WriteLine ("OnEnterNotifyEvent");
+			//Console.WriteLine ("OnEnterNotifyEvent");
+			// necessary for keys to work:
 			if (!this.HasFocus)
 				this.GrabFocus ();
 			args.RetVal = true;
@@ -328,11 +329,16 @@ namespace GtkWidgets
 				foreach (var r in this.regions) {
 					Cairo.Color color = Util.Coloring.RegionColor (r.RegionType);
 					DrawRegion (cr, ref color, r.Pos1, r.Pos2);
-					//DrawRangeMarker (cr, ref ColorMarker2, index2, ArrowType.Left);
-					//DrawRangeMarker (pos2, ArrowType.Left);
 
-					//DrawRangeMarker (cr, ref ColorMarker1, index1, ArrowType.Right);
-					//DrawRangeMarker (pos1, ArrowType.Right);
+					if (r.RegionType == Util.RegionType.TableSearch) {
+						cr.LineWidth = LineWidth;
+						SetColor (cr, ref color);
+						DrawRangeMarker (cr, r.Pos2, ArrowType.Right);
+						DrawRangeMarker (r.Pos2, ArrowType.Left);
+
+						DrawRangeMarker (cr, r.Pos1, ArrowType.Left);
+						DrawRangeMarker (r.Pos1, ArrowType.Right);
+					}
 				}
 			}
 
@@ -413,9 +419,9 @@ namespace GtkWidgets
 		}
 		*/
 
-		void DrawRangeMarker (int sampleIndex, ArrowType arrowType)
+		void DrawRangeMarker (int pos, ArrowType arrowType)
 		{
-			int x = Convert.ToInt32 (PosXLeft (sampleIndex));
+			int x = Convert.ToInt32 (PosXLeft (pos));
 			int height = Convert.ToInt32 (totalRect.Height);
 			int y = Convert.ToInt32 (totalRect.Y);
 			int dx = height / 2 + 2;
@@ -435,23 +441,35 @@ namespace GtkWidgets
 				x, y, dx, height);
 		}
 
-		/*
-		void DrawRangeMarker (Cairo.Context cr, ref Cairo.Color color, int sampleIndex, ArrowType arrowType)
+		void DrawRangeMarker (Cairo.Context cr, int pos, ArrowType arrowType)
 		{
-			double x = PosXLeft (sampleIndex);
+			double x = PosXLeft (pos);
 			double height = totalRect.Height;
 			double y = totalRect.Y;
-			double dx = 0.25 * height;
+			double dx = 0.33 * height;
 
 			if (arrowType == ArrowType.Left)
 				dx = -dx;
-			SetColor (cr, ref color);
 			cr.MoveTo (x + dx, y);
 			cr.LineTo (x, y + 0.5 * height);
 			cr.LineTo (x + dx, y + height);
 			cr.Stroke ();
 		}
-		*/
+
+		void DrawRangeMarker2 (Cairo.Context cr, int pos, ArrowType arrowType)
+		{
+			double x = PosXLeft (pos);
+			double height = totalRect.Height;
+			double y = totalRect.Y;
+			double dx = 0.33 * height;
+
+			if (arrowType == ArrowType.Left)
+				dx = -dx;
+			cr.MoveTo (x + dx, y);
+			cr.LineTo (x, y + 0.5 * height);
+			cr.LineTo (x + dx, y + height);
+			cr.Stroke ();
+		}
 
 		/*
 		void DrawRange (int index1, int index2)

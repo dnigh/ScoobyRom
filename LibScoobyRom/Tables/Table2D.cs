@@ -135,11 +135,15 @@ namespace Subaru.Tables
 		{
 		}
 
+		public override int RecordSize {
+			get { return hasMAC ? 20 : 12; }
+		}
+
 		public override string ToString ()
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder (200);
 			sb.AppendFormat ("[Table2D @ {0:X6} | Count={1} Type={2} | RangeX={3}, RangeY={4} | xMin={5} xMax={6} | yMin={7} yMax={8} yAvg={9}", Location, CountX, TableType.ToStr (), rangeX.ToString (), rangeY.ToString (), Xmin.ToString (), Xmax.ToString (), Ymin.ToString (), Ymax.ToString (),
-			Yavg.ToString ());
+				Yavg.ToString ());
 			if (hasMAC) {
 				sb.AppendFormat (" | Multiplier={0}, Offset={1}]", Multiplier, Offset);
 			} else {
@@ -209,7 +213,7 @@ namespace Subaru.Tables
 		{
 			// X-axis is being called "Y Axis" in RR!
 			return new XElement ("table", new XAttribute ("type", "2D"), new XAttribute ("name", title), new XAttribute ("category", category), new XAttribute ("storagetype", tableType.ToRRType ()), new XAttribute ("endian", endian), new XAttribute ("sizey", countX.ToString ()), new XAttribute ("storageaddress", HexAddress (rangeY.Pos)), new XComment (ValuesStats (valuesYmin, valuesYmax, valuesYavg)), RRXmlScaling (unitX, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
-			RRXmlAxis ("Y Axis", nameX, unitX, TableType.Float, rangeX, valuesX), new XElement ("description", description));
+				RRXmlAxis ("Y Axis", nameX, unitX, TableType.Float, rangeX, valuesX), new XElement ("description", description));
 		}
 
 		public void WriteCSV (System.IO.TextWriter tw)
@@ -225,9 +229,9 @@ namespace Subaru.Tables
 
 			float[] valuesY = GetValuesYasFloats ();
 			for (int i = 0; i < countX; i++) {
-				tw.Write (valuesX[i].ToString (cultureInfo));
+				tw.Write (valuesX [i].ToString (cultureInfo));
 				tw.Write (delimiter);
-				tw.WriteLine (valuesY[i].ToString (cultureInfo));
+				tw.WriteLine (valuesY [i].ToString (cultureInfo));
 			}
 		}
 
@@ -252,7 +256,7 @@ namespace Subaru.Tables
 				if (i > 0) {
 					sb.Append (DelimiterRomRaider);
 				}
-				sb.Append (valuesY[i].ToString (cultureInfo));
+				sb.Append (valuesY [i].ToString (cultureInfo));
 			}
 			return sb.ToString ();
 		}

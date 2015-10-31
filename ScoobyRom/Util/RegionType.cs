@@ -9,6 +9,8 @@ namespace Util
 		AxisY,
 		ValuesY,
 		ValuesZ,
+		TableRecord2D,
+		TableRecord3D,
 		TableSearch,
 	}
 }

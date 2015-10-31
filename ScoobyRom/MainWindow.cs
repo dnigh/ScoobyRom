@@ -260,23 +260,25 @@ public partial class MainWindow : Gtk.Window
 
 		var tables2D = data.List2D;
 		foreach (var t in tables2D) {
+			regions.Add (new Util.Region (t.Location, t.Location + t.RecordSize - 1, Util.RegionType.TableRecord2D));
 			regions.Add (new Util.Region (t.RangeX.Pos, t.RangeX.Last, Util.RegionType.AxisX));
 			regions.Add (new Util.Region (t.RangeY.Pos, t.RangeY.Last, Util.RegionType.ValuesY));
 		}
 
 		var tables3D = data.List3D;
 		foreach (var t in tables3D) {
+			regions.Add (new Util.Region (t.Location, t.Location + t.RecordSize - 1, Util.RegionType.TableRecord3D));
 			regions.Add (new Util.Region (t.RangeX.Pos, t.RangeX.Last, Util.RegionType.AxisX));
 			regions.Add (new Util.Region (t.RangeY.Pos, t.RangeY.Last, Util.RegionType.AxisY));
 			regions.Add (new Util.Region (t.RangeZ.Pos, t.RangeZ.Last, Util.RegionType.ValuesZ));
 		}
 
-		int[] positions;
-		//positions = data.List2D.Select (t => t.Location).ToArray ();
-		positions = data.List2D.Select (t => t.Location).Concat (data.List3D.Select (t => t.Location)).ToArray ();
-
 		navbarwidget.SetRegions (regions);
-		navbarwidget.SetMarkedPositions (positions);
+
+		//int[] positions;
+		//positions = data.List2D.Select (t => t.Location).ToArray ();
+		//positions = data.List2D.Select (t => t.Location).Concat (data.List3D.Select (t => t.Location)).ToArray ();
+		//navbarwidget.SetMarkedPositions (positions);
 	}
 
 	static void DoPendingEvents ()
