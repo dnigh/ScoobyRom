@@ -218,7 +218,7 @@ public partial class MainWindow : Gtk.Window
 				DoPendingEvents ();
 				Console.WriteLine (txt);
 
-				UpdateNavBar ();
+				PopulateNavBar ();
 
 				dataView2DGtk.ShowIcons = false;
 				dataView3DGtk.ShowIcons = false;
@@ -240,7 +240,7 @@ public partial class MainWindow : Gtk.Window
 		});
 	}
 
-	void UpdateNavBar ()
+	void PopulateNavBar ()
 	{
 		if (!data.RomLoaded) {
 			navbarwidget.Clear ();
@@ -250,11 +250,10 @@ public partial class MainWindow : Gtk.Window
 		var regions = new List<Util.Region> (256);
 
 		navbarwidget.FirstPos = 0;
-		navbarwidget.LastPos = data.Rom.Size;
+		navbarwidget.LastPos = data.Rom.Size - 1;
 
 		var searchRange = data.TableSearchRange;
-		if (searchRange.HasValue)
-		{
+		if (searchRange.HasValue) {
 			regions.Add (new Util.Region (searchRange.Value.Pos, searchRange.Value.Last, Util.RegionType.TableSearch));
 		}
 
@@ -274,11 +273,6 @@ public partial class MainWindow : Gtk.Window
 		}
 
 		navbarwidget.SetRegions (regions);
-
-		//int[] positions;
-		//positions = data.List2D.Select (t => t.Location).ToArray ();
-		//positions = data.List2D.Select (t => t.Location).Concat (data.List3D.Select (t => t.Location)).ToArray ();
-		//navbarwidget.SetMarkedPositions (positions);
 	}
 
 	static void DoPendingEvents ()
@@ -295,6 +289,8 @@ public partial class MainWindow : Gtk.Window
 
 	void ClearVisualizations ()
 	{
+		navbarwidget.ClearMarkedPositions ();
+
 		plotSurface.Clear ();
 		plotSurface.Refresh ();
 
@@ -314,6 +310,8 @@ public partial class MainWindow : Gtk.Window
 			return;
 
 		navbarwidget.CurrentPos = table.Location;
+
+		navbarwidget.SetMarkedPositions (new int[] { table.RangeX.Pos, table.RangeY.Pos, table.RangeZ.Pos });
 
 		var valuesZ = table.GetValuesZasFloats ();
 		var tableUI = new GtkWidgets.TableWidget3D (coloring, table.ValuesX, table.ValuesY, valuesZ,
@@ -348,6 +346,7 @@ public partial class MainWindow : Gtk.Window
 			return;
 
 		navbarwidget.CurrentPos = table.Location;
+		navbarwidget.SetMarkedPositions (new int[] { table.RangeX.Pos, table.RangeY.Pos });
 
 		// plot
 		plot2D.Draw (table);
