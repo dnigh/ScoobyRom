@@ -646,12 +646,12 @@ public partial class MainWindow : Gtk.Window
 		d.Show ();
 	}
 
-	void OnStatisticsWindowActionActivated (object sender, System.EventArgs e)
+	void OnPropertiesWindowActionActivated (object sender, System.EventArgs e)
 	{
 		if (!data.RomLoaded)
 			return;
 
-		var d = new StatisticsWindow (data);
+		var d = new PropertiesWindow (data);
 		d.Show ();
 	}
 
@@ -736,7 +736,7 @@ public partial class MainWindow : Gtk.Window
 		zoomNormalAction.Sensitive = sensitive;
 
 		checksumWindowAction.Sensitive = sensitive;
-		statisticsWindowAction.Sensitive = sensitive;
+		propertiesWindowAction.Sensitive = sensitive;
 
 		plotExternalAction.Sensitive = sensitive;
 		createSVGFileAction.Sensitive = sensitive;

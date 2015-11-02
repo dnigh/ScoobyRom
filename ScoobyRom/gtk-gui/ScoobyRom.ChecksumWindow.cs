@@ -28,7 +28,6 @@ namespace ScoobyRom
 			// Widget ScoobyRom.ChecksumWindow
 			this.Name = "ScoobyRom.ChecksumWindow";
 			this.Title = "Checksum Window";
-			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Container child ScoobyRom.ChecksumWindow.Gtk.Container+ContainerChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";

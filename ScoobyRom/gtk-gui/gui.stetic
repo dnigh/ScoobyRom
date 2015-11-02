@@ -93,12 +93,14 @@
         <property name="ShortLabel" translatable="yes">Checksum Window</property>
         <signal name="Activated" handler="OnROMChecksumsActionActivated" />
       </action>
-      <action id="statisticsWindowAction">
+      <action id="propertiesWindowAction">
         <property name="Type">Action</property>
-        <property name="Label" translatable="yes">Statistics Window</property>
+        <property name="Accelerator">&lt;Alt&gt;&lt;Mod2&gt;Return</property>
+        <property name="Label" translatable="yes">Properties Window</property>
         <property name="Sensitive">False</property>
-        <property name="ShortLabel" translatable="yes">Statistics Window</property>
-        <signal name="Activated" handler="OnStatisticsWindowActionActivated" />
+        <property name="ShortLabel" translatable="yes">Properties Window</property>
+        <property name="StockId">gtk-properties</property>
+        <signal name="Activated" handler="OnPropertiesWindowActionActivated" />
       </action>
       <action id="PlotAction">
         <property name="Type">Action</property>
@@ -218,7 +220,7 @@
                 <node type="Menuitem" action="zoomNormalAction" />
                 <node type="Separator" />
                 <node type="Menuitem" action="checksumWindowAction" />
-                <node type="Menuitem" action="statisticsWindowAction" />
+                <node type="Menuitem" action="propertiesWindowAction" />
                 <node type="Separator" />
                 <node type="Menuitem" action="navigationBarAction" />
               </node>
@@ -433,7 +435,6 @@
   <widget class="Gtk.Window" id="ScoobyRom.ChecksumWindow" design-size="419 548">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Checksum Window</property>
-    <property name="WindowPosition">CenterOnParent</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
@@ -531,9 +532,10 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="ScoobyRom.StatisticsWindow" design-size="262 210">
+  <widget class="Gtk.Window" id="ScoobyRom.PropertiesWindow" design-size="262 210">
     <property name="MemberName" />
-    <property name="Title" translatable="yes">Statistics Window</property>
+    <property name="Title" translatable="yes">Properties Window</property>
+    <property name="Icon">stock:gtk-properties Menu</property>
     <child>
       <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
         <property name="MemberName" />
@@ -892,7 +894,7 @@
                 <child>
                   <widget class="Gtk.Label" id="labelRowRomDate">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">ROM Date &lt;sup&gt;(Diesel only)&lt;/sup&gt;</property>
+                    <property name="LabelProp" translatable="yes">ROM Date</property>
                     <property name="UseMarkup">True</property>
                     <property name="Wrap">True</property>
                   </widget>

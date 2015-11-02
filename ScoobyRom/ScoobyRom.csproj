@@ -121,8 +121,6 @@
     <Compile Include="Plot\PlotIcon3D.cs" />
     <Compile Include="Plot\Plot2D.cs" />
     <Compile Include="Plot\Plot3D.cs" />
-    <Compile Include="gtk-gui\ScoobyRom.StatisticsWindow.cs" />
-    <Compile Include="UIGtk\StatisticsWindow.cs" />
     <Compile Include="Plot\GnuPlot.cs" />
     <Compile Include="Plot\GnuPlotExceptions.cs" />
     <Compile Include="Plot\PlotIconBase.cs" />
@@ -138,6 +136,8 @@
     <Compile Include="GtkWidgets\NavBarWidget.cs" />
     <Compile Include="Util\Region.cs" />
     <Compile Include="Util\RegionType.cs" />
+    <Compile Include="UIGtk\PropertiesWindow.cs" />
+    <Compile Include="gtk-gui\ScoobyRom.PropertiesWindow.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

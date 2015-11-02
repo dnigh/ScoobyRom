@@ -484,7 +484,7 @@ Without XML file or missing *tableSearch* XML element (see below), the app will 
 On a slow computer this can take several seconds.
 By using a good search range, load time is usually just a fraction of a second - highly recommended if you use this app frequently in terms of editing metadata!
 
-See record position column as well as statistics window to get first/last record positions.
+See record position column, properties window and navigation bar to get first/last record positions.
 Currently you've got to add and adjust this manually in XML:
 
 
@@ -681,7 +681,7 @@ If `<ROM_file>` cannot be found, ScoobyRom ignores this error, starts in normal 
 
 Couple of things that may not be immediately obvious:
 
-*	Both tab pages have a horizontal splitter between list view (top) and visualization area (bottom).
+*	Both tab pages have a horizontal splitter between list view (top) and visualisation area (bottom).
 Click & drag splitter according to your needs. However, the app does not remember such UI settings.
 
 *	Using check mark columns has no effect at all, selection is not being saved/restored.
@@ -695,11 +695,11 @@ You can use it to temporarily select and sort items if you want to. Might have m
 
 	Column *Record*: you need to type in complete address in hex, i.e. "`8ddc4`" or "`0x8ddc4`". Supported hexadecimal prefixes are "`0x`" and "`$`".
 
-*	Visualization (`Ctrl+Space`): Either displays coloured table values (3D) or 2D values + line graph in bottom tab pane.
-Any visualization (except icons) does not update on changed metadata (text, data type),
+*	Visualisation (`Ctrl+Space`): Either displays coloured table values (3D) or 2D values + line graph in bottom tab pane.
+Any visualisation (except icons) does not update on changed metadata (text, data type),
 you'll have to trigger updates manually (`Ctrl+Space`) and/or (`Ctrl+P`) for gnuplot window.
 Double-clicking or (`Enter`) key on a focused read-only row column (icon, numbers)
-also triggers internal visualization.
+also triggers internal visualisation.
 
 *	Icons update immediately on table type change as this is a fast operation.
 By looking a the icon you can often tell already whether current data type is correct or not ("stripe patterns", bad values).
@@ -723,9 +723,17 @@ Often these are valid tables and are actually used in ROM firmware logic.
 	*	(`Home` / `Pos1`) key to reset plot (auto-scale both axes)
 	*	(`Alt`) in addition to other keys for finer operation
 
-*	*"Edit -> Copy Table"* (`Ctrl+C`)
+*	*"Edit -> Copy Table"* (`Alt+C`)
 
 	*	Copies table values as text into clipboard.
 	*	The format is *RomRaider*-compatible but also works well for pasting into spreadsheet applications (*LibreOffice Calc, Microsoft Excel*). You can easily verify the output by pasting into a text editor.
 	*	Values only, no annotations (text)
-	*	The number format (decimal separator) depends on current operating system region settings.
+	*	The number format (decimal separator) depends on current operating system region settings. (Not sure yet if *RomRaider* also uses current locale or always needs English formatting for copy/paste.)
+
+*	Navigation Bar
+
+	*	Visualises ROM content using different colours: table 2D/3D records, X- and Y-axes, values.
+	*	Currently zoom in/out only works by holding (left) mouse button #1 depressed and pressing key (`+`), (`-`) or (`0`).
+	*	Tooltip shows ROM position at mouse pointer.
+	*	Vertical markers (red) show currently viewed table record and axes locations, updated at visualise-action.
+	*	Special markers (left + right) and coloured region (grey) appear when *tableSearch* is specified. Makes it easy to verify or improve table search range.
