@@ -111,6 +111,12 @@ namespace Subaru.Tables
 			set { location = value; }
 		}
 
+		/// <summary>
+		/// Gets the size of the record (structure) in bytes.
+		/// </summary>
+		/// <value>The size of the record in bytes.</value>
+		public abstract int RecordSize { get; }
+
 		public int CountX {
 			get { return countX; }
 			set { countX = value; }

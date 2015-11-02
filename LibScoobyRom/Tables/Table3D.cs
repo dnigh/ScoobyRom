@@ -27,6 +27,8 @@ using Extensions;
 
 namespace Subaru.Tables
 {
+	// Native ROM struct size is 28 bytes in cases where there are two MAC floats,
+	// 20 bytes without the two MAC floats
 	public sealed class Table3D : Table
 	{
 		const int CountXMax = CountMax;
@@ -47,6 +49,7 @@ namespace Subaru.Tables
 			s_tableInfo3D.rangeZ.Pos = stream.ReadInt32BigEndian ();
 			// first byte matters, rest probably just alignment (zeroes), read all four in one go by little endian
 			s_tableInfo3D.tableType = (TableType)(stream.ReadInt32LittleEndian ());
+			// 20 bytes read so far
 
 			// Float type never has MAC floats so far, makes sense.
 			// Shortcut, does not hurt (valid) results though.
@@ -150,12 +153,12 @@ namespace Subaru.Tables
 
 		// valid object has increasing axis values
 		public float Ymin {
-			get { return valuesY != null ? valuesY[0] : float.NaN; }
+			get { return valuesY != null ? valuesY [0] : float.NaN; }
 		}
 
 		// valid object has increasing axis values
 		public float Ymax {
-			get { return valuesY != null ? valuesY[this.valuesY.Length - 1] : float.NaN; }
+			get { return valuesY != null ? valuesY [this.valuesY.Length - 1] : float.NaN; }
 		}
 
 		public float[] GetValuesZasFloats ()
@@ -203,6 +206,10 @@ namespace Subaru.Tables
 
 		public Table3D ()
 		{
+		}
+
+		public override int RecordSize {
+			get { return hasMAC ? 28 : 20; }
 		}
 
 		public override bool HasMetadata {
@@ -296,7 +303,7 @@ namespace Subaru.Tables
 		public override XElement RRXml ()
 		{
 			return new XElement ("table", new XAttribute ("type", "3D"), new XAttribute ("name", title), new XAttribute ("category", category), new XAttribute ("storagetype", tableType.ToRRType ()), new XAttribute ("endian", endian), new XAttribute ("sizex", countX.ToString ()), new XAttribute ("sizey", countY.ToString ()), new XAttribute ("storageaddress", HexAddress (rangeZ.Pos)), new XComment (ValuesStats (valuesZmin, valuesZmax, valuesZavg)),
-			RRXmlScaling (unitZ, Expression, ExpressionBack, "0.000", 0.01f, 0.1f), RRXmlAxis ("X Axis", nameX, unitX, TableType.Float, rangeX, valuesX), RRXmlAxis ("Y Axis", nameY, unitY, TableType.Float, rangeY, valuesY), new XElement ("description", description));
+				RRXmlScaling (unitZ, Expression, ExpressionBack, "0.000", 0.01f, 0.1f), RRXmlAxis ("X Axis", nameX, unitX, TableType.Float, rangeX, valuesX), RRXmlAxis ("Y Axis", nameY, unitY, TableType.Float, rangeY, valuesY), new XElement ("description", description));
 		}
 
 		public override string CopyTableRomRaider ()

@@ -175,6 +175,14 @@
         <property name="Tooltip">i.e. for paste into spreadsheet application or RomRaider</property>
         <signal name="Activated" handler="OnCopyTableAction" />
       </action>
+      <action id="navigationBarAction">
+        <property name="Type">Toggle</property>
+        <property name="Label" translatable="yes">_Navigation Bar</property>
+        <property name="ShortLabel" translatable="yes">_Navigation Bar</property>
+        <property name="DrawAsRadio">False</property>
+        <property name="Active">True</property>
+        <signal name="Activated" handler="OnNavigationBarActionActivated" />
+      </action>
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">ScoobyRom</property>
@@ -211,6 +219,8 @@
                 <node type="Separator" />
                 <node type="Menuitem" action="checksumWindowAction" />
                 <node type="Menuitem" action="statisticsWindowAction" />
+                <node type="Separator" />
+                <node type="Menuitem" action="navigationBarAction" />
               </node>
               <node type="Menu" action="PlotAction">
                 <node type="Menuitem" action="plotExternalAction" />
@@ -226,9 +236,36 @@
           </widget>
           <packing>
             <property name="Position">0</property>
-            <property name="AutoSize">True</property>
+            <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.ScrolledWindow" id="navScrolledWindow">
+            <property name="MemberName" />
+            <property name="HeightRequest">38</property>
+            <child>
+              <widget class="Gtk.Viewport" id="GtkViewport2">
+                <property name="MemberName" />
+                <property name="ShadowType">None</property>
+                <child>
+                  <widget class="GtkWidgets.NavBarWidget" id="navbarwidget">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="ShowScrollbars">True</property>
+                    <property name="FirstPos">0</property>
+                    <property name="LastPos">0</property>
+                    <property name="CurrentPos">0</property>
+                  </widget>
+                </child>
+              </widget>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">False</property>
+            <property name="Expand">False</property>
           </packing>
         </child>
         <child>
@@ -241,7 +278,7 @@
               <widget class="Gtk.VPaned" id="vpaned2D">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Position">249</property>
+                <property name="Position">235</property>
                 <child>
                   <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindowTV2D">
                     <property name="MemberName" />
@@ -307,7 +344,7 @@
               <widget class="Gtk.VPaned" id="vpaned3D">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Position">249</property>
+                <property name="Position">213</property>
                 <child>
                   <widget class="Gtk.ScrolledWindow" id="ScrolledWindowTV3D">
                     <property name="MemberName" />
@@ -361,7 +398,7 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">1</property>
+            <property name="Position">2</property>
             <property name="AutoSize">True</property>
           </packing>
         </child>
@@ -384,8 +421,8 @@
           </widget>
           <packing>
             <property name="PackType">End</property>
-            <property name="Position">2</property>
-            <property name="AutoSize">True</property>
+            <property name="Position">3</property>
+            <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>

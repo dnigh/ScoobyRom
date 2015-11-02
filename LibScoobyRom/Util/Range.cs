@@ -25,6 +25,14 @@ namespace Util
 {
 	public struct Range : IEquatable<Range>
 	{
+		public static Range FromPositions (int start, int last)
+		{
+			Range range = new Range ();
+			range.pos = start;
+			range.Last = last;
+			return range;
+		}
+
 		// 2 fields
 		int pos;
 		int size;
@@ -51,6 +59,7 @@ namespace Util
 		/// </summary>
 		public int Last {
 			get { return pos + size - 1; }
+			set { size = value - pos + 1; }
 		}
 
 		public Range (int start, int size)

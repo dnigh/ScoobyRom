@@ -38,7 +38,7 @@ namespace Util
 		#region Constructors
 
 		// Initialize with a good rainbow color range
-		public Coloring () : this(new Cairo.Color (0.6, 0.6, 1.0), new Cairo.Color (1.0, 0.4, 0.4))
+		public Coloring () : this (new Cairo.Color (0.6, 0.6, 1.0), new Cairo.Color (1.0, 0.4, 0.4))
 		{
 		}
 
@@ -107,5 +107,39 @@ namespace Util
 		}
 
 		#endif
+
+		static Cairo.Color RegionColorAxisX = new Cairo.Color (0, 0, 1);
+		static Cairo.Color RegionColorAxisY = new Cairo.Color (0, 0.5, 0);
+		static Cairo.Color RegionColorValuesY = new Cairo.Color (1, 0.65, 0);
+		static Cairo.Color RegionColorValuesZ = new Cairo.Color (1, 0, 1);
+		static Cairo.Color RegionColorTableSearch = new Cairo.Color (0.5, 0.5, 0.5, 0.5);
+
+		// pink
+		static Cairo.Color RegionColorTableRecord2D = new Cairo.Color (1, 153/255.0, 171/255.0);
+		// brown
+		static Cairo.Color RegionColorTableRecord3D = new Cairo.Color (139/255.0, 105/255.0, 20/255.0);
+
+		public static Cairo.Color RegionColor (RegionType regionType)
+		{
+			switch (regionType) {
+			case RegionType.AxisX:
+				return RegionColorAxisX;
+			case RegionType.AxisY:
+				return RegionColorAxisY;
+			case RegionType.ValuesY:
+				return RegionColorValuesY;
+			case RegionType.ValuesZ:
+				return RegionColorValuesZ;
+			case RegionType.TableRecord2D:
+				return RegionColorTableRecord2D;
+			case RegionType.TableRecord3D:
+				return RegionColorTableRecord3D;
+			case RegionType.TableSearch:
+				return RegionColorTableSearch;
+			default:
+				return invalidCol;
+			}
+
+		}
 	}
 }

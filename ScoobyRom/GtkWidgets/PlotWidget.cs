@@ -61,12 +61,6 @@ namespace Florence.GtkSharp
 			Init();
 		}
 
-		public PlotWidget(GLib.GType gtype)
-			: base(gtype)
-		{
-			Init();
-		}
-
 		public PlotWidget(IntPtr raw)
 			: base(raw)
 		{

@@ -44,11 +44,21 @@ namespace ScoobyRom
 			}
 		}
 
+		/// <summary>
+		/// Full application executable path
+		/// Example: 'C:\Program Files\ScoobyRom\ScoobyRom.exe'
+		/// </summary>
+		/// <value>The assembly path.</value>
 		static internal string AssemblyPath
 		{
 			get { return System.Reflection.Assembly.GetCallingAssembly ().Location; }
 		}
 
+		/// <summary>
+		/// Directory of application executable.
+		/// Example: 'C:\Program Files\ScoobyRom\'
+		/// </summary>
+		/// <value>The assembly directory.</value>
 		static internal string AssemblyFolder
 		{
 			get { return System.IO.Path.GetDirectoryName (AssemblyPath); }

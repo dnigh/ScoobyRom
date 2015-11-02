@@ -136,11 +136,11 @@ REQUIRED!
 
 *	Windows 10
 
-	* Not tested yet, should work. Windows 10 comes with .NET Framework 4.6 pre-installed.
+	* Tested, just works. Windows 10 comes with .NET Framework 4.6 pre-installed.
 
 *	Windows 8.1
 
-	* Tested, should just work. Windows 8.1 ships with .NET v4.0 pre-installed. Upgrading to newer version does not hurt (v4.5 and v4.6 run 4.0 apps and might be slightly faster).
+	* Tested, just works. Windows 8.1 ships with .NET v4.0 pre-installed. Upgrading to newer version does not hurt (v4.5 and v4.6 run 4.0 apps and might be slightly faster).
 
 * Older Windows versions:
 
@@ -187,7 +187,7 @@ REQUIRED!
 	*	Arch Linux: [mono](http://www.archlinux.org/packages/?q=mono)
 
 
-### 4.2) Gtk\#
+### 4.2) Gtk\# 
 
 REQUIRED!
 
@@ -485,7 +485,7 @@ On a slow computer this can take several seconds.
 By using a good search range, load time is usually just a fraction of a second - highly recommended if you use this app frequently in terms of editing metadata!
 
 See record position column as well as statistics window to get first/last record positions.
-Currently you've got to add & adjust this manually in XML:
+Currently you've got to add and adjust this manually in XML:
 
 
 It's not necessary to copy & paste exact numbers like

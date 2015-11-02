@@ -24,9 +24,11 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Linq;
 using Gtk;
 using ScoobyRom;
 using Subaru.Tables;
+using System.Collections.Generic;
 
 public partial class MainWindow : Gtk.Window
 {
@@ -50,7 +52,7 @@ public partial class MainWindow : Gtk.Window
 
 	// Gtk# integration: NPlot.Gtk.PlotSurface2D instead of generic NPlot.PlotSurface2D
 	//readonly NPlot.Gtk.NPlotSurface2D plotSurface = new NPlot.Gtk.NPlotSurface2D ();
-	readonly Florence.InteractivePlotSurface2D plotSurface = new Florence.InteractivePlotSurface2D();
+	readonly Florence.InteractivePlotSurface2D plotSurface = new Florence.InteractivePlotSurface2D ();
 
 
 	readonly Plot2D plot2D;
@@ -216,6 +218,8 @@ public partial class MainWindow : Gtk.Window
 				DoPendingEvents ();
 				Console.WriteLine (txt);
 
+				PopulateNavBar ();
+
 				dataView2DGtk.ShowIcons = false;
 				dataView3DGtk.ShowIcons = false;
 				ClearVisualizations ();
@@ -236,6 +240,41 @@ public partial class MainWindow : Gtk.Window
 		});
 	}
 
+	void PopulateNavBar ()
+	{
+		if (!data.RomLoaded) {
+			navbarwidget.Clear ();
+			return;
+		}
+		
+		var regions = new List<Util.Region> (256);
+
+		navbarwidget.FirstPos = 0;
+		navbarwidget.LastPos = data.Rom.Size - 1;
+
+		var searchRange = data.TableSearchRange;
+		if (searchRange.HasValue) {
+			regions.Add (new Util.Region (searchRange.Value.Pos, searchRange.Value.Last, Util.RegionType.TableSearch));
+		}
+
+		var tables2D = data.List2D;
+		foreach (var t in tables2D) {
+			regions.Add (new Util.Region (t.Location, t.Location + t.RecordSize - 1, Util.RegionType.TableRecord2D));
+			regions.Add (new Util.Region (t.RangeX.Pos, t.RangeX.Last, Util.RegionType.AxisX));
+			regions.Add (new Util.Region (t.RangeY.Pos, t.RangeY.Last, Util.RegionType.ValuesY));
+		}
+
+		var tables3D = data.List3D;
+		foreach (var t in tables3D) {
+			regions.Add (new Util.Region (t.Location, t.Location + t.RecordSize - 1, Util.RegionType.TableRecord3D));
+			regions.Add (new Util.Region (t.RangeX.Pos, t.RangeX.Last, Util.RegionType.AxisX));
+			regions.Add (new Util.Region (t.RangeY.Pos, t.RangeY.Last, Util.RegionType.AxisY));
+			regions.Add (new Util.Region (t.RangeZ.Pos, t.RangeZ.Last, Util.RegionType.ValuesZ));
+		}
+
+		navbarwidget.SetRegions (regions);
+	}
+
 	static void DoPendingEvents ()
 	{
 		while (Application.EventsPending ()) {
@@ -250,6 +289,8 @@ public partial class MainWindow : Gtk.Window
 
 	void ClearVisualizations ()
 	{
+		navbarwidget.ClearMarkedPositions ();
+
 		plotSurface.Clear ();
 		plotSurface.Refresh ();
 
@@ -267,6 +308,10 @@ public partial class MainWindow : Gtk.Window
 	{
 		if (table == null)
 			return;
+
+		navbarwidget.CurrentPos = table.Location;
+
+		navbarwidget.SetMarkedPositions (new int[] { table.RangeX.Pos, table.RangeY.Pos, table.RangeZ.Pos });
 
 		var valuesZ = table.GetValuesZasFloats ();
 		var tableUI = new GtkWidgets.TableWidget3D (coloring, table.ValuesX, table.ValuesY, valuesZ,
@@ -300,9 +345,11 @@ public partial class MainWindow : Gtk.Window
 		if (table == null)
 			return;
 
+		navbarwidget.CurrentPos = table.Location;
+		navbarwidget.SetMarkedPositions (new int[] { table.RangeX.Pos, table.RangeY.Pos });
+
 		// plot
 		plot2D.Draw (table);
-		plotSurface.Refresh ();
 
 		// table data as text
 		var values = table.GetValuesYasFloats ();
@@ -339,7 +386,7 @@ public partial class MainWindow : Gtk.Window
 	{
 		if (!data.RomLoaded)
 			return;
-		
+
 		var table = CurrentTable;
 		if (table is Table2D) {
 			Show2D ((Table2D)table);
@@ -368,7 +415,7 @@ public partial class MainWindow : Gtk.Window
 		about.Icon = about.Logo = MainClass.AppIcon;
 		about.Comments = "License: GPL v3";
 
-		string licensePath = System.IO.Path.Combine(MainClass.AssemblyFolder, LicenseFilename);
+		string licensePath = System.IO.Path.Combine (MainClass.AssemblyFolder, LicenseFilename);
 		try {
 			about.License = System.IO.File.ReadAllText (licensePath);
 		} catch (System.IO.FileNotFoundException) {
@@ -495,6 +542,14 @@ public partial class MainWindow : Gtk.Window
 		view.ResetIconSize ();
 	}
 
+	void OnNavigationBarActionActivated (object sender, EventArgs e)
+	{
+		navScrolledWindow.Visible = navigationBarAction.Active;
+		// tested: child .Visible keeps true
+		// probably not necessary:
+		navbarwidget.Visible = navScrolledWindow.Visible;
+	}
+
 	// create or close gnuplot window
 	void OnPlotActionActivated (object sender, System.EventArgs e)
 	{
@@ -509,12 +564,15 @@ public partial class MainWindow : Gtk.Window
 			GnuPlot.ToggleGnuPlot (table);
 		} catch (GnuPlotProcessException ex) {
 			Console.Error.WriteLine (ex);
-			ErrorMsg ("Error launching gnuplot!", ex.Message + "\n\nHave you installed gnuplot?" + "\nYou also may need to edit file '" + MainClass.AppName + ".exe.config'." + "\nCurrent platform-ID is '" + System.Environment.OSVersion.Platform.ToString () + "'." + "\nSee 'README.txt' for details.");
+			ErrorMsg ("Error launching gnuplot!", ex.Message
+			+ "\n\nHave you installed gnuplot?"
+			+ "\nYou also may need to edit file '" + MainClass.AssemblyPath + ".exe.config'."
+			+ "\nCurrent platform-ID is '" + System.Environment.OSVersion.Platform.ToString () + "'."
+			+ "\nSee 'README.txt' for details.");
 		} catch (GnuPlotException ex) {
 			Console.Error.WriteLine (ex);
 			ErrorMsg ("Error launching gnuplot!", ex.Message);
-		}
-		catch (System.IO.FileNotFoundException ex) {
+		} catch (System.IO.FileNotFoundException ex) {
 			Console.Error.WriteLine (ex);
 			ErrorMsg ("Error using gnuplot!", ex.Message + "\nFile: " + ex.FileName);
 		}
@@ -605,7 +663,7 @@ public partial class MainWindow : Gtk.Window
 		Subaru.Tables.Table table = CurrentTable;
 		if (table == null)
 			return;
-		
+
 		if (table is Table3D) {
 			ErrorMsg ("Error", "Creating CSV for 3D table not implemented yet.");
 			return;
