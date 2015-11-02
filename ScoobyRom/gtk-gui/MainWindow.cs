@@ -177,7 +177,7 @@ public partial class MainWindow
 		this.copyAction = new global::Gtk.Action ("copyAction", "Copy Table", "i.e. for paste into spreadsheet application or RomRaider", "gtk-copy");
 		this.copyAction.Sensitive = false;
 		this.copyAction.ShortLabel = "Copy Table";
-		w1.Add (this.copyAction, "<Primary><Mod2>c");
+		w1.Add (this.copyAction, "<Alt><Mod2>c");
 		this.navigationBarAction = new global::Gtk.ToggleAction ("navigationBarAction", "_Navigation Bar", null, null);
 		this.navigationBarAction.Active = true;
 		this.navigationBarAction.ShortLabel = "_Navigation Bar";

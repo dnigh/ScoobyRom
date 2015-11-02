@@ -208,17 +208,24 @@ namespace Subaru.File
 
 		void ParseTableSearch (XElement el)
 		{
+			TableSearchRange = null;
+
 			if (el == null) {
-				TableSearchRange = null;
 				return;
 			}
 
-			int tableSearchStart, tableSearchEnd;
-			XAttribute at = el.Attribute (X_tableSearchStart);
-			tableSearchStart = ParseHexInt ((string)at, at);
-			at = el.Attribute (X_tableSearchEnd);
-			tableSearchEnd = ParseHexInt ((string)at, at);
-			TableSearchRange = Util.Range.FromPositions (tableSearchStart, tableSearchEnd);
+			// allow empty element
+			int tableSearchStart = 0, tableSearchEnd = 0;
+			XAttribute at;
+			if ((at = el.Attribute (X_tableSearchStart)) != null) {
+				tableSearchStart = ParseHexInt ((string)at, at);
+			}
+			if ((at = el.Attribute (X_tableSearchEnd)) != null) {
+				tableSearchEnd = ParseHexInt ((string)at, at);
+			}
+			if (tableSearchStart > 0 && tableSearchEnd > 0) {
+				TableSearchRange = Util.Range.FromPositions (tableSearchStart, tableSearchEnd);
+			}
 		}
 
 		XElement TableSearchXElement ()
@@ -229,7 +236,8 @@ namespace Subaru.File
 					new XAttribute (X_tableSearchEnd, HexNum (tableSearchRange.Value.Last))
 				);
 			} else {
-				return null;
+				// create empty element
+				return new XElement (X_tableSearch);
 			}
 		}
 

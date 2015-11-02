@@ -167,7 +167,7 @@
       </action>
       <action id="copyAction">
         <property name="Type">Action</property>
-        <property name="Accelerator">&lt;Primary&gt;&lt;Mod2&gt;c</property>
+        <property name="Accelerator">&lt;Alt&gt;&lt;Mod2&gt;c</property>
         <property name="Label">Copy Table</property>
         <property name="Sensitive">False</property>
         <property name="ShortLabel">Copy Table</property>
