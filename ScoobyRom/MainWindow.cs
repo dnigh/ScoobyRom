@@ -272,7 +272,7 @@ public partial class MainWindow : Gtk.Window
 			regions.Add (new Util.Region (t.RangeZ.Pos, t.RangeZ.Last, Util.RegionType.ValuesZ));
 		}
 
-		navbarwidget.SetRegions (regions);
+		navbarwidget.SetRegions (regions.ToArray ());
 	}
 
 	static void DoPendingEvents ()
