@@ -157,12 +157,12 @@ namespace Subaru.Tables
 
 		// these two floats are optional, usually for type non-float but not always
 		public float Multiplier {
-			get { return multiplier; }
+			get { return hasMAC ? multiplier : float.NaN; }
 			set { multiplier = value; }
 		}
 
 		public float Offset {
-			get { return offset; }
+			get { return hasMAC ? offset : float.NaN; }
 			set { offset = value; }
 		}
 

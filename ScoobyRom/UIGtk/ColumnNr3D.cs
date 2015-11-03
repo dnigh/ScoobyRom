@@ -44,6 +44,10 @@ namespace ScoobyRom
 		Zmin,
 		Zavg,
 		Zmax,
+		Multiplier,
+		Offset,
+		XPos,
+		YPos,
 		ZPos,
 		Description,
 		Obj
