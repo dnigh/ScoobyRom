@@ -212,7 +212,7 @@ public partial class MainWindow
 		this.navbarwidget.CanFocus = true;
 		this.navbarwidget.Name = "navbarwidget";
 		this.navbarwidget.FirstPos = 0;
-		this.navbarwidget.LastPos = 0;
+		this.navbarwidget.LastPos = -1;
 		this.navbarwidget.CurrentPos = 0;
 		w3.Add (this.navbarwidget);
 		this.navScrolledWindow.Add (w3);

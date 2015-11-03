@@ -257,7 +257,7 @@
                     <property name="CanFocus">True</property>
                     <property name="ShowScrollbars">True</property>
                     <property name="FirstPos">0</property>
-                    <property name="LastPos">0</property>
+                    <property name="LastPos">-1</property>
                     <property name="CurrentPos">0</property>
                   </widget>
                 </child>

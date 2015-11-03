@@ -37,6 +37,7 @@ namespace Util
 
 		public bool Contains (int pos)
 		{
+			// probably very fast, no need to skip sort
 			Sort ();
 			return pos1 <= pos && pos <= pos2;
 		}
@@ -55,28 +56,27 @@ namespace Util
 		public void Reset ()
 		{
 			pos1 = pos2 = 0;
+			regionType = RegionType.Undefined;
 		}
 
 		/// <summary>
-		/// Deep copy except event.
+		/// Deep copy.
 		/// </summary>
 		public Region Copy ()
 		{
 			Sort ();
-			Region copy = new Region ();
-			copy.pos1 = pos1;
-			copy.pos2 = pos2;
-			return copy;
+			return new Region (pos1, pos2, regionType);
 		}
 
 		public override string ToString ()
 		{
-			return string.Format ("[Range: Pos1={0}, Pos2={1}, Size={2}]", Pos1, Pos2, Size);
+			return string.Format ("[Range: Pos1={0}, Pos2={1}, Size={2}, RegionType={3}]",
+				Pos1, Pos2, Size, RegionHelper.ToStr (regionType));
 		}
 
 		public override int GetHashCode ()
 		{
-			return this.pos1 ^ (this.pos2 << 3);
+			return this.pos1 ^ (this.pos2 << 3) ^ (int)this.regionType;
 		}
 
 		public void Sort ()
@@ -91,7 +91,7 @@ namespace Util
 
 		public bool Equals (Region other)
 		{
-			return this.pos1 == other.pos1 && this.pos2 == other.pos2;
+			return this.pos1 == other.pos1 && this.pos2 == other.pos2 && this.regionType == other.regionType;
 		}
 
 		#endregion
