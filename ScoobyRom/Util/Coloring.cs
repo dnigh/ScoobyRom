@@ -115,9 +115,11 @@ namespace Util
 		static Cairo.Color RegionColorTableSearch = new Cairo.Color (0.5, 0.5, 0.5, 0.5);
 
 		// pink
-		static Cairo.Color RegionColorTableRecord2D = new Cairo.Color (1, 153/255.0, 171/255.0);
+		static Cairo.Color RegionColorTableRecord2D = new Cairo.Color (1, 153 / 255.0, 171 / 255.0);
 		// brown
-		static Cairo.Color RegionColorTableRecord3D = new Cairo.Color (139/255.0, 105/255.0, 20/255.0);
+		static Cairo.Color RegionColorTableRecord3D = new Cairo.Color (139 / 255.0, 105 / 255.0, 20 / 255.0);
+		// yellow
+		static Cairo.Color RegionColorChecksummed = new Cairo.Color (1, 1, 0);
 
 		public static Cairo.Color RegionColor (RegionType regionType)
 		{
@@ -136,6 +138,8 @@ namespace Util
 				return RegionColorTableRecord3D;
 			case RegionType.TableSearch:
 				return RegionColorTableSearch;
+			case RegionType.Checksummed:
+				return RegionColorChecksummed;
 			default:
 				return invalidCol;
 			}
