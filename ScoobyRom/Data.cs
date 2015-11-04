@@ -29,6 +29,8 @@ namespace ScoobyRom
 {
 	public sealed class Data
 	{
+		public event EventHandler<EventArgs> RomChanged;
+
 		public event EventHandler<EventArgs> ItemsChanged2D;
 		public event EventHandler<EventArgs> ItemsChanged3D;
 
@@ -173,6 +175,8 @@ namespace ScoobyRom
 
 		public void UpdateUI ()
 		{
+			if (RomChanged != null)
+				RomChanged (this, new EventArgs ());
 			if (ItemsChanged3D != null)
 				ItemsChanged3D (this, new EventArgs ());
 			if (ItemsChanged2D != null)
@@ -195,7 +199,7 @@ namespace ScoobyRom
 				bool found = true;
 				for (int i = 0; i < values.Length; i++) {
 					float value = values [i];
-					float rounded = (float)Math.Round (value, digits);
+					float rounded = Convert.ToSingle (Math.Round (value, digits));
 					if (Math.Abs (value - rounded) > float.Epsilon) {
 						++digits;
 						found = false;

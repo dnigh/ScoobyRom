@@ -58,6 +58,7 @@ namespace ScoobyRom
 			types [(int)ColumnNr3D.Icon] = typeof(Gdk.Pixbuf);
 			types [(int)ColumnNr3D.Title] = typeof(string);
 			types [(int)ColumnNr3D.Type] = typeof(int);
+			types [(int)ColumnNr3D.Location] = typeof(int);
 
 			types [(int)ColumnNr3D.NameX] = typeof(string);
 			types [(int)ColumnNr3D.NameY] = typeof(string);
@@ -78,8 +79,12 @@ namespace ScoobyRom
 			types [(int)ColumnNr3D.Zavg] = typeof(float);
 			types [(int)ColumnNr3D.Zmax] = typeof(float);
 
+			types [(int)ColumnNr3D.Multiplier] = typeof(float);
+			types [(int)ColumnNr3D.Offset] = typeof(float);
+
+			types [(int)ColumnNr3D.XPos] = typeof(int);
+			types [(int)ColumnNr3D.YPos] = typeof(int);
 			types [(int)ColumnNr3D.ZPos] = typeof(int);
-			types [(int)ColumnNr3D.Location] = typeof(int);
 
 			types [(int)ColumnNr3D.Description] = typeof(string);
 
@@ -133,6 +138,11 @@ namespace ScoobyRom
 			store.SetValue (iter, (int)ColumnNr3D.Ymin, table3D.Ymin);
 			store.SetValue (iter, (int)ColumnNr3D.Ymax, table3D.Ymax);
 
+			store.SetValue (iter, (int)ColumnNr3D.Multiplier, table3D.Multiplier);
+			store.SetValue (iter, (int)ColumnNr3D.Offset, table3D.Offset);
+
+			store.SetValue (iter, (int)ColumnNr3D.XPos, table3D.RangeX.Pos);
+			store.SetValue (iter, (int)ColumnNr3D.YPos, table3D.RangeY.Pos);
 			store.SetValue (iter, (int)ColumnNr3D.ZPos, table3D.RangeZ.Pos);
 			store.SetValue (iter, (int)ColumnNr3D.Location, table3D.Location);
 			store.SetValue (iter, (int)ColumnNr3D.Description, table3D.Description);

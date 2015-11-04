@@ -105,13 +105,13 @@ namespace Subaru.Tables
 			c.tableType = tableType;
 			c.typeUncertain = typeUncertain;
 
-			c.multiplier = multiplier;
-			c.offset = offset;
+			c.hasMAC = hasMAC;
+			c.multiplier = Multiplier;
+			c.offset = Offset;
 
 			c.location = location;
 			c.rangeX = rangeX;
 			c.rangeY = rangeY;
-			c.hasMAC = hasMAC;
 
 			c.valuesX = valuesX;
 			c.valuesY = valuesY;

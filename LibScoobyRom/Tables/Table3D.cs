@@ -113,8 +113,8 @@ namespace Subaru.Tables
 			c.rangeZ = rangeZ;
 
 			c.hasMAC = hasMAC;
-			c.multiplier = multiplier;
-			c.offset = offset;
+			c.multiplier = Multiplier;
+			c.offset = Offset;
 
 			// copy array references only for best performance, no deep copy
 			c.valuesX = valuesX;

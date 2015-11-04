@@ -43,6 +43,9 @@ namespace ScoobyRom
 			ColumnNr2D.Ymin,
 			ColumnNr2D.Yavg,
 			ColumnNr2D.Ymax,
+			ColumnNr2D.Multiplier,
+			ColumnNr2D.Offset,
+			ColumnNr2D.XPos,
 			ColumnNr2D.YPos,
 			ColumnNr2D.Description,
 			ColumnNr2D.Obj
@@ -137,72 +140,71 @@ namespace ScoobyRom
 		{
 			TreeViewColumn col = null;
 			switch (colNr) {
-			case ColumnNr2D.Category:
-				col = new TreeViewColumn ("Category", cellRendererTextEditable, "text", colNr);
-				break;
 			case ColumnNr2D.Toggle:
-				col = new TreeViewColumn (null, cellRendererToggle, "active", colNr);
+				col = CreateToggleColumn ((int)colNr);
 				break;
 			case ColumnNr2D.Icon:
-				col = new TreeViewColumn ("Icon", cellRendererPixbuf, "pixbuf", colNr);
-				col.Visible = showIcons;
-				break;
-			case ColumnNr2D.Title:
-				col = new TreeViewColumn ("Title", cellRendererTextEditable, "text", colNr);
+				col = CreateIconColumn ((int)colNr);
 				break;
 			case ColumnNr2D.Type:
-				col = new TreeViewColumn ("Type", cellRendererCombo, "text", colNr);
-				col.SetCellDataFunc (cellRendererCombo, TreeCellDataFuncTableType);
+				col = CreateTypeColumn ((int)colNr);
+				break;
+			case ColumnNr2D.Category:
+				col = CreateTextEditableColumn ("Category", (int)colNr);
+				break;
+			case ColumnNr2D.Title:
+				col = CreateTextEditableColumn ("Title", (int)colNr);
 				break;
 			case ColumnNr2D.NameX:
-				col = new TreeViewColumn ("NameX", cellRendererTextEditable, "text", colNr);
+				col = CreateTextEditableColumn ("NameX", (int)colNr);
 				break;
 			case ColumnNr2D.UnitX:
-				col = new TreeViewColumn ("UnitX", cellRendererTextEditable, "text", colNr);
+				col = CreateTextEditableColumn ("UnitX", (int)colNr);
 				break;
 			case ColumnNr2D.UnitY:
-				col = new TreeViewColumn ("UnitY", cellRendererTextEditable, "text", colNr);
-				break;
-			case ColumnNr2D.CountX:
-				col = new TreeViewColumn ("Count", cellRendererText, "text", colNr);
-				break;
-			case ColumnNr2D.Xmin:
-				col = new TreeViewColumn ("Xmin", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncFloat);
-				break;
-			case ColumnNr2D.Xmax:
-				col = new TreeViewColumn ("Xmax", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncFloat);
-				break;
-			case ColumnNr2D.Ymin:
-				col = new TreeViewColumn ("Ymin", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncFloat);
-				break;
-			case ColumnNr2D.Yavg:
-				col = new TreeViewColumn ("Yavg", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncFloat);
-				break;
-			case ColumnNr2D.Ymax:
-				col = new TreeViewColumn ("Ymax", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncFloat);
-				break;
-			case ColumnNr2D.Location:
-				col = new TreeViewColumn ("Record", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncHex);
-				break;
-			case ColumnNr2D.YPos:
-				col = new TreeViewColumn ("YPos", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncHex);
+				col = CreateTextEditableColumn ("UnitY", (int)colNr);
 				break;
 			case ColumnNr2D.Description:
-				col = new TreeViewColumn ("Description", cellRendererTextEditable, "text", colNr);
+				col = CreateTextEditableColumn ("Description", (int)colNr);
+				break;
+			case ColumnNr2D.CountX:
+				col = CreateTextColumn ("Count", (int)colNr);
+				break;
+			case ColumnNr2D.Xmin:
+				col = CreateFloatColumn ("Xmin", (int)colNr);
+				break;
+			case ColumnNr2D.Xmax:
+				col = CreateFloatColumn ("Xmax", (int)colNr);
+				break;
+			case ColumnNr2D.Ymin:
+				col = CreateFloatColumn ("Ymin", (int)colNr);
+				break;
+			case ColumnNr2D.Yavg:
+				col = CreateFloatColumn ("Yavg", (int)colNr);
+				break;
+			case ColumnNr2D.Ymax:
+				col = CreateFloatColumn ("Ymax", (int)colNr);
+				break;
+			case ColumnNr2D.Multiplier:
+				col = CreateFloatColumn ("Multiplier", (int)colNr);
+				break;
+			case ColumnNr2D.Offset:
+				col = CreateFloatColumn ("Offset", (int)colNr);
+				break;
+			case ColumnNr2D.Location:
+				col = CreateHexColumn ("Record", (int)colNr);
+				break;
+			case ColumnNr2D.XPos:
+				col = CreateHexColumn ("XPos", (int)colNr);
+				break;
+			case ColumnNr2D.YPos:
+				col = CreateHexColumn ("YPos", (int)colNr);
 				break;
 			}
 			if (col != null)
 				treeView.AppendColumn (col);
 			return col;
 		}
-
 
 		// It seems if using own TreeViewSearchEqualFunc one cannot use default function anymore.
 		// Function getter returns null and null is not allowed.

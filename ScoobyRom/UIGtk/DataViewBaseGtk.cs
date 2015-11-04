@@ -82,6 +82,7 @@ namespace ScoobyRom
 		}
 
 		protected abstract int ColumnNrIcon { get; }
+
 		protected abstract int ColumnNrObj { get; }
 
 		public bool ShowIcons {
@@ -163,7 +164,7 @@ namespace ScoobyRom
 
 		protected void TreeCellDataFuncHex (TreeViewColumn treeViewColumn, CellRenderer renderer, TreeModel treeModel, TreeIter iter)
 		{
-			int nr = (int)treeModel.GetValue (iter, columnsDict[treeViewColumn]);
+			int nr = (int)treeModel.GetValue (iter, columnsDict [treeViewColumn]);
 			cellRendererText.Text = nr.ToString ("X");
 		}
 
@@ -171,14 +172,13 @@ namespace ScoobyRom
 		// ToString() only adds decimals where necessary - much better.
 		protected void TreeCellDataFuncFloat (TreeViewColumn treeViewColumn, CellRenderer renderer, TreeModel treeModel, TreeIter iter)
 		{
-			float nr = (float)treeModel.GetValue (iter, columnsDict[treeViewColumn]);
-			//((CellRendererText)renderer).Text = nr.ToString ();
+			float nr = (float)treeModel.GetValue (iter, columnsDict [treeViewColumn]);
 			cellRendererText.Text = nr.ToString ();
 		}
 
 		protected void TreeCellDataFuncTableType (TreeViewColumn treeViewColumn, CellRenderer renderer, TreeModel treeModel, TreeIter iter)
 		{
-			TableType tt = (TableType)treeModel.GetValue (iter, columnsDict[treeViewColumn]);
+			TableType tt = (TableType)treeModel.GetValue (iter, columnsDict [treeViewColumn]);
 			cellRendererCombo.Text = tt.ToStr ();
 		}
 
@@ -309,13 +309,13 @@ namespace ScoobyRom
 			treeView.SearchColumn = CursorColNr;
 		}
 
-//		void HandleTreeViewKeyPressEvent (object o, KeyPressEventArgs args)
-//		{
-//			Gdk.Key key = args.Event.Key;
-//			Console.WriteLine (key.ToString());
-//			if (key == (Gdk.Key.p | Gdk.Key.Control_L))
-//				Console.WriteLine ("p");
-//		}
+		//		void HandleTreeViewKeyPressEvent (object o, KeyPressEventArgs args)
+		//		{
+		//			Gdk.Key key = args.Event.Key;
+		//			Console.WriteLine (key.ToString());
+		//			if (key == (Gdk.Key.p | Gdk.Key.Control_L))
+		//				Console.WriteLine ("p");
+		//		}
 
 		// double click or Enter key
 		protected void HandleTreeViewRowActivated (object o, RowActivatedArgs args)
@@ -379,8 +379,63 @@ namespace ScoobyRom
 		protected int CursorColNr {
 			get {
 				TreeViewColumn column = CursorColumn;
-				return column != null ? columnsDict[CursorColumn] : 0;
+				return column != null ? columnsDict [CursorColumn] : 0;
 			}
 		}
+
+		#region CreateColumn
+
+		protected TreeViewColumn CreateTextColumn (string displayName, int colNr)
+		{
+			return new TreeViewColumn (displayName, cellRendererText, "text", colNr);
+		}
+
+		protected TreeViewColumn CreateTextEditableColumn (string displayName, int colNr)
+		{
+			return new TreeViewColumn (displayName, cellRendererTextEditable, "text", colNr);
+		}
+
+		protected TreeViewColumn CreateFloatColumn (string displayName, int colNr)
+		{
+			var col = new TreeViewColumn (displayName, cellRendererText, "text", colNr);
+			col.SetCellDataFunc (cellRendererText, TreeCellDataFuncFloat);
+			return col;
+		}
+
+		protected TreeViewColumn CreateHexColumn (string displayName, int colNr)
+		{
+			var col = new TreeViewColumn (displayName, cellRendererText, "text", colNr);
+			col.SetCellDataFunc (cellRendererText, TreeCellDataFuncHex);
+			return col;
+		}
+
+		protected TreeViewColumn CreateIconColumn (int colNr)
+		{
+			var col = new TreeViewColumn ("Icon", cellRendererPixbuf, "pixbuf", colNr);
+			col.Visible = showIcons;
+			//col.MaxWidth = 64;
+			// might help perf
+			//col.Sizing = TreeViewColumnSizing.Fixed;
+			//col.FixedWidth = 64;
+			return col;
+		}
+
+		protected TreeViewColumn CreateTypeColumn (int colNr)
+		{
+			var col = new TreeViewColumn ("Type", cellRendererCombo, "text", colNr);
+			col.SetCellDataFunc (cellRendererCombo, TreeCellDataFuncTableType);
+			return col;
+		}
+
+		protected TreeViewColumn CreateToggleColumn (int colNr)
+		{
+			return new TreeViewColumn (null, cellRendererToggle, "active", colNr);
+			// inconsistent state shows sort of "-" in check box or radio circle
+			//col.AddAttribute (cellRendererToggle, "inconsistent", (int)ColumnNr3D.ToggleInconsistent);
+			// not as expected on type bool, SortOrder does not help
+			//col.SortOrder = SortType.Descending;
+		}
+
+		#endregion CreateColumn
 	}
 }

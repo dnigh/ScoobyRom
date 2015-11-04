@@ -650,7 +650,7 @@ public partial class MainWindow : Gtk.Window
 		// Use a Window (not Dialog) to allow working in main window with new window still open.
 		// Also supports multiple monitors.
 		var d = new ChecksumWindow ();
-		d.SetRom (data.Rom);
+		d.SetData (data);
 		d.Show ();
 	}
 

@@ -75,7 +75,11 @@ namespace ScoobyRom
 			types [(int)ColumnNr2D.Yavg] = typeof(float);
 			types [(int)ColumnNr2D.Ymax] = typeof(float);
 
+			types [(int)ColumnNr2D.Multiplier] = typeof(float);
+			types [(int)ColumnNr2D.Offset] = typeof(float);
+
 			types [(int)ColumnNr2D.Location] = typeof(int);
+			types [(int)ColumnNr2D.XPos] = typeof(int);
 			types [(int)ColumnNr2D.YPos] = typeof(int);
 
 			types [(int)ColumnNr2D.Description] = typeof(string);
@@ -119,7 +123,11 @@ namespace ScoobyRom
 			store.SetValue (iter, (int)ColumnNr2D.Xmin, table2D.Xmin);
 			store.SetValue (iter, (int)ColumnNr2D.Xmax, table2D.Xmax);
 
+			store.SetValue (iter, (int)ColumnNr2D.Multiplier, table2D.Multiplier);
+			store.SetValue (iter, (int)ColumnNr2D.Offset, table2D.Offset);
+
 			store.SetValue (iter, (int)ColumnNr2D.Location, table2D.Location);
+			store.SetValue (iter, (int)ColumnNr2D.XPos, table2D.RangeX.Pos);
 			store.SetValue (iter, (int)ColumnNr2D.YPos, table2D.RangeY.Pos);
 			store.SetValue (iter, (int)ColumnNr2D.Description, table2D.Description);
 
