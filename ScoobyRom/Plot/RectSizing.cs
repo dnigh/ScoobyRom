@@ -88,8 +88,8 @@ namespace ScoobyRom
 
 		void CalcFromNewWidth (double newWidth)
 		{
-			int w = (int)System.Math.Round (newWidth);
-			int h = (int)System.Math.Round (newWidth / aspectRatio);
+			int w = Convert.ToInt32 (newWidth);
+			int h = Convert.ToInt32 (newWidth / aspectRatio);
 			Calc (w, h);
 		}
 

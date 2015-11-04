@@ -40,6 +40,12 @@ namespace ScoobyRom
 		public PropertiesWindow (Data data) : this ()
 		{
 			this.data = data;
+			data.RomChanged += Data_RomChanged;
+			Update ();
+		}
+
+		void Data_RomChanged (object sender, EventArgs e)
+		{
 			Update ();
 		}
 

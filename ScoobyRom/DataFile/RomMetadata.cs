@@ -150,7 +150,21 @@ namespace Subaru.File
 		}
 
 		public XElement XElement {
-			get { return new XElement (RRX_romid, new XElement (RRX_xmlid, xmlid), new XElement (RRX_internalidaddress, calibrationIDPos.ToString ("X")), new XElement (RRX_internalidstring, calibrationID), new XElement (RRX_ecuid, RomIdStr), new XElement (RRX_year, year), new XElement (RRX_market, market), new XElement (RRX_make, make), new XElement (RRX_model, model), new XElement (RRX_submodel, submodel),new XElement (RRX_transmission, transmission), new XElement (RRX_memmodel, memmodel), new XElement (RRX_flashmethod, flashmethod), new XElement (RRX_filesize, FileSizeToStr (filesize))); }
+			get {
+				return new XElement (RRX_romid, new XElement (RRX_xmlid, xmlid),
+					new XElement (RRX_internalidaddress, calibrationIDPos.ToString ("X")),
+					new XElement (RRX_internalidstring, calibrationID),
+					new XElement (RRX_ecuid, RomIdStr),
+					new XElement (RRX_year, year),
+					new XElement (RRX_market, market),
+					new XElement (RRX_make, make),
+					new XElement (RRX_model, model),
+					new XElement (RRX_submodel, submodel),
+					new XElement (RRX_transmission, transmission),
+					new XElement (RRX_memmodel, memmodel),
+					new XElement (RRX_flashmethod, flashmethod),
+					new XElement (RRX_filesize, Util.Misc.SizeForDisplay (filesize)));
+			}
 		}
 
 		public static RomMetadata FromXML (XElement romidElement)
@@ -268,20 +282,6 @@ namespace Subaru.File
 		public static string RomIdToStr (long romid)
 		{
 			return romid.ToString ("X10");
-		}
-
-		public static string FileSizeToStr (int fSize)
-		{
-			string postfix = null;
-			if (fSize % 1024 == 0) {
-				fSize = fSize / 1024;
-				postfix = "KB";
-			}
-			if (fSize % 1024 == 0) {
-				fSize = fSize / 1024;
-				postfix = "MB";
-			}
-			return postfix != null ? fSize.ToString () + postfix : fSize.ToString ();
 		}
 
 		#endregion static helper methods

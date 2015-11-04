@@ -551,12 +551,12 @@ namespace GtkWidgets
 
 			int X, Y;
 			GetPointer (out X, out Y);
-			int worldX = (int)PhysicalToWorldX (X);
+			int worldX = Convert.ToInt32 (PhysicalToWorldX (X));
 			if (firstPos <= worldX && worldX <= lastPos) {
 				var sb = new System.Text.StringBuilder ("<tt>0x", 50);
 				sb.Append (worldX.ToString ("X"));
 				sb.Append ("</tt>\n");
-				sb.Append (Gnome.Vfs.Vfs.FormatFileSizeForDisplay (worldX));
+				sb.Append (Util.Misc.SizeForDisplay (worldX));
 				sb.AppendLine ();
 				sb.Append (worldX.ToString ());
 
