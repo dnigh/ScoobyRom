@@ -32,7 +32,7 @@ namespace GtkWidgets
 		Viewport viewport;
 		int firstPos, lastPos;
 		int currentPos;
-		Util.Region[] regions;
+		Util.Region[] regions, regionsTop;
 		int[] markedPositions;
 		double posFactor;
 		/// <summary>
@@ -97,6 +97,7 @@ namespace GtkWidgets
 			firstPos = 0;
 			lastPos = -1;
 			regions = null;
+			regionsTop = null;
 			markedPositions = null;
 			QueueDraw ();
 		}
@@ -167,6 +168,12 @@ namespace GtkWidgets
 			QueueDraw ();
 		}
 
+		public void SetRegionsTop (Util.Region[] regions)
+		{
+			this.regionsTop = regions;
+			QueueDraw ();
+		}
+
 		public void ClearMarkedPositions ()
 		{
 			markedPositions = null;
@@ -186,6 +193,10 @@ namespace GtkWidgets
 
 		bool RegionsToDisplay {
 			get { return regions != null && regions.Length > 0; }
+		}
+
+		bool RegionsTopToDisplay {
+			get { return regionsTop != null && regionsTop.Length > 0; }
 		}
 
 		bool MarkedPositionsToDisplay {
@@ -421,6 +432,7 @@ namespace GtkWidgets
 				return;
 
 			DrawRegions (cr);
+			DrawRegionsTop (cr);
 
 			cr.LineWidth = LineWidth;
 
@@ -447,6 +459,17 @@ namespace GtkWidgets
 					DrawGtkStyleRangeMarker (r.Pos1, ArrowType.Right);
 					cr.LineWidth = LineWidthRegions;
 				}
+			}
+		}
+
+		void DrawRegionsTop (Cairo.Context cr)
+		{
+			if (!RegionsTopToDisplay)
+				return;
+			cr.LineWidth = LineWidthRegions;
+			foreach (var r in this.regionsTop) {
+				Cairo.Color color = Util.Coloring.RegionColor (r.RegionType);
+				DrawRegionTop (cr, ref color, r.Pos1, r.Pos2);
 			}
 		}
 
@@ -537,6 +560,16 @@ namespace GtkWidgets
 
 			SetColor (cr, ref color);
 			cr.Rectangle (left, totalRect.Y + LineWidth, right - left, totalRect.Height - (2 * LineWidth));
+			cr.Fill ();
+		}
+
+		void DrawRegionTop (Cairo.Context cr, ref Cairo.Color color, int pos1, int pos2)
+		{
+			double left = WorldToPhysicalX (pos1);
+			double right = WorldToPhysicalX (pos2);
+
+			SetColor (cr, ref color);
+			cr.Rectangle (left, 0, right - left, totalRect.Y - 1);
 			cr.Fill ();
 		}
 

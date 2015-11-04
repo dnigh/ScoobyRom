@@ -246,11 +246,18 @@ public partial class MainWindow : Gtk.Window
 			navbarwidget.Clear ();
 			return;
 		}
-		
-		var regions = new List<Util.Region> (256);
+
+		var regions = new List<Util.Region> (1024);
 
 		navbarwidget.FirstPos = 0;
 		navbarwidget.LastPos = data.Rom.Size - 1;
+
+		var rcs = data.Rom.RomChecksumming;
+		var checksums = rcs.ReadTableRecords ();
+		var regionsTop = new List<Util.Region> (checksums.Count);
+		foreach (var cs in checksums) {
+			regionsTop.Add (new Util.Region (cs.StartAddress, cs.EndAddress, Util.RegionType.Checksummed));
+		}
 
 		var searchRange = data.TableSearchRange;
 		if (searchRange.HasValue) {
@@ -272,6 +279,7 @@ public partial class MainWindow : Gtk.Window
 			regions.Add (new Util.Region (t.RangeZ.Pos, t.RangeZ.Last, Util.RegionType.ValuesZ));
 		}
 
+		navbarwidget.SetRegionsTop (regionsTop.ToArray ());
 		navbarwidget.SetRegions (regions.ToArray ());
 	}
 

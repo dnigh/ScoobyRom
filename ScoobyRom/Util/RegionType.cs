@@ -12,6 +12,7 @@ namespace Util
 		TableRecord2D,
 		TableRecord3D,
 		TableSearch,
+		Checksummed
 	}
 
 	public static class RegionHelper
@@ -40,6 +41,9 @@ namespace Util
 				break;
 			case RegionType.TableSearch:
 				s = "(TableSearch)";
+				break;
+			case RegionType.Checksummed:
+				s = "(Checksummed)";
 				break;
 			default:
 				break;
