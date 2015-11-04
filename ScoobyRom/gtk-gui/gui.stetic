@@ -246,7 +246,8 @@
         <child>
           <widget class="Gtk.ScrolledWindow" id="navScrolledWindow">
             <property name="MemberName" />
-            <property name="HeightRequest">38</property>
+            <property name="HeightRequest">40</property>
+            <property name="VscrollbarPolicy">Never</property>
             <child>
               <widget class="Gtk.Viewport" id="GtkViewport2">
                 <property name="MemberName" />

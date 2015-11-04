@@ -124,7 +124,6 @@ namespace GtkWidgets
 					widget.ShadowType = ShadowType.EtchedOut;
 				else if (val <= this.valuesMin)
 					widget.ShadowType = ShadowType.EtchedIn;
-
 				widget.Add (label);
 
 				uint row = DataRowTop + i / (uint)this.countX;

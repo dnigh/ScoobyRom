@@ -252,11 +252,16 @@ public partial class MainWindow : Gtk.Window
 		navbarwidget.FirstPos = 0;
 		navbarwidget.LastPos = data.Rom.Size - 1;
 
-		var rcs = data.Rom.RomChecksumming;
-		var checksums = rcs.ReadTableRecords ();
-		var regionsTop = new List<Util.Region> (checksums.Count);
-		foreach (var cs in checksums) {
-			regionsTop.Add (new Util.Region (cs.StartAddress, cs.EndAddress, Util.RegionType.Checksummed));
+		try {
+			var rcs = data.Rom.RomChecksumming;
+			var checksums = rcs.ReadTableRecords ();
+			var regionsTop = new List<Util.Region> (checksums.Count);
+			foreach (var cs in checksums) {
+				regionsTop.Add (new Util.Region (cs.StartAddress, cs.EndAddress, Util.RegionType.Checksummed));
+			}
+			navbarwidget.SetRegionsTop (regionsTop.ToArray ());
+		} catch (Exception ex) {
+			Console.Error.WriteLine (ex.ToString ());
 		}
 
 		var searchRange = data.TableSearchRange;
@@ -279,7 +284,6 @@ public partial class MainWindow : Gtk.Window
 			regions.Add (new Util.Region (t.RangeZ.Pos, t.RangeZ.Last, Util.RegionType.ValuesZ));
 		}
 
-		navbarwidget.SetRegionsTop (regionsTop.ToArray ());
 		navbarwidget.SetRegions (regions.ToArray ());
 	}
 
@@ -405,13 +409,12 @@ public partial class MainWindow : Gtk.Window
 
 	void OnAbout (object sender, System.EventArgs e)
 	{
-		const string LicenseFilename = "COPYING.txt";
-
-		AboutDialog about = new AboutDialog {
+		AboutDialog dialog = new AboutDialog {
 			ProgramName = MainClass.AppName,
 			Version = MainClass.AppVersion,
-			Copyright = "© 2011-2015 SubaruDieselCrew",
-			Authors = new string[] { "subdiesel\thttp://subdiesel.wordpress.com/",
+			Copyright = MainClass.AppCopyright,
+			Comments = MainClass.AppDescription,
+			Authors = new string[] { "subdiesel <http://subdiesel.wordpress.com/>",
 				"\nThanks for any feedback!",
 				"\nEXTERNAL BINARY DEPENDENCIES:",
 				"Gtk#\thttp://mono-project.com/GtkSharp",
@@ -420,18 +423,18 @@ public partial class MainWindow : Gtk.Window
 			},
 			WrapLicense = true,
 		};
-		about.Icon = about.Logo = MainClass.AppIcon;
-		about.Comments = "License: GPL v3";
 
-		string licensePath = System.IO.Path.Combine (MainClass.AssemblyFolder, LicenseFilename);
+		dialog.Icon = dialog.Logo = MainClass.AppIcon;
+
+		string licensePath = MainClass.LicensePath;
 		try {
-			about.License = System.IO.File.ReadAllText (licensePath);
+			dialog.License = System.IO.File.ReadAllText (licensePath);
 		} catch (System.IO.FileNotFoundException) {
-			about.License = "Could not load license file '" + licensePath + "'.\nGo to http://www.fsf.org";
+			dialog.License = "Could not load license file '" + licensePath + "'.\nGo to http://www.fsf.org";
 		}
 
-		about.Run ();
-		about.Destroy ();
+		dialog.Run ();
+		dialog.Destroy ();
 	}
 
 	void OnOpenActionActivated (object sender, System.EventArgs e)

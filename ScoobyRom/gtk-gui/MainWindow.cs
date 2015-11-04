@@ -202,8 +202,9 @@ public partial class MainWindow
 		w2.Fill = false;
 		// Container child vbox1.Gtk.Box+BoxChild
 		this.navScrolledWindow = new global::Gtk.ScrolledWindow ();
-		this.navScrolledWindow.HeightRequest = 38;
+		this.navScrolledWindow.HeightRequest = 40;
 		this.navScrolledWindow.Name = "navScrolledWindow";
+		this.navScrolledWindow.VscrollbarPolicy = ((global::Gtk.PolicyType)(2));
 		// Container child navScrolledWindow.Gtk.Container+ContainerChild
 		global::Gtk.Viewport w3 = new global::Gtk.Viewport ();
 		w3.ShadowType = ((global::Gtk.ShadowType)(0));

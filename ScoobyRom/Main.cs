@@ -26,6 +26,8 @@ namespace ScoobyRom
 {
 	static class MainClass
 	{
+		const string LicenseFilename = "COPYING.txt";
+
 		static Gdk.Pixbuf appIcon;
 
 		// sharing, used on all sub-windows
@@ -44,14 +46,38 @@ namespace ScoobyRom
 			}
 		}
 
+		static internal string AppDescription {
+			get {
+				return (ExecutingAssembly.GetCustomAttributes (
+					typeof(System.Reflection.AssemblyDescriptionAttribute), false) [0]
+					as System.Reflection.AssemblyDescriptionAttribute).Description;
+			}
+
+		}
+
+		static internal string AppCopyright {
+			get {
+				return (ExecutingAssembly.GetCustomAttributes (
+					typeof(System.Reflection.AssemblyCopyrightAttribute), false) [0]
+					as System.Reflection.AssemblyCopyrightAttribute).Copyright;
+			}
+		}
+
+		static internal string LicensePath {
+			get { return System.IO.Path.Combine (MainClass.AssemblyFolder, LicenseFilename); }
+		}
+
+		static internal System.Reflection.Assembly ExecutingAssembly {
+			get { return System.Reflection.Assembly.GetExecutingAssembly (); }
+		}
+
 		/// <summary>
 		/// Full application executable path
 		/// Example: 'C:\Program Files\ScoobyRom\ScoobyRom.exe'
 		/// </summary>
 		/// <value>The assembly path.</value>
-		static internal string AssemblyPath
-		{
-			get { return System.Reflection.Assembly.GetCallingAssembly ().Location; }
+		static internal string AssemblyPath {
+			get { return System.Reflection.Assembly.GetExecutingAssembly ().Location; }
 		}
 
 		/// <summary>
@@ -59,9 +85,12 @@ namespace ScoobyRom
 		/// Example: 'C:\Program Files\ScoobyRom\'
 		/// </summary>
 		/// <value>The assembly directory.</value>
-		static internal string AssemblyFolder
-		{
+		static internal string AssemblyFolder {
 			get { return System.IO.Path.GetDirectoryName (AssemblyPath); }
+		}
+
+		static internal string MonospaceFont {
+			get { return System.Environment.OSVersion.Platform == PlatformID.Win32NT ? "Consolas" : "monospace"; }
 		}
 
 		public static void Main (string[] args)

@@ -64,7 +64,7 @@ namespace ScoobyRom
 
 			cellRendererText = new CellRendererText ();
 			Pango.FontDescription fontDesc = new Pango.FontDescription ();
-			fontDesc.Family = System.Environment.OSVersion.Platform == PlatformID.Win32NT ? "Consolas" : "Monospace";
+			fontDesc.Family = MainClass.MonospaceFont;
 
 			cellRendererText.FontDesc = fontDesc;
 
@@ -132,18 +132,23 @@ namespace ScoobyRom
 			if (data == null)
 				return;
 
-			var rcs = data.Rom.RomChecksumming;
-			var ilist = rcs.ReadTableRecords ();
-			for (int i = 0; i < ilist.Count; i++) {
-				var item = ilist [i];
-				int sum = rcs.CalcChecksumValue (item);
-				int iconIndex = item.Checksum == sum ? 1 : 0;
-				store.AppendValues (i, item.StartAddress, item.EndAddress, item.Checksum, pixbufs [iconIndex], sum);
-			}
+			try {
+				var rcs = data.Rom.RomChecksumming;
+				var ilist = rcs.ReadTableRecords ();
+				for (int i = 0; i < ilist.Count; i++) {
+					var item = ilist [i];
+					int sum = rcs.CalcChecksumValue (item);
+					int iconIndex = item.Checksum == sum ? 1 : 0;
+					store.AppendValues (i, item.StartAddress, item.EndAddress, item.Checksum, pixbufs [iconIndex], sum);
+				}
 
-			labelCVN8.Markup = "<tt>" + RomChecksumming.CVN8Str (rcs.CalcCVN8 ()) + "</tt>";
-			// pre-select for copy & paste
-			labelCVN8.SelectRegion (0, -1);
+				labelCVN8.Markup = "<tt>" + RomChecksumming.CVN8Str (rcs.CalcCVN8 ()) + "</tt>";
+				// pre-select for copy & paste
+				labelCVN8.SelectRegion (0, -1);
+			} catch (Exception ex) {
+				Console.Error.WriteLine (ex.ToString ());
+				labelCVN8.Markup = "<b>Checksumming error.</b>";
+			}
 		}
 
 		#region Tree Cell Data Functions

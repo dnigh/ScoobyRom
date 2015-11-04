@@ -49,7 +49,7 @@ namespace Util
 		}
 
 		#if IncludeGdkColor
-
+		
 		public Coloring (Gdk.Color colorMin, Gdk.Color colorMax)
 		{
 			GdkColorToHSV (colorMin, out hMin, out sMin, out vMin);
@@ -98,7 +98,7 @@ namespace Util
 		}
 
 		#if IncludeGdkColor
-
+		
 		public static void GdkColorToHSV (Gdk.Color color, out double h, out double s, out double v)
 		{
 			// Gdk.Color fields are type ushort although its constructor takes bytes!
@@ -118,8 +118,8 @@ namespace Util
 		static Cairo.Color RegionColorTableRecord2D = new Cairo.Color (1, 153 / 255.0, 171 / 255.0);
 		// brown
 		static Cairo.Color RegionColorTableRecord3D = new Cairo.Color (139 / 255.0, 105 / 255.0, 20 / 255.0);
-		// yellow
-		static Cairo.Color RegionColorChecksummed = new Cairo.Color (1, 1, 0);
+		// dark yellow
+		static Cairo.Color RegionColorChecksummed = new Cairo.Color (0.8, 0.8, 0, 0.7);
 
 		public static Cairo.Color RegionColor (RegionType regionType)
 		{
