@@ -230,5 +230,14 @@ namespace ScoobyRom
 			}
 			return ValueFormat (digits);
 		}
+
+		internal IList<Table2D> FindTables2DSameAxisX (Table2D table)
+		{
+			var r = list2D.Where (t => t.RangeX.Pos == table.RangeX.Pos).ToList ();
+			for (int i = 0; i < r.Count; i++) {
+				Console.WriteLine ("#{0}: {1}", i, r [i]);
+			}
+			return r;
+		}
 	}
 }

@@ -31,7 +31,7 @@ namespace ScoobyRom
 	// sort of ViewModel in M-V-VM (Model-View-ViewModel pattern)
 	public abstract class DataViewModelBaseGtk
 	{
-		protected CancellationTokenSource tokenSource = new CancellationTokenSource();
+		protected CancellationTokenSource tokenSource = new CancellationTokenSource ();
 		protected Task task;
 
 		// generates icons
@@ -53,7 +53,10 @@ namespace ScoobyRom
 		}
 
 		protected abstract int ColumnNrIcon { get; }
+
 		protected abstract int ColumnNrObj { get; }
+
+		protected abstract int ColumnNrToggle { get; }
 
 		public DataViewModelBaseGtk (Data data, PlotIconBase plotIcon)
 		{
@@ -74,8 +77,7 @@ namespace ScoobyRom
 			data.ChangeTableType (table, newType);
 		}
 
-		public bool IconsVisible
-		{
+		public bool IconsVisible {
 			get { return iconsVisible; }
 			set { iconsVisible = value; }
 		}
@@ -121,8 +123,7 @@ namespace ScoobyRom
 
 			#else
 
-			if (task != null && !task.IsCompleted)
-			{
+			if (task != null && !task.IsCompleted) {
 				tokenSource.Cancel ();
 				// "It is not necessary to wait on tasks that have canceled."
 				// https://msdn.microsoft.com/en-us/library/dd537607%28v=vs.100%29.aspx
@@ -146,8 +147,7 @@ namespace ScoobyRom
 			if (!store.GetIterFirst (out iter))
 				return;
 
-			if (ct.IsCancellationRequested)
-			{
+			if (ct.IsCancellationRequested) {
 				return;
 			}
 
@@ -160,10 +160,9 @@ namespace ScoobyRom
 				// HACK Application.Invoke causes wrong iters ???
 				// IA__gtk_list_store_set_value: assertion 'VALID_ITER (iter, list_store)' failed
 				//Application.Invoke (delegate {
-					store.SetValue (iter, iconColumnNr, pixbuf);
+				store.SetValue (iter, iconColumnNr, pixbuf);
 				//});
-				if (ct.IsCancellationRequested)
-				{
+				if (ct.IsCancellationRequested) {
 					return;
 				}
 			} while (store.IterNext (ref iter));
@@ -201,5 +200,45 @@ namespace ScoobyRom
 		abstract protected void PopulateData ();
 
 		abstract protected void UpdateModel (TreeIter iter);
+
+
+
+		protected bool FindIter (Subaru.Tables.Table table, out TreeIter iter)
+		{
+			int objColumnNr = ColumnNrObj;
+
+			if (!store.GetIterFirst (out iter))
+				return false;
+
+			Subaru.Tables.Table currentTable;
+			do {
+				currentTable = (Subaru.Tables.Table)store.GetValue (iter, objColumnNr);
+				if (currentTable.Equals (table)) {
+					return true;
+				}
+			} while (store.IterNext (ref iter));
+			return false;
+		}
+
+		protected void SetHandleRowChanged (bool on)
+		{
+			if (on) {
+				store.RowChanged += HandleTreeStoreRowChanged;
+			} else {
+				store.RowChanged -= HandleTreeStoreRowChanged;
+			}
+		}
+
+		protected void ToggleAll (bool on)
+		{
+			int objColumnNr = ColumnNrObj;
+
+			TreeIter iter;
+			if (!store.GetIterFirst (out iter))
+				return;
+			do {
+				store.SetValue (iter, ColumnNrToggle, on);
+			} while (store.IterNext (ref iter));
+		}
 	}
 }

@@ -42,6 +42,10 @@ namespace ScoobyRom
 			get { return (int)ColumnNr3D.Obj; }
 		}
 
+		protected override int ColumnNrToggle {
+			get { return (int)ColumnNr3D.Toggle; }
+		}
+
 		override protected void InitStore ()
 		{
 			// TODO avoid reflection
@@ -100,7 +104,7 @@ namespace ScoobyRom
 		override protected void PopulateData ()
 		{
 			// performance, would get raised for each new row
-			store.RowChanged -= HandleTreeStoreRowChanged;
+			SetHandleRowChanged (false);
 			TreeIter newNode;
 
 			foreach (var table3D in data.List3D) {
@@ -110,7 +114,7 @@ namespace ScoobyRom
 				SetNodeContent (newNode, table3D);
 			}
 
-			store.RowChanged += HandleTreeStoreRowChanged;
+			SetHandleRowChanged (true);
 		}
 
 		public void SetNodeContent (TreeIter iter, Table3D table3D)

@@ -42,6 +42,10 @@ namespace ScoobyRom
 			get { return (int)ColumnNr2D.Obj; }
 		}
 
+		protected override int ColumnNrToggle {
+			get { return (int)ColumnNr2D.Toggle; }
+		}
+
 		public void ChangeTableType (Table2D table2D, TableType newType)
 		{
 			data.ChangeTableType (table2D, newType);
@@ -96,14 +100,14 @@ namespace ScoobyRom
 		override protected void PopulateData ()
 		{
 			// performance, would get raised for each new row
-			store.RowChanged -= HandleTreeStoreRowChanged;
+			SetHandleRowChanged (false);
 
 			foreach (Table2D table2D in data.List2D) {
 				TreeIter newNode = store.Append ();
 				SetNodeContent (newNode, table2D);
 			}
 
-			store.RowChanged += HandleTreeStoreRowChanged;
+			SetHandleRowChanged (true);
 		}
 
 		public void SetNodeContent (TreeIter iter, Table2D table2D)
@@ -148,15 +152,42 @@ namespace ScoobyRom
 
 		protected override void UpdateModel (TreeIter iter)
 		{
+			// prevent loop when content might change in here (i.e. toggle)
+			SetHandleRowChanged (false);
+
 			Table2D table = store.GetValue (iter, (int)ColumnNr2D.Obj) as Table2D;
 			if (table == null)
 				return;
+
+			string nameX = (string)store.GetValue (iter, (int)ColumnNr2D.NameX);
+			string unitX = (string)store.GetValue (iter, (int)ColumnNr2D.UnitX);
+
+			nameX = nameX.Trim ();
+			unitX = unitX.Trim ();
+			if (unitX != table.UnitX || nameX != table.NameX) {
+				var shared = data.FindTables2DSameAxisX (table);
+				if (shared.Count > 0) {
+					Console.WriteLine ("AxisX shared {0} times.", shared.Count);
+					//store.SetValue (iter, (int)ColumnNr2D.Toggle, true);
+					ToggleAll (false);
+				}
+				foreach (var t in shared) {
+					TreeIter iterDup;
+					if (FindIter (t, out iterDup)) {
+						store.SetValue (iterDup, (int)ColumnNr2D.Toggle, true);
+						//Console.WriteLine ("toggled: " + t.ToString ());
+					}
+				}
+			}
+
 			table.Category = (string)store.GetValue (iter, (int)ColumnNr2D.Category);
 			table.Title = (string)store.GetValue (iter, (int)ColumnNr2D.Title);
 			table.UnitY = (string)store.GetValue (iter, (int)ColumnNr2D.UnitY);
-			table.NameX = (string)store.GetValue (iter, (int)ColumnNr2D.NameX);
-			table.UnitX = (string)store.GetValue (iter, (int)ColumnNr2D.UnitX);
+			table.NameX = nameX;
+			table.UnitX = unitX;
 			table.Description = (string)store.GetValue (iter, (int)ColumnNr2D.Description);
+
+			SetHandleRowChanged (true);
 		}
 	}
 }

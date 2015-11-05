@@ -345,6 +345,7 @@ namespace ScoobyRom
 			// type int needs further info!
 			switch ((ColumnNr3D)column) {
 			case ColumnNr3D.Location:
+			case ColumnNr3D.XPos:
 			case ColumnNr3D.YPos:
 			case ColumnNr3D.ZPos:
 				return EqualFuncHex (key, (int)content);

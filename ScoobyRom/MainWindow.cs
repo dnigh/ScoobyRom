@@ -555,10 +555,11 @@ public partial class MainWindow : Gtk.Window
 
 	void OnNavigationBarActionActivated (object sender, EventArgs e)
 	{
-		navScrolledWindow.Visible = navigationBarAction.Active;
-		// tested: child .Visible keeps true
-		// probably not necessary:
-		navbarwidget.Visible = navScrolledWindow.Visible;
+		if (navigationBarAction.Active) {
+			navScrolledWindow.ShowAll ();
+		} else {
+			navScrolledWindow.HideAll ();
+		}
 	}
 
 	// create or close gnuplot window

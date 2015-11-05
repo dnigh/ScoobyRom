@@ -15,20 +15,12 @@ namespace Util
 
 		public int Pos1 {
 			get { return this.pos1; }
-			set {
-				if (pos1 != value) {
-					pos1 = value;
-				}
-			}
+			set { this.pos1 = value; }
 		}
 
 		public int Pos2 {
 			get { return this.pos2; }
-			set {
-				if (pos2 != value) {
-					pos2 = value;
-				}
-			}
+			set { pos2 = value; }
 		}
 
 		public int Size {

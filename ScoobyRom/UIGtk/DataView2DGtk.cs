@@ -224,6 +224,7 @@ namespace ScoobyRom
 			// type int needs further info!
 			switch ((ColumnNr2D)column) {
 			case ColumnNr2D.Location:
+			case ColumnNr2D.XPos:
 			case ColumnNr2D.YPos:
 				return EqualFuncHex (key, (int)content);
 			case ColumnNr2D.Type:
