@@ -231,9 +231,14 @@ namespace ScoobyRom
 			return ValueFormat (digits);
 		}
 
-		internal IList<Table2D> FindTables2DSameAxisX (Table2D table)
+		// some x-axis is shared many times with both 2D and 3D tables
+		public IList<Table> FindTablesSameAxisX (Table table)
 		{
-			var r = list2D.Where (t => t.RangeX.Pos == table.RangeX.Pos).ToList ();
+			var r2 = list2D.Where (t => t.RangeX.Pos == table.RangeX.Pos).Cast <Table> ();
+			var r3 = list3D.Where (t => t.RangeX.Pos == table.RangeX.Pos).Cast <Table> ();
+
+			var r = r2.Concat (r3).ToList ();
+
 			for (int i = 0; i < r.Count; i++) {
 				Console.WriteLine ("#{0}: {1}", i, r [i]);
 			}

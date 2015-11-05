@@ -229,7 +229,7 @@ namespace ScoobyRom
 			}
 		}
 
-		protected void ToggleAll (bool on)
+		public void ToggleAll (bool on)
 		{
 			int objColumnNr = ColumnNrObj;
 

@@ -53,6 +53,10 @@ public partial class MainWindow
 	
 	private global::Gtk.ToggleAction navigationBarAction;
 	
+	private global::Gtk.Action selectAllAction;
+	
+	private global::Gtk.Action selectNoneAction;
+	
 	private global::Gtk.VBox vbox1;
 	
 	private global::Gtk.MenuBar menubar1;
@@ -182,6 +186,12 @@ public partial class MainWindow
 		this.navigationBarAction.Active = true;
 		this.navigationBarAction.ShortLabel = "_Navigation Bar";
 		w1.Add (this.navigationBarAction, null);
+		this.selectAllAction = new global::Gtk.Action ("selectAllAction", "Select _All", null, "gtk-select-all");
+		this.selectAllAction.ShortLabel = "Select _All";
+		w1.Add (this.selectAllAction, "<Primary><Mod2>a");
+		this.selectNoneAction = new global::Gtk.Action ("selectNoneAction", "Select _None", null, "gtk-clear");
+		this.selectNoneAction.ShortLabel = "Select _None";
+		w1.Add (this.selectNoneAction, "<Primary><Mod2>n");
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
@@ -192,7 +202,7 @@ public partial class MainWindow
 		this.vbox1.Name = "vbox1";
 		this.vbox1.Spacing = 6;
 		// Container child vbox1.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='FileAction' action='FileAction'><menuitem name='openAction' action='openAction'/><menuitem name='saveAction' action='saveAction'/><separator/><menu name='exportAsAction' action='exportAsAction'><menuitem name='exportAsRRAction' action='exportAsRRAction'/></menu><separator/><menuitem name='quitAction' action='quitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='copyAction' action='copyAction'/></menu><menu name='ViewAction' action='ViewAction'><menuitem name='visualizationAction' action='visualizationAction'/><separator/><menuitem name='iconsAction' action='iconsAction'/><menuitem name='zoomInAction' action='zoomInAction'/><menuitem name='zoomOutAction' action='zoomOutAction'/><menuitem name='zoomNormalAction' action='zoomNormalAction'/><separator/><menuitem name='checksumWindowAction' action='checksumWindowAction'/><menuitem name='propertiesWindowAction' action='propertiesWindowAction'/><separator/><menuitem name='navigationBarAction' action='navigationBarAction'/></menu><menu name='PlotAction' action='PlotAction'><menuitem name='plotExternalAction' action='plotExternalAction'/><menuitem name='createSVGFileAction' action='createSVGFileAction'/></menu><menu name='DataAction' action='DataAction'><menuitem name='exportTableAsCSVAction' action='exportTableAsCSVAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='aboutAction' action='aboutAction'/></menu></menubar></ui>");
+		this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='FileAction' action='FileAction'><menuitem name='openAction' action='openAction'/><menuitem name='saveAction' action='saveAction'/><separator/><menu name='exportAsAction' action='exportAsAction'><menuitem name='exportAsRRAction' action='exportAsRRAction'/></menu><separator/><menuitem name='quitAction' action='quitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='copyAction' action='copyAction'/><separator/><menuitem name='selectAllAction' action='selectAllAction'/><menuitem name='selectNoneAction' action='selectNoneAction'/></menu><menu name='ViewAction' action='ViewAction'><menuitem name='visualizationAction' action='visualizationAction'/><separator/><menuitem name='iconsAction' action='iconsAction'/><menuitem name='zoomInAction' action='zoomInAction'/><menuitem name='zoomOutAction' action='zoomOutAction'/><menuitem name='zoomNormalAction' action='zoomNormalAction'/><separator/><menuitem name='checksumWindowAction' action='checksumWindowAction'/><menuitem name='propertiesWindowAction' action='propertiesWindowAction'/><separator/><menuitem name='navigationBarAction' action='navigationBarAction'/></menu><menu name='PlotAction' action='PlotAction'><menuitem name='plotExternalAction' action='plotExternalAction'/><menuitem name='createSVGFileAction' action='createSVGFileAction'/></menu><menu name='DataAction' action='DataAction'><menuitem name='exportTableAsCSVAction' action='exportTableAsCSVAction'/></menu><menu name='HelpAction' action='HelpAction'><menuitem name='aboutAction' action='aboutAction'/></menu></menubar></ui>");
 		this.menubar1 = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/menubar1")));
 		this.menubar1.Name = "menubar1";
 		this.vbox1.Add (this.menubar1);
@@ -348,6 +358,8 @@ public partial class MainWindow
 		this.zoomNormalAction.Activated += new global::System.EventHandler (this.OnZoomNormalActionActivated);
 		this.copyAction.Activated += new global::System.EventHandler (this.OnCopyTableAction);
 		this.navigationBarAction.Activated += new global::System.EventHandler (this.OnNavigationBarActionActivated);
+		this.selectAllAction.Activated += new global::System.EventHandler (this.OnSelectAllActionActivated);
+		this.selectNoneAction.Activated += new global::System.EventHandler (this.OnSelectNoneActionActivated);
 		this.notebook1.SwitchPage += new global::Gtk.SwitchPageHandler (this.OnNotebook1SwitchPage);
 	}
 }

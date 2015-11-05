@@ -90,8 +90,7 @@ namespace ScoobyRom
 			set {
 				showIcons = value;
 				viewModel.IconsVisible = value;
-
-				GetColumn (ColumnNrIcon).Visible = value;
+				AjustIconCol ();
 
 				if (value) {
 					//treeView.Sensitive = false;
@@ -131,10 +130,17 @@ namespace ScoobyRom
 
 		protected void AjustIconCol ()
 		{
+			GetColumn (ColumnNrIcon).Visible = showIcons;
+			var col = GetColumn (ColumnNrIcon);
+			if (!showIcons) {
+				// HACK does not reduce row heights when icons not shown
+				// col.FixedWidth = 1;
+				return;
+			}
+
 			var iconSizing = this.viewModel.IconSizing;
 			cellRendererPixbuf.SetFixedSize (iconSizing.Width, iconSizing.Height);
 
-			var col = GetColumn (ColumnNrIcon);
 			// need some more width for PixBuf to be completely visible
 			// HACK icon column FixedWidth
 			col.FixedWidth = iconSizing.Width + 10;

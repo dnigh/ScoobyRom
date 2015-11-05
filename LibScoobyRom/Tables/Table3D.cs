@@ -223,7 +223,7 @@ namespace Subaru.Tables
 		public override string ToString ()
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder (200);
-			sb.AppendFormat ("[TableInfo3D @ {0:X6} | XCount={1}, YCount={2} | RangeX={3}, RangeY={4}, RangeZ={5} | TableType={6}", Location, countX.ToString (), countY.ToString (), rangeX.ToString (), rangeY.ToString (), rangeZ.ToString (), tableType.ToStr ());
+			sb.AppendFormat ("[Table3D @ {0:X6} | XCount={1}, YCount={2} | RangeX={3}, RangeY={4}, RangeZ={5} | TableType={6}", Location, countX.ToString (), countY.ToString (), rangeX.ToString (), rangeY.ToString (), rangeZ.ToString (), tableType.ToStr ());
 
 			sb.AppendFormat (" | Xmin={0} Xmax={1} | Ymin={2} Ymax={3} | Zmin={4} Zmax={5}", Xmin, Xmax, Ymin, Ymax, Zmin, Zmax);
 

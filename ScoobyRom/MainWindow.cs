@@ -130,6 +130,18 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 
+	DataViewModelBaseGtk CurrentViewModel {
+		get {
+			switch (CurrentUI) {
+			case ActiveUI.View2D:
+				return dataView2DModelGtk;
+			case ActiveUI.View3D:
+				return dataView3DModelGtk;
+			}
+			return null;
+		}
+	}
+
 	DataViewBaseGtk CurrentView {
 		get {
 			switch (CurrentUI) {
@@ -772,5 +784,15 @@ public partial class MainWindow : Gtk.Window
 		md.Title = title;
 		md.Run ();
 		md.Destroy ();
+	}
+
+	protected void OnSelectAllActionActivated (object sender, EventArgs e)
+	{
+		CurrentViewModel.ToggleAll (true);
+	}
+
+	protected void OnSelectNoneActionActivated (object sender, EventArgs e)
+	{
+		CurrentViewModel.ToggleAll (false);
 	}
 }

@@ -165,7 +165,7 @@ namespace ScoobyRom
 			nameX = nameX.Trim ();
 			unitX = unitX.Trim ();
 			if (unitX != table.UnitX || nameX != table.NameX) {
-				var shared = data.FindTables2DSameAxisX (table);
+				var shared = data.FindTablesSameAxisX (table);
 				if (shared.Count > 0) {
 					Console.WriteLine ("AxisX shared {0} times.", shared.Count);
 					//store.SetValue (iter, (int)ColumnNr2D.Toggle, true);
