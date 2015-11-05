@@ -426,7 +426,7 @@ public partial class MainWindow : Gtk.Window
 			Version = MainClass.AppVersion,
 			Copyright = MainClass.AppCopyright,
 			Comments = MainClass.AppDescription,
-			Authors = new string[] { "subdiesel <http://subdiesel.wordpress.com/>",
+			Authors = new string[] { "subdiesel\thttp://subdiesel.wordpress.com/",
 				"\nThanks for any feedback!",
 				"\nEXTERNAL BINARY DEPENDENCIES:",
 				"Gtk#\thttp://mono-project.com/GtkSharp",
@@ -445,9 +445,18 @@ public partial class MainWindow : Gtk.Window
 			dialog.License = "Could not load license file '" + licensePath + "'.\nGo to http://www.fsf.org";
 		}
 
+		// default works fine on Linux, need extra work on Windows it seems...
+		//AboutDialog.SetUrlHook (HandleAboutDialogActivateLinkFunc);
+
 		dialog.Run ();
 		dialog.Destroy ();
 	}
+
+	/*
+	void HandleAboutDialogActivateLinkFunc (AboutDialog about, string uri)
+	{
+	}
+	*/
 
 	void OnOpenActionActivated (object sender, System.EventArgs e)
 	{

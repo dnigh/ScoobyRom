@@ -93,19 +93,7 @@ namespace ScoobyRom
 				AjustIconCol ();
 
 				if (value) {
-					//treeView.Sensitive = false;
 					viewModel.RequestIcons ();
-					//treeView.Sensitive = true;
-				} else {
-					// row heights won't shrink automatically, only after editing any column content
-					// no effect: treeView.SizeRequest (); treeView.QueueResize ();
-					// there is no treeView.RowsAutosize ()
-
-					// hack not needed when using col.FixedWidth & cellRendererPixBuf.FixedSize
-					// HACK shrinking row heights - no better method found yet
-					// disadvantage: does not maintain current selected row
-					//treeView.Model = null;
-					//treeView.Model = viewModel.TreeModel;
 				}
 			}
 		}
@@ -130,21 +118,21 @@ namespace ScoobyRom
 
 		protected void AjustIconCol ()
 		{
-			GetColumn (ColumnNrIcon).Visible = showIcons;
 			var col = GetColumn (ColumnNrIcon);
+			col.Visible = showIcons;
+
 			if (!showIcons) {
-				// HACK does not reduce row heights when icons not shown
-				// col.FixedWidth = 1;
-				return;
+				// HACK best solution to reduce row heights so far
+				treeView.ColumnsAutosize ();
+			} else {
+				var iconSizing = this.viewModel.IconSizing;
+				cellRendererPixbuf.SetFixedSize (iconSizing.Width, iconSizing.Height);
+
+				// need some more width for PixBuf to be completely visible
+				// HACK icon column FixedWidth
+				col.FixedWidth = iconSizing.Width + 10;
+				col.Sizing = TreeViewColumnSizing.Fixed;
 			}
-
-			var iconSizing = this.viewModel.IconSizing;
-			cellRendererPixbuf.SetFixedSize (iconSizing.Width, iconSizing.Height);
-
-			// need some more width for PixBuf to be completely visible
-			// HACK icon column FixedWidth
-			col.FixedWidth = iconSizing.Width + 10;
-			col.Sizing = TreeViewColumnSizing.Fixed;
 		}
 
 		public Subaru.Tables.Table Selected {
@@ -436,10 +424,6 @@ namespace ScoobyRom
 		protected TreeViewColumn CreateToggleColumn (int colNr)
 		{
 			return new TreeViewColumn (null, cellRendererToggle, "active", colNr);
-			// inconsistent state shows sort of "-" in check box or radio circle
-			//col.AddAttribute (cellRendererToggle, "inconsistent", (int)ColumnNr3D.ToggleInconsistent);
-			// not as expected on type bool, SortOrder does not help
-			//col.SortOrder = SortType.Descending;
 		}
 
 		#endregion CreateColumn
