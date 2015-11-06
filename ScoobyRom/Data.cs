@@ -80,6 +80,26 @@ namespace ScoobyRom
 			return list3D.Where (t => t.HasMetadata).OrderBy (t => t.Location).AsParallel ().ToList ();
 		}
 
+		public IList<Table2D> List2DSelected ()
+		{
+			return list2D.Where (t => t.Selected).AsParallel ().ToList ();
+		}
+
+		public IList<Table3D> List3DSelected ()
+		{
+			return list3D.Where (t => t.Selected).AsParallel ().ToList ();
+		}
+
+		public IList<Table2D> List2DSelectedSorted ()
+		{
+			return list2D.Where (t => t.Selected).OrderBy (t => t.Location).AsParallel ().ToList ();
+		}
+
+		public IList<Table3D> List3DSelectedSorted ()
+		{
+			return list3D.Where (t => t.Selected).OrderBy (t => t.Location).AsParallel ().ToList ();
+		}
+
 
 		public Subaru.File.Rom Rom {
 			get { return this.rom; }

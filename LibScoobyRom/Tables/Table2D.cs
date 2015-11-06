@@ -123,6 +123,7 @@ namespace Subaru.Tables
 			// metadata
 			c.title = title ?? string.Empty;
 			c.category = category ?? string.Empty;
+			c.selected = selected;
 			c.description = description ?? string.Empty;
 			c.nameX = nameX ?? string.Empty;
 			c.unitX = unitX ?? string.Empty;
@@ -142,8 +143,11 @@ namespace Subaru.Tables
 		public override string ToString ()
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder (200);
-			sb.AppendFormat ("[Table2D @ {0:X6} | Count={1} Type={2} | RangeX={3}, RangeY={4} | xMin={5} xMax={6} | yMin={7} yMax={8} yAvg={9}", Location, CountX, TableType.ToStr (), rangeX.ToString (), rangeY.ToString (), Xmin.ToString (), Xmax.ToString (), Ymin.ToString (), Ymax.ToString (),
-				Yavg.ToString ());
+			sb.AppendFormat ("[Table2D @ {0:X6} | Selected={1} Count={2} Type={3} | RangeX={4}, RangeY={5} | xMin={6} xMax={7} | yMin={8} yMax={9} yAvg={10}",
+				location, selected, CountX, TableType.ToStr (),
+				rangeX.ToString (), rangeY.ToString (),
+				Xmin.ToString (), Xmax.ToString (),
+				Ymin.ToString (), Ymax.ToString (), Yavg.ToString ());
 			if (hasMAC) {
 				sb.AppendFormat (" | Multiplier={0}, Offset={1}]", Multiplier, Offset);
 			} else {

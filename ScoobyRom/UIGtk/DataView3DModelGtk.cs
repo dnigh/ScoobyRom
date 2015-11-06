@@ -150,6 +150,7 @@ namespace ScoobyRom
 			store.SetValue (iter, (int)ColumnNr3D.ZPos, table3D.RangeZ.Pos);
 			store.SetValue (iter, (int)ColumnNr3D.Location, table3D.Location);
 			store.SetValue (iter, (int)ColumnNr3D.Description, table3D.Description);
+			Toggle (iter, table3D.Selected);
 
 			SetNodeContentTypeChanged (iter, table3D);
 		}
@@ -178,6 +179,7 @@ namespace ScoobyRom
 			table.NameY = (string)store.GetValue (iter, (int)ColumnNr3D.NameY);
 			table.UnitY = (string)store.GetValue (iter, (int)ColumnNr3D.UnitY);
 			table.Description = (string)store.GetValue (iter, (int)ColumnNr3D.Description);
+			table.Selected = IsToggled (iter);
 		}
 	}
 }

@@ -134,6 +134,7 @@ namespace ScoobyRom
 			store.SetValue (iter, (int)ColumnNr2D.XPos, table2D.RangeX.Pos);
 			store.SetValue (iter, (int)ColumnNr2D.YPos, table2D.RangeY.Pos);
 			store.SetValue (iter, (int)ColumnNr2D.Description, table2D.Description);
+			Toggle (iter, table2D.Selected);
 
 			SetNodeContentTypeChanged (iter, table2D);
 		}
@@ -185,6 +186,7 @@ namespace ScoobyRom
 			table.NameX = nameX;
 			table.UnitX = unitX;
 			table.Description = (string)store.GetValue (iter, (int)ColumnNr2D.Description);
+			table.Selected = IsToggled (iter);
 
 			SetHandleRowChanged (true);
 		}

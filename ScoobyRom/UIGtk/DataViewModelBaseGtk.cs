@@ -22,6 +22,7 @@
 #define UseBackGroundTask
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Gtk;
@@ -191,43 +192,21 @@ namespace ScoobyRom
 
 		abstract protected void UpdateModel (TreeIter iter);
 
-
-
 		protected bool FindIter (Subaru.Tables.Table table, out TreeIter iter)
 		{
-			int objColumnNr = ColumnNrObj;
-
+			// not using ForEach - more complicated due to returning iter
 			if (!store.GetIterFirst (out iter))
 				return false;
 
 			Subaru.Tables.Table currentTable;
 			do {
-				currentTable = (Subaru.Tables.Table)store.GetValue (iter, objColumnNr);
+				currentTable = (Subaru.Tables.Table)store.GetValue (iter, ColumnNrObj);
 				if (currentTable.Equals (table)) {
-					return false;
+					return true;
 				}
 			} while (store.IterNext (ref iter));
 			iter = TreeIter.Zero;
 			return false;
-		}
-
-		protected void SetHandleRowChanged (bool on)
-		{
-			if (on) {
-				store.RowChanged += HandleTreeStoreRowChanged;
-			} else {
-				store.RowChanged -= HandleTreeStoreRowChanged;
-			}
-		}
-
-		protected void Toggle (TreeIter iter, bool on)
-		{
-			store.SetValue (iter, ColumnNrToggle, on);
-		}
-
-		protected bool IsToggled (TreeIter iter)
-		{
-			return (bool)store.GetValue (iter, ColumnNrToggle);
 		}
 
 		/// <summary>
@@ -248,6 +227,20 @@ namespace ScoobyRom
 			} while (store.IterNext (ref iter));
 		}
 
+		protected void SetHandleRowChanged (bool on)
+		{
+			if (on) {
+				store.RowChanged += HandleTreeStoreRowChanged;
+			} else {
+				store.RowChanged -= HandleTreeStoreRowChanged;
+			}
+		}
+
+		protected void Toggle (TreeIter iter, bool on)
+		{
+			store.SetValue (iter, ColumnNrToggle, on);
+		}
+
 		public void ToggleAll (bool on)
 		{
 			ForEach (delegate(TreeIter iter) {
@@ -257,5 +250,29 @@ namespace ScoobyRom
 				return false;
 			});
 		}
+
+		protected bool IsToggled (TreeIter iter)
+		{
+			return (bool)store.GetValue (iter, ColumnNrToggle);
+		}
+
+		protected Subaru.Tables.Table GetTable (TreeIter iter)
+		{
+			return (Subaru.Tables.Table)store.GetValue (iter, ColumnNrObj);
+		}
+
+		/* not needed
+		public List<Subaru.Tables.Table> GetToggled (bool toggled)
+		{
+			List<Subaru.Tables.Table> list = new List<Subaru.Tables.Table> (64);
+			ForEach (delegate(TreeIter iter) {
+				if (IsToggled (iter) == toggled) {
+					list.Add (GetTable (iter));
+				}
+				return false;
+			});
+			return list;
+		}
+		*/
 	}
 }

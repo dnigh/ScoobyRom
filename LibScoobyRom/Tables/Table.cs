@@ -52,12 +52,8 @@ namespace Subaru.Tables
 		/// The position max.
 		/// </value>
 		public static int PosMax {
-			get {
-				return posMax;
-			}
-			set {
-				posMax = value;
-			}
+			get { return posMax; }
+			set { posMax = value; }
 		}
 
 		/// <summary>
@@ -68,12 +64,8 @@ namespace Subaru.Tables
 		/// The position minimum.
 		/// </value>
 		public static int PosMin {
-			get {
-				return posMin;
-			}
-			set {
-				posMin = value;
-			}
+			get { return posMin; }
+			set { posMin = value; }
 		}
 
 		public const int FloatSize = 4;
@@ -100,6 +92,7 @@ namespace Subaru.Tables
 
 		// metadata
 		protected string title, category, description, nameX, unitX, unitY;
+		protected bool selected;
 
 		#endregion Fields
 
@@ -176,6 +169,8 @@ namespace Subaru.Tables
 			set { rangeY = value; }
 		}
 
+		#region metadata properties
+
 		public string NameX {
 			get { return this.nameX; }
 			set { nameX = value; }
@@ -189,6 +184,11 @@ namespace Subaru.Tables
 		public string Category {
 			get { return this.category; }
 			set { category = value; }
+		}
+
+		public bool Selected {
+			get { return this.selected; }
+			set { selected = value; }
 		}
 
 		public string Description {
@@ -205,6 +205,8 @@ namespace Subaru.Tables
 			get { return this.unitY; }
 			set { unitY = value; }
 		}
+
+		#endregion metadata properties
 
 		public virtual void Reset ()
 		{
@@ -554,17 +556,29 @@ namespace Subaru.Tables
 
 		public static string ValuesStats (float min, float max, float avg)
 		{
-			return string.Format (CultureInfo.InvariantCulture, " min: {0}  max: {1}  average: {2} ", min.ToString (), max.ToString (), avg.ToString ());
+			return string.Format (CultureInfo.InvariantCulture, " min: {0}  max: {1}  average: {2} ",
+				min.ToString (), max.ToString (), avg.ToString ());
 		}
 
 		public static XElement RRXmlScaling (string units, string expr, string to_byte, string format, float fineincrement, float coarseincrement)
 		{
-			return new XElement ("scaling", new XAttribute ("units", units), new XAttribute ("expression", expr), new XAttribute ("to_byte", to_byte), new XAttribute ("format", format), new XAttribute ("fineincrement", fineincrement), new XAttribute ("coarseincrement", coarseincrement));
+			return new XElement ("scaling",
+				new XAttribute ("units", units),
+				new XAttribute ("expression", expr),
+				new XAttribute ("to_byte", to_byte),
+				new XAttribute ("format", format),
+				new XAttribute ("fineincrement", fineincrement),
+				new XAttribute ("coarseincrement", coarseincrement));
 		}
 
 		public XElement RRXmlAxis (string axisType, string name, string unit, TableType tableType, Range range, float[] axis)
 		{
-			return new XElement ("table", new XAttribute ("type", axisType), new XAttribute ("name", name), new XAttribute ("storagetype", "float"), new XAttribute ("storageaddress", HexAddress (range.Pos)), new XComment (ValuesStats (axis)), RRXmlScaling (unit, "x", "x", "0.00", 1f, 5f));
+			return new XElement ("table",
+				new XAttribute ("type", axisType),
+				new XAttribute ("name", name),
+				new XAttribute ("storagetype", "float"),
+				new XAttribute ("storageaddress", HexAddress (range.Pos)),
+				new XComment (ValuesStats (axis)), RRXmlScaling (unit, "x", "x", "0.00", 1f, 5f));
 		}
 	}
 }

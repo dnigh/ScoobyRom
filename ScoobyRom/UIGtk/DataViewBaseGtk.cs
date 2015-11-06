@@ -423,7 +423,7 @@ namespace ScoobyRom
 
 		protected TreeViewColumn CreateToggleColumn (int colNr)
 		{
-			return new TreeViewColumn (null, cellRendererToggle, "active", colNr);
+			return new TreeViewColumn ("S", cellRendererToggle, "active", colNr);
 		}
 
 		#endregion CreateColumn
