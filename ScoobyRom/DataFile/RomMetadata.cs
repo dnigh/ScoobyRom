@@ -151,6 +151,17 @@ namespace Subaru.File
 
 		public XElement XElement {
 			get {
+				int fSize = filesize;
+				string postfix = null;
+				if (fSize % 1024 == 0) {
+					fSize = fSize / 1024;
+					postfix = "KB";
+				}
+				if (fSize % 1024 == 0) {
+					fSize = fSize / 1024;
+
+					postfix = "MB";
+				}
 				return new XElement (RRX_romid, new XElement (RRX_xmlid, xmlid),
 					new XElement (RRX_internalidaddress, calibrationIDPos.ToString ("X")),
 					new XElement (RRX_internalidstring, calibrationID),
@@ -163,7 +174,9 @@ namespace Subaru.File
 					new XElement (RRX_transmission, transmission),
 					new XElement (RRX_memmodel, memmodel),
 					new XElement (RRX_flashmethod, flashmethod),
-					new XElement (RRX_filesize, Util.Misc.SizeForDisplay (filesize)));
+					// RomRaider filesize needs integer and must not have space after postfix
+					// i.e. "1536 kB", "1MB" and not "1 MB"
+					new XElement (RRX_filesize, postfix != null ? fSize.ToString () + postfix : fSize.ToString ()));
 			}
 		}
 

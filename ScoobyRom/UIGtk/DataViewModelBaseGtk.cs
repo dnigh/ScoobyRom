@@ -143,16 +143,10 @@ namespace ScoobyRom
 			int objColumnNr = ColumnNrObj;
 			int iconColumnNr = ColumnNrIcon;
 
-			TreeIter iter;
-			if (!store.GetIterFirst (out iter))
-				return;
+			ForEach (delegate(TreeIter iter) {
+				if (ct.IsCancellationRequested)
+					return false;
 
-			if (ct.IsCancellationRequested) {
-				return;
-			}
-
-			// Console.WriteLine ("CreateAllIcons Loop");
-			do {
 				Subaru.Tables.Table table = (Subaru.Tables.Table)store.GetValue (iter, objColumnNr);
 				Gdk.Pixbuf pixbuf = plotIcon.CreateIcon (table);
 
@@ -161,13 +155,9 @@ namespace ScoobyRom
 				// IA__gtk_list_store_set_value: assertion 'VALID_ITER (iter, list_store)' failed
 				//Application.Invoke (delegate {
 				store.SetValue (iter, iconColumnNr, pixbuf);
-				//});
-				if (ct.IsCancellationRequested) {
-					return;
-				}
-			} while (store.IterNext (ref iter));
+				return false;
+			});
 			iconsCached = true;
-			//plotIcon.CleanupTemp ();
 		}
 
 		public abstract void SetNodeContentTypeChanged (TreeIter iter, Subaru.Tables.Table table);
@@ -214,9 +204,10 @@ namespace ScoobyRom
 			do {
 				currentTable = (Subaru.Tables.Table)store.GetValue (iter, objColumnNr);
 				if (currentTable.Equals (table)) {
-					return true;
+					return false;
 				}
 			} while (store.IterNext (ref iter));
+			iter = TreeIter.Zero;
 			return false;
 		}
 
@@ -229,16 +220,42 @@ namespace ScoobyRom
 			}
 		}
 
-		public void ToggleAll (bool on)
+		protected void Toggle (TreeIter iter, bool on)
 		{
-			int objColumnNr = ColumnNrObj;
+			store.SetValue (iter, ColumnNrToggle, on);
+		}
 
+		protected bool IsToggled (TreeIter iter)
+		{
+			return (bool)store.GetValue (iter, ColumnNrToggle);
+		}
+
+		/// <summary>
+		/// Calls func on each node in model in a depth-first fashion.
+		/// If func returns true, then the tree ceases to be walked, and this method returns.
+		/// like Gtk.TreeModel.Foreach method which uses delegate bool TreeModelForeachFunc (ITreeModel model, TreePath path, TreeIter iter)
+		/// Tested: slightly faster on Linux than Gtk.TreeModel.Foreach.Foreach, probably because of additional arguments.
+		/// </summary>
+		/// <param name="func">Func.</param>
+		public void ForEach (Func<TreeIter, bool> func)
+		{
 			TreeIter iter;
 			if (!store.GetIterFirst (out iter))
 				return;
 			do {
-				store.SetValue (iter, ColumnNrToggle, on);
+				if (func (iter))
+					break;
 			} while (store.IterNext (ref iter));
+		}
+
+		public void ToggleAll (bool on)
+		{
+			ForEach (delegate(TreeIter iter) {
+				if (IsToggled (iter) != on) {
+					Toggle (iter, on);
+				}
+				return false;
+			});
 		}
 	}
 }

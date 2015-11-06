@@ -174,8 +174,7 @@ namespace ScoobyRom
 				foreach (var t in shared) {
 					TreeIter iterDup;
 					if (FindIter (t, out iterDup)) {
-						store.SetValue (iterDup, (int)ColumnNr2D.Toggle, true);
-						//Console.WriteLine ("toggled: " + t.ToString ());
+						Toggle (iterDup, true);
 					}
 				}
 			}

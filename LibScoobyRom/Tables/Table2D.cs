@@ -212,8 +212,18 @@ namespace Subaru.Tables
 		public override XElement RRXml ()
 		{
 			// X-axis is being called "Y Axis" in RR!
-			return new XElement ("table", new XAttribute ("type", "2D"), new XAttribute ("name", title), new XAttribute ("category", category), new XAttribute ("storagetype", tableType.ToRRType ()), new XAttribute ("endian", endian), new XAttribute ("sizey", countX.ToString ()), new XAttribute ("storageaddress", HexAddress (rangeY.Pos)), new XComment (ValuesStats (valuesYmin, valuesYmax, valuesYavg)), RRXmlScaling (unitX, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
-				RRXmlAxis ("Y Axis", nameX, unitX, TableType.Float, rangeX, valuesX), new XElement ("description", description));
+			return new XElement ("table",
+				new XAttribute ("type", "2D"),
+				new XAttribute ("name", title),
+				new XAttribute ("category", category),
+				new XAttribute ("storagetype", tableType.ToRRType ()),
+				new XAttribute ("endian", endian),
+				new XAttribute ("sizey", countX.ToString ()),
+				new XAttribute ("storageaddress", HexAddress (rangeY.Pos)),
+				new XComment (ValuesStats (valuesYmin, valuesYmax, valuesYavg)),
+				RRXmlScaling (unitX, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
+				RRXmlAxis ("Y Axis", nameX, unitX, TableType.Float, rangeX, valuesX),
+				new XElement ("description", description));
 		}
 
 		public void WriteCSV (System.IO.TextWriter tw)

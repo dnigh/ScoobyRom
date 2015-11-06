@@ -247,8 +247,8 @@ namespace Subaru.File
 			// necessary, otherwise single line
 			xw.Formatting = Formatting.Indented;
 
-			var table2DXElements = list2D.Where (t => t.HasMetadata).Select (t => GetXElement (t)).AsParallel ();
-			var table3DXElements = list3D.Where (t => t.HasMetadata).Select (t => GetXElement (t)).AsParallel ();
+			var table2DXElements = list2D.Where (t => t.HasMetadata).OrderBy (t => t.Location).Select (t => GetXElement (t)).AsParallel ();
+			var table3DXElements = list3D.Where (t => t.HasMetadata).OrderBy (t => t.Location).Select (t => GetXElement (t)).AsParallel ();
 
 			XElement romEl = new XElement (X_rom, romMetadata.XElement, TableSearchXElement (), table2DXElements, table3DXElements);
 
@@ -436,7 +436,7 @@ namespace Subaru.File
 		public static XDocument XDoc (params object[] content)
 		{
 			// XDeclaration: null parameters --> "<?xml version="1.0" encoding="utf-8"?>"
-			return new XDocument (new XDeclaration (null, null, null), content);
+			return new XDocument (new XDeclaration (null, null, null), new XComment (ScoobyRom.MainClass.GeneratedBy), content);
 		}
 
 		static XElement GetXElement (Table2D table2D)

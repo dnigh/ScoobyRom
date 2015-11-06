@@ -499,7 +499,8 @@ public partial class MainWindow : Gtk.Window
 	void OnExportAsRRActionActivated (object sender, System.EventArgs e)
 	{
 		string pathSuggested = ScoobyRom.Data.PathWithNewExtension (data.Rom.Path, ".RR.xml");
-		var fc = new Gtk.FileChooserDialog ("Export as RomRaider definition file", this, FileChooserAction.Save, Gtk.Stock.Cancel, ResponseType.Cancel, Gtk.Stock.Save, ResponseType.Accept);
+		var fc = new Gtk.FileChooserDialog ("Export as RomRaider definition file", this,
+			         FileChooserAction.Save, Gtk.Stock.Cancel, ResponseType.Cancel, Gtk.Stock.Save, ResponseType.Accept);
 		try {
 			FileFilter filter = new FileFilter ();
 			filter.Name = "XML files";
@@ -513,10 +514,8 @@ public partial class MainWindow : Gtk.Window
 			fc.AddFilter (filter);
 
 			fc.DoOverwriteConfirmation = true;
-			// fc.CurrentFolder is read-only
 			fc.SetFilename (pathSuggested);
-			//fc.SetCurrentFolder (System.IO.Path.GetDirectoryName (pathSuggested));
-			fc.CurrentName = System.IO.Path.GetFileName (pathSuggested);
+
 			if (fc.Run () == (int)ResponseType.Accept) {
 				data.SaveAsRomRaiderXml (fc.Filename);
 			}

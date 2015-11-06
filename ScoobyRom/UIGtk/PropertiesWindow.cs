@@ -57,8 +57,8 @@ namespace ScoobyRom
 			label2DCountTotal.Text = data.List2D.Count.ToString ();
 			label3DCountTotal.Text = data.List3D.Count.ToString ();
 
-			label2DAnnotated.Text = data.List2DAnnotated.Count.ToString ();
-			label3DAnnotated.Text = data.List3DAnnotated.Count.ToString ();
+			label2DAnnotated.Text = data.List2DAnnotated ().Count.ToString ();
+			label3DAnnotated.Text = data.List3DAnnotated ().Count.ToString ();
 
 			if (data.List2D.Count > 0) {
 				label2DFirstRecord.Text = string.Format (StringFormatHex, data.List2D [0].Location);
