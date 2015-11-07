@@ -6,7 +6,7 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../bin/Debug/ScoobyRom.exe" internal="true" />
+    <widget-library name="../bin/Release/ScoobyRom.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="938 702">
     <action-group name="Default">
@@ -114,10 +114,10 @@
         <property name="ShortLabel" translatable="yes">Create SVG File</property>
         <signal name="Activated" handler="OnCreateSVGFileActionActivated" />
       </action>
-      <action id="visualizationAction">
+      <action id="visualisationAction">
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Control&gt;space</property>
-        <property name="Label" translatable="yes">Visualization</property>
+        <property name="Label" translatable="yes">_Visualisation</property>
         <property name="Sensitive">False</property>
         <property name="ShortLabel" translatable="yes">Visualization</property>
         <property name="StockId">gtk-refresh</property>
@@ -189,6 +189,7 @@
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Primary&gt;&lt;Mod2&gt;a</property>
         <property name="Label" translatable="yes">Select _All</property>
+        <property name="Sensitive">False</property>
         <property name="ShortLabel" translatable="yes">Select _All</property>
         <property name="StockId">gtk-select-all</property>
         <signal name="Activated" handler="OnSelectAllActionActivated" />
@@ -197,6 +198,7 @@
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Primary&gt;&lt;Mod2&gt;n</property>
         <property name="Label" translatable="yes">Select _None</property>
+        <property name="Sensitive">False</property>
         <property name="ShortLabel" translatable="yes">Select _None</property>
         <property name="StockId">gtk-clear</property>
         <signal name="Activated" handler="OnSelectNoneActionActivated" />
@@ -231,7 +233,7 @@
                 <node type="Menuitem" action="selectNoneAction" />
               </node>
               <node type="Menu" action="ViewAction">
-                <node type="Menuitem" action="visualizationAction" />
+                <node type="Menuitem" action="visualisationAction" />
                 <node type="Separator" />
                 <node type="Menuitem" action="iconsAction" />
                 <node type="Menuitem" action="zoomInAction" />

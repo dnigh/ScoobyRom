@@ -36,7 +36,7 @@ You can also get license text in different formats and further details there.
 
 ## 2) Purpose
 
-*ScoobyRom* is a car control unit ([ECU](http://en.wikipedia.org/wiki/Engine_Control_Unit), [TCU](http://en.wikipedia.org/wiki/Transmission_Control_Unit)) firmware (ROM) **data visualization viewer and metadata editor**.
+*ScoobyRom* is a car control unit ([ECU](http://en.wikipedia.org/wiki/Engine_Control_Unit), [TCU](http://en.wikipedia.org/wiki/Transmission_Control_Unit)) firmware (ROM) **data visualisation viewer and metadata editor**.
 Currently it is very [*Denso*](http://en.wikipedia.org/wiki/Denso) specific.
 
 Originally designed for *Subaru* Diesel (Euro 4 & 5) ROMs, some *Subaru* petrol models, as well as ROMs from other manufacturers like *Mazda*, *Mitsubishi*, *Nissan* etc. have been tested working (where *Denso* supplied control units).
@@ -44,7 +44,7 @@ In general, different car models are equipped with different ECUs (hardware and/
 
 Main features
 
-*	Find and visualize 2D (x-y) and 3D (x-y-z) tables ("maps").
+*	Find and visualise 2D (x-y) and 3D (x-y-z) tables ("maps").
 *	Allows adding metadata (category, title, axes names, units, description text) as ROMs (= compiled software + calibration data such as tables) do not contain such annotations.
 *	Display and verify checksums.
 
@@ -191,10 +191,18 @@ REQUIRED!
 
 REQUIRED!
 
-The application will not run without this as it is used for the multi-platform *graphical user interface* (GUI).
+The application will not run without this as it is used to show its (multi-platform) *graphical user interface* (GUI).
+
+**What is Gtk#?**
+
+Excerpt from <http://www.mono-project.com/docs/gui/gtksharp/> :
+
+*Gtk# is a Graphical User Interface Toolkit for mono and .Net. The project binds the [Gtk+](http://www.gtk.org/) toolkit and assorted [GNOME](http://www.gnome.org/) libraries, enabling fully native graphical Gnome application development using the Mono and .Net development frameworks.*
+
 Basically it's a .NET wrapper for native [Gtk+](http://www.gtk.org/) binaries.
 
-Note: Some software like *MonoDevelop / Xamarin Studio* depends on *Gtk#*, too.
+**Note:**
+Some software like *MonoDevelop / Xamarin Studio* depends on *Gtk#*, too.
 No need to install this if it is already there of course.
 
 
@@ -206,18 +214,20 @@ Select your **operating system** and follow instructions...
 <http://www.mono-project.com/download/#download-win>
 
 
-Most users will want this:
+Most users will want the following item:
 
-*	GTK# for .NET
+*	**GTK# for .NET**
 Installer for running Gtk#-based applications on Microsoft .NET:
 
-	1.	Click Button: **Download Gtk#** (currently links to <http://download.xamarin.com/GTKforWindows/Windows/gtk-sharp-2.12.26.msi>)
+	1.	Click Button: **Download Gtk#** (currently links to <http://download.xamarin.com/GTKforWindows/Windows/gtk-sharp-2.12.26.msi>, 25 MiB)
 	2.	Run installer (`gtk-sharp-2.12.26.msi`)
+	3.	If launching ScoobyRom does nothing (no app window appears), do a Windows logout and login (tested working for Windows 10 at least). If this does not help, try a reboot.
 
-Alternative: Mono + GTK#
+*	Alternative: **Mono + GTK#**
 
-*	**Mono for Windows** is not needed if you have a sufficient .NET runtime on your system already!
-	1.	Click Button: **Download Mono** (currently links to <http://download.mono-project.com/archive/4.0.3/windows-installer/mono-4.0.3-gtksharp-2.12.26-win32-0.msi>)
+	**Mono for Windows** is not needed if you have a sufficient .NET runtime on your system already! If you need or want this combination:
+
+	1.	Click Button: **Download Mono** (currently links to <http://download.mono-project.com/archive/4.0.3/windows-installer/mono-4.0.3-gtksharp-2.12.26-win32-0.msi>, 114 MiB)
 	2.	Run installer (`mono-4.0.3-gtksharp-2.12.26-win32-0.msi`)
 
 #### Linux:
@@ -233,18 +243,17 @@ package names:
 
 Required. Nothing to do as this library is already included pre-compiled (`/vendor/Florence.dll`).
 
-Did some bug fixes and improvements only for the GtkWidget part, included in ScoobyRom source.
+Did some bug fixes and improvements only for the Gtk# widget code, included in ScoobyRom source (`GtkWidgets/PlotWidget.cs`).
 
 Florence source code is pure C#, multi-platform. Currently, WinForms, Gtk#, and BitMap backends are implemented.
 
 <https://github.com/scottstephens/Florence>
 
-Older versions of Scoobyrom used *NPlot* which does not support interactive zoom, pan etc.
+Older versions of Scoobyrom (v0.6.x) used *NPlot.dll* which does not support interactive zoom, pan etc.
 The plot graphics look exactly the same.
 
 ##### *NPlot*
-Development is rather inactive for years but pretty good and compact. Cannot do 3D (surface) plots
- - therefore gnuplot is used!
+Development is rather inactive for years but pretty good and compact. Cannot do 3D (surface) plots, therefore gnuplot is used!
 
 <http://netcontrols.org/nplot/wiki/>
 
@@ -289,7 +298,7 @@ Tested example:
 
 Step 2: Run installer EXE (easiest method) or extract ZIP, respectively.
 
-The Windows installer can also set gnuplot's default terminal (`GNUTERM` environment variable). I recommend to try "qt" first as "wxt" in 5.0.1 x64 has a window-resize bug.
+Note: The Windows installer can also set gnuplot's default terminal (`GNUTERM` environment variable). I recommend to select "**qt**" as "wxt" in 5.0.1 x64 on Windows has a window-resize bug. "qt" also seems to render faster.
 
 Step 3: Check and edit file `ScoobyRom.exe.config` with a text editor.
 Enter the exact full path of `gnuplot.exe`, it will probably exist in a gnuplot subfolder like "bin".
@@ -343,13 +352,21 @@ Launch the binary (Windows: `gnuplot.exe`, Linux/Unix: `gnuplot`)
 	*	wxt
 
 	Try available ones to see which one works best.
-	If not specified (**`GNUTERM`** environment variable not set, see gnuplot documentation), gnuplot will use the default one.
+	If not specified (**`GNUTERM`** environment variable not set, see gnuplot documentation), gnuplot will use the default one. Windows: Advanced System Settings - Environment Variables.
+
+	Manually, temporary:
+
+	Windows example: choose terminal "qt" and launch ScoobyRom:
+
+		SET GNUTERM=qt
+		ScoobyRom.exe
+
 
 	Linux example, choose terminal "wxt" and launch ScoobyRom:
 
-	`GNUTERM="wxt" ScoobyRom.exe`
+	`GNUTERM=wxt ScoobyRom.exe`
 
-	You can also set it by editing gnuplot *template* files, insert command "set term wxt", see also chapter 5.7.
+	You can also set terminal by editing gnuplot *template* files (`.plt`), insert command "`set term qt`" near the beginning, see also chapter 5.7.
 
 ---
 
@@ -417,7 +434,7 @@ Applies to icon column in both 2D and 3D table lists.
 *	`"False"`: Icons are created on first demand. UI row heights are smaller without icons. Perhaps use this in case you rarely want icons visible.
 
 #### Icon size
-Errors or missing entries will result in default size (48 x 32) pixels. Both, width and height values are clamped to range 10..255. Larger icons are allowed via UI, though.
+Errors or missing entries will result in default size (48 x 32) pixels. Both, width and height values are clamped, max 255. Minimum in UI for zooming out will be 24 x 16, larger icons are allowed via zoom in.
 
 	<add key="iconWidth" value="48"/>
 	<add key="iconHeight" value="32"/>
@@ -445,7 +462,7 @@ Notes:
 
 *	Included XML comments are automatically generated by *ScoobyRom* as these can be useful when viewing the file. Also applies to file format created by feature "*Export As -> RomRaider def XML*".
 *	Any comments will be ignored and lost whenever XML is being saved, just the newly written auto-generated ones will be there!
-*	In XML payload text special characters like "<" or "&" must be escaped. Either avoid these or use "& l t ;" or "& a m p;" (without spaces) etc.
+*	In XML payload text special characters such as "`<`" or "`&`" must be escaped. Either avoid these or use "`&lt;`" or "`&amp;`" respectively.
 
 	Details: [Wikipedia: XML - Escaping](http://en.wikipedia.org/wiki/XML#Escaping)
 
@@ -470,7 +487,7 @@ Example:
   Easy to find and backup this XML regularly (simple file copy, source control, ...).
 
 * Cons:
-  ROM folder must be writeable.
+  ROM folder must be writable.
 
 WARNING: In case of existing file, ScoobyRom does not ask for permission (too annoying for every save), it immediately overwrites existing file! Be careful not to overwrite XML files meant for other software!!!
 
@@ -484,7 +501,7 @@ Without XML file or missing *tableSearch* XML element (see below), the app will 
 On a slow computer this can take several seconds.
 By using a good search range, load time is usually just a fraction of a second - highly recommended if you use this app frequently in terms of editing metadata!
 
-See record position column, properties window and navigation bar to get first/last record positions.
+See record position column as well as statistics window to get first/last record positions.
 Currently you've got to add and adjust this manually in XML:
 
 
@@ -505,20 +522,20 @@ Somewhat larger range will be almost as fast, in addition it might work for many
 
 *	If you want to annotate a new ROM, I recommend specifying metadata and a suitable search range sooner than later, you'll get proper ROM ID text (*internalidstring*, see next chapter) displayed in main window, better load speed and avoid looking at false maps.
 
-*	Records for 2D tables as well as 3D tables are often grouped together in the ROM. Looking at column *Record* (click column header to sort), you should see those table record addresses being close together. If record addresses differ a lot from most others, these are probably false results, easy to be excluded using tableSearch.
+*	Records for 2D tables as well as 3D tables are often grouped together in the ROM. Looking at column *Record* (click column header to sort), you should see those table record addresses being close together. If record addresses differ a lot from most others, these are probably false results, easy to be excluded using *tableSearch*.
 
 *	In many Denso ROMs, all 2D table records are stored together, then followed by all 3D ones. Therefore creating search range by taking addresses of first (valid) 2D table and last (valid) 3D table works very well.
 
 *	Another indication for bad tables is that their data, therefore also min, max, average are very high/low numbers (e.g. -1.567E+11). Sometimes even *NaN* (Not a Number).
 
-#### 5.2.3) ROM ID Metadata
+#### 5.2.4) ROM ID Metadata
 Borrowed from *RomRaider* ECU definition format, needed for *"Export as -> RomRaider def XML"* anyway.
 
 There is no UI dialog yet, you have to edit XML manually!
 
-In case you've got similar ROMs I suggest copy & paste the whole romid region, then edit required changes.
+In case you've got similar ROMs I suggest copy & paste the whole romid region (`<romid>...</romid>`), then edit required changes.
 
-ScoobyRom itself currently does only use these elements
+ScoobyRom itself currently does only use these sub-elements
 
 *	internalidaddress
 *	internalidstring
@@ -526,7 +543,7 @@ ScoobyRom itself currently does only use these elements
 to verify the string from ROM and display it in main window title.
 All others are just being read and re-written.
 
-#### 5.2.4) Full example content
+#### 5.2.5) Full example content
 The following ScoobyRom XML example file contains just two annotated tables for brevity:
 
 	<?xml version="1.0" encoding="utf-8"?>
@@ -567,11 +584,16 @@ The following ScoobyRom XML example file contains just two annotated tables for 
 
 ### 5.3) RomRaider ECU def export XML
 
-Currently the application only writes annotated tables into file.
-There is no UI for custom filtering or "export all" yet.
-
 You can use *RomRaider* to edit map values and modify the ROM.
 <http://www.romraider.com/>
+
+ScoobyRom will display statistics and ask whether you want to export all, selected only or annotated only tables.
+
+Empty categories will be named "Unknown 2D" and "Unknown 3D".
+
+Tables having empty names will appear named "Record 0x..." in RomRaider, indicating table (record) location which can be entered/searched/sorted in ScoobyRom's "Record" column.
+
+Note: For loading many hundreds of tables into *RomRaider*, you might need to increase allowed memory usage for RomRaider. See RomRaider documentation/forums on how to do this.
 
 Do not use very old versions of RomRaider: For signed data types (int16, int8) support,
 RomRaider v0.5.3b RC7 or newer is needed!
@@ -693,7 +715,7 @@ You can use it to temporarily select and sort items if you want to. Might have m
 
 	For example, if *Title* "Engine Speed" exists on a table, focus title column if not done already, type "`eng`" and it will probably jump to the first matching row.
 
-	Column *Record*: you need to type in complete address in hex, i.e. "`8ddc4`" or "`0x8ddc4`". Supported hexadecimal prefixes are "`0x`" and "`$`".
+	Hex columns *Record, X/Y/ZPos*: you need to type in complete address in hex, i.e. "`8ddc4`" or "`0x8ddc4`". Supported hexadecimal prefixes are "`0x`" and "`$`".
 
 *	Visualisation (`Ctrl+Space`): Either displays coloured table values (3D) or 2D values + line graph in bottom tab pane.
 Any visualisation (except icons) does not update on changed metadata (text, data type),
@@ -732,8 +754,10 @@ Often these are valid tables and are actually used in ROM firmware logic.
 
 *	Navigation Bar
 
-	*	Visualises ROM content using different colours: table 2D/3D records, X- and Y-axes, values.
-	*	Currently zoom in/out only works by holding (left) mouse button #1 depressed and pressing key (`+`), (`-`) or (`0`).
-	*	Tooltip shows ROM position at mouse pointer.
-	*	Vertical markers (red) show currently viewed table record and axes locations, updated at visualise-action.
+	*	Visualises ROM content using different colours: table records, axes and values.
+	*	Slim horizontal bars (dark yellow) on top of the content-rectangle indicate **checksummed regions**.
+	*	Currently **zoom** in/out/reset works by placing mouse pointer somewhere over NavBar area, holding (left) mouse button #1 depressed and pressing key (`+`), (`-`) or (`0`), respectively.
+	*	Tooltip shows ROM position (hex, byte size, decimal) as well as content type at mouse pointer. You should use this to find out the mapping between colour and content.
+	*	Since ScoobyRom deals with tables mostly, unlike *IDA* for example, it does not scan for other content types like code, empty space, misc data etc.
+	*	Vertical markers (red) show currently viewed table record and corresponding locations of axes and values. These markers only update using visualise-action.
 	*	Special markers (left + right) and coloured region (grey) appear when *tableSearch* is specified. Makes it easy to verify or improve table search range.

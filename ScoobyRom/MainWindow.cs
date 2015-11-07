@@ -776,12 +776,15 @@ public partial class MainWindow : Gtk.Window
 		exportAsAction.Sensitive = sensitive;
 		exportAsRRAction.Sensitive = sensitive;
 
-		visualizationAction.Sensitive = sensitive;
+		visualisationAction.Sensitive = sensitive;
 
 		iconsAction.Sensitive = sensitive;
 		zoomInAction.Sensitive = sensitive;
 		zoomOutAction.Sensitive = sensitive;
 		zoomNormalAction.Sensitive = sensitive;
+
+		selectAllAction.Sensitive = sensitive;
+		selectNoneAction.Sensitive = sensitive;
 
 		checksumWindowAction.Sensitive = sensitive;
 		propertiesWindowAction.Sensitive = sensitive;
