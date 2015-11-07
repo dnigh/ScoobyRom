@@ -60,6 +60,16 @@ namespace ScoobyRom
 			get { return this.list3D; }
 		}
 
+		public IEnumerable<Table> Enumerable2Dand3D ()
+		{
+			return list2D.Cast <Table> ().Concat (list3D.Cast <Table> ());
+		}
+
+		public IList<Table> List2Dand3D ()
+		{
+			return list2D.Cast <Table> ().Concat (list3D.Cast <Table> ()).AsParallel ().ToList ();
+		}
+
 		public IList<Table2D> List2DSorted ()
 		{
 			return list2D.OrderBy (t => t.Location).AsParallel ().ToList ();
@@ -176,6 +186,8 @@ namespace ScoobyRom
 				romXml.TryMergeWith (list2D);
 				romXml.TryMergeWith (list3D);
 			}
+
+			//PrintSharedStatistics ();
 		}
 
 		public static string PathWithNewExtension (string path, string extension)
@@ -286,15 +298,31 @@ namespace ScoobyRom
 		// some x-axis is shared many times with both 2D and 3D tables
 		public IList<Table> FindTablesSameAxisX (Table table)
 		{
-			var r2 = list2D.Where (t => t.RangeX.Pos == table.RangeX.Pos).Cast <Table> ();
-			var r3 = list3D.Where (t => t.RangeX.Pos == table.RangeX.Pos).Cast <Table> ();
-
-			var r = r2.Concat (r3).ToList ();
+			var r = Enumerable2Dand3D ().Where (t => t.RangeX.Pos == table.RangeX.Pos).AsParallel ().ToList ();
 
 			for (int i = 0; i < r.Count; i++) {
 				Console.WriteLine ("#{0}: {1}", i, r [i]);
 			}
+
 			return r;
+		}
+
+		public void PrintSharedStatistics ()
+		{
+			var all = List2Dand3D ();
+
+			Console.WriteLine ("Checking all tables for shared x-axis:", all.Count);
+			int num = 0;
+			for (int i = 0; i < all.Count; i++) {
+				var t = all [i];
+				var shared = FindTablesSameAxisX (t);
+
+				if (shared.Count > 1) {
+					num++;
+					Console.WriteLine ("table #{0} Location 0x{1:X}: shared AxisX {2} times", i.ToString (), t.Location, shared.Count.ToString ());
+				}
+			}
+			Console.WriteLine ("Result: {0} tables have shared x-axis", num);
 		}
 	}
 }

@@ -169,14 +169,19 @@ namespace ScoobyRom
 				var shared = data.FindTablesSameAxisX (table);
 				if (shared.Count > 0) {
 					Console.WriteLine ("AxisX shared {0} times.", shared.Count);
-					//store.SetValue (iter, (int)ColumnNr2D.Toggle, true);
+
+					#if SelectShared
+
 					ToggleAll (false);
-				}
-				foreach (var t in shared) {
-					TreeIter iterDup;
-					if (FindIter (t, out iterDup)) {
-						Toggle (iterDup, true);
+					foreach (var t in shared) {
+						t.Selected = true;
+						TreeIter iterDup;
+						if (FindIter (t, out iterDup)) {
+							Toggle (iterDup, true);
+						}
 					}
+
+					#endif
 				}
 			}
 
