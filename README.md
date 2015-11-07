@@ -32,13 +32,13 @@ You can also get license text in different formats and further details there.
 
 ## 2) Purpose
 
-*ScoobyRom* is a car control unit ([ECU](http://en.wikipedia.org/wiki/Engine_Control_Unit), [TCU](http://en.wikipedia.org/wiki/Transmission_Control_Unit)) firmware (ROM) **data visualization viewer and metadata editor**.
+*ScoobyRom* is a car control unit ([ECU](http://en.wikipedia.org/wiki/Engine_Control_Unit), [TCU](http://en.wikipedia.org/wiki/Transmission_Control_Unit)) firmware (ROM) **data visualisation viewer and metadata editor**.
 Currently it is very [*Denso*](http://en.wikipedia.org/wiki/Denso) specific.
 
 Originally designed for *Subaru* Diesel (Euro 4 & 5) ROMs, some *Subaru* petrol models, as well as ROMs from other manufacturers like *Mazda*, *Mitsubishi*, *Nissan* etc. have been tested working (where *Denso* supplied control units).
 In general, different car models are equipped with different ECUs (hardware and/or firmware), therefore success varies.
 
-Currently it can find and visualize 2D (x-y) and 3D (x-y-z) tables ("maps").
+Currently it can find and visualise 2D (x-y) and 3D (x-y-z) tables ("maps").
 Also it displays and verifies checksums.
 
 ROM memory model is supposed to be **32 bit, big endian**, others are unlikely to work.

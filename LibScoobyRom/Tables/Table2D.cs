@@ -89,6 +89,10 @@ namespace Subaru.Tables
 			get { return valuesYavg; }
 		}
 
+		public override bool IsDataConst {
+			get { return this.valuesYmin == this.valuesYmax; }
+		}
+
 		public float[] GetValuesYasFloats ()
 		{
 			return valuesYasFloats;
@@ -101,13 +105,13 @@ namespace Subaru.Tables
 			c.tableType = tableType;
 			c.typeUncertain = typeUncertain;
 
-			c.multiplier = multiplier;
-			c.offset = offset;
+			c.hasMAC = hasMAC;
+			c.multiplier = Multiplier;
+			c.offset = Offset;
 
 			c.location = location;
 			c.rangeX = rangeX;
 			c.rangeY = rangeY;
-			c.hasMAC = hasMAC;
 
 			c.valuesX = valuesX;
 			c.valuesY = valuesY;
@@ -119,6 +123,7 @@ namespace Subaru.Tables
 			// metadata
 			c.title = title ?? string.Empty;
 			c.category = category ?? string.Empty;
+			c.selected = selected;
 			c.description = description ?? string.Empty;
 			c.nameX = nameX ?? string.Empty;
 			c.unitX = unitX ?? string.Empty;
@@ -131,11 +136,18 @@ namespace Subaru.Tables
 		{
 		}
 
+		public override int RecordSize {
+			get { return hasMAC ? 20 : 12; }
+		}
+
 		public override string ToString ()
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder (200);
-			sb.AppendFormat ("[Table2D @ {0:X6} | Count={1} Type={2} | RangeX={3}, RangeY={4} | xMin={5} xMax={6} | yMin={7} yMax={8} yAvg={9}", Location, CountX, TableType.ToStr (), rangeX.ToString (), rangeY.ToString (), Xmin.ToString (), Xmax.ToString (), Ymin.ToString (), Ymax.ToString (),
-			Yavg.ToString ());
+			sb.AppendFormat ("[Table2D @ {0:X6} | Selected={1} Count={2} Type={3} | RangeX={4}, RangeY={5} | xMin={6} xMax={7} | yMin={8} yMax={9} yAvg={10}",
+				location, selected, CountX, TableType.ToStr (),
+				rangeX.ToString (), rangeY.ToString (),
+				Xmin.ToString (), Xmax.ToString (),
+				Ymin.ToString (), Ymax.ToString (), Yavg.ToString ());
 			if (hasMAC) {
 				sb.AppendFormat (" | Multiplier={0}, Offset={1}]", Multiplier, Offset);
 			} else {
@@ -204,8 +216,23 @@ namespace Subaru.Tables
 		public override XElement RRXml ()
 		{
 			// X-axis is being called "Y Axis" in RR!
-			return new XElement ("table", new XAttribute ("type", "2D"), new XAttribute ("name", title), new XAttribute ("category", category), new XAttribute ("storagetype", tableType.ToRRType ()), new XAttribute ("endian", endian), new XAttribute ("sizey", countX.ToString ()), new XAttribute ("storageaddress", HexAddress (rangeY.Pos)), new XComment (ValuesStats (valuesYmin, valuesYmax, valuesYavg)), RRXmlScaling (unitX, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
-			RRXmlAxis ("Y Axis", nameX, unitX, TableType.Float, rangeX, valuesX), new XElement ("description", description));
+			return new XElement ("table",
+				new XAttribute ("type", "2D"),
+				new XAttribute ("name", RRName),
+				new XAttribute ("category", RRCategory),
+				new XAttribute ("storagetype", tableType.ToRRType ()),
+				new XAttribute ("endian", endian),
+				new XAttribute ("sizey", countX.ToString ()),
+				new XAttribute ("storageaddress", HexAddress (rangeY.Pos)),
+				new XComment (ValuesStats (valuesYmin, valuesYmax, valuesYavg)),
+				RRXmlScaling (unitX, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
+				RRXmlAxis ("Y Axis", nameX, unitX, TableType.Float, rangeX, valuesX),
+				new XElement ("description", description));
+		}
+
+		public override string RRCategory
+		{
+			get { return string.IsNullOrEmpty (this.category) ? "Unknown 2D" : this.category; }
 		}
 
 		public void WriteCSV (System.IO.TextWriter tw)
@@ -221,9 +248,9 @@ namespace Subaru.Tables
 
 			float[] valuesY = GetValuesYasFloats ();
 			for (int i = 0; i < countX; i++) {
-				tw.Write (valuesX[i].ToString (cultureInfo));
+				tw.Write (valuesX [i].ToString (cultureInfo));
 				tw.Write (delimiter);
-				tw.WriteLine (valuesY[i].ToString (cultureInfo));
+				tw.WriteLine (valuesY [i].ToString (cultureInfo));
 			}
 		}
 
@@ -248,7 +275,7 @@ namespace Subaru.Tables
 				if (i > 0) {
 					sb.Append (DelimiterRomRaider);
 				}
-				sb.Append (valuesY[i].ToString (cultureInfo));
+				sb.Append (valuesY [i].ToString (cultureInfo));
 			}
 			return sb.ToString ();
 		}

@@ -42,6 +42,10 @@ namespace ScoobyRom
 			get { return (int)ColumnNr3D.Obj; }
 		}
 
+		protected override int ColumnNrToggle {
+			get { return (int)ColumnNr3D.Toggle; }
+		}
+
 		override protected void InitStore ()
 		{
 			// TODO avoid reflection
@@ -58,6 +62,7 @@ namespace ScoobyRom
 			types [(int)ColumnNr3D.Icon] = typeof(Gdk.Pixbuf);
 			types [(int)ColumnNr3D.Title] = typeof(string);
 			types [(int)ColumnNr3D.Type] = typeof(int);
+			types [(int)ColumnNr3D.Location] = typeof(int);
 
 			types [(int)ColumnNr3D.NameX] = typeof(string);
 			types [(int)ColumnNr3D.NameY] = typeof(string);
@@ -78,8 +83,12 @@ namespace ScoobyRom
 			types [(int)ColumnNr3D.Zavg] = typeof(float);
 			types [(int)ColumnNr3D.Zmax] = typeof(float);
 
+			types [(int)ColumnNr3D.Multiplier] = typeof(float);
+			types [(int)ColumnNr3D.Offset] = typeof(float);
+
+			types [(int)ColumnNr3D.XPos] = typeof(int);
+			types [(int)ColumnNr3D.YPos] = typeof(int);
 			types [(int)ColumnNr3D.ZPos] = typeof(int);
-			types [(int)ColumnNr3D.Location] = typeof(int);
 
 			types [(int)ColumnNr3D.Description] = typeof(string);
 
@@ -95,7 +104,7 @@ namespace ScoobyRom
 		override protected void PopulateData ()
 		{
 			// performance, would get raised for each new row
-			store.RowChanged -= HandleTreeStoreRowChanged;
+			SetHandleRowChanged (false);
 			TreeIter newNode;
 
 			foreach (var table3D in data.List3D) {
@@ -105,7 +114,7 @@ namespace ScoobyRom
 				SetNodeContent (newNode, table3D);
 			}
 
-			store.RowChanged += HandleTreeStoreRowChanged;
+			SetHandleRowChanged (true);
 		}
 
 		public void SetNodeContent (TreeIter iter, Table3D table3D)
@@ -133,9 +142,15 @@ namespace ScoobyRom
 			store.SetValue (iter, (int)ColumnNr3D.Ymin, table3D.Ymin);
 			store.SetValue (iter, (int)ColumnNr3D.Ymax, table3D.Ymax);
 
+			store.SetValue (iter, (int)ColumnNr3D.Multiplier, table3D.Multiplier);
+			store.SetValue (iter, (int)ColumnNr3D.Offset, table3D.Offset);
+
+			store.SetValue (iter, (int)ColumnNr3D.XPos, table3D.RangeX.Pos);
+			store.SetValue (iter, (int)ColumnNr3D.YPos, table3D.RangeY.Pos);
 			store.SetValue (iter, (int)ColumnNr3D.ZPos, table3D.RangeZ.Pos);
 			store.SetValue (iter, (int)ColumnNr3D.Location, table3D.Location);
 			store.SetValue (iter, (int)ColumnNr3D.Description, table3D.Description);
+			Toggle (iter, table3D.Selected);
 
 			SetNodeContentTypeChanged (iter, table3D);
 		}
@@ -164,6 +179,7 @@ namespace ScoobyRom
 			table.NameY = (string)store.GetValue (iter, (int)ColumnNr3D.NameY);
 			table.UnitY = (string)store.GetValue (iter, (int)ColumnNr3D.UnitY);
 			table.Description = (string)store.GetValue (iter, (int)ColumnNr3D.Description);
+			table.Selected = IsToggled (iter);
 		}
 	}
 }

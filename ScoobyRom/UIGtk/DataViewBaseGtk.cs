@@ -82,6 +82,7 @@ namespace ScoobyRom
 		}
 
 		protected abstract int ColumnNrIcon { get; }
+
 		protected abstract int ColumnNrObj { get; }
 
 		public bool ShowIcons {
@@ -89,23 +90,10 @@ namespace ScoobyRom
 			set {
 				showIcons = value;
 				viewModel.IconsVisible = value;
-
-				GetColumn (ColumnNrIcon).Visible = value;
+				AjustIconCol ();
 
 				if (value) {
-					//treeView.Sensitive = false;
 					viewModel.RequestIcons ();
-					//treeView.Sensitive = true;
-				} else {
-					// row heights won't shrink automatically, only after editing any column content
-					// no effect: treeView.SizeRequest (); treeView.QueueResize ();
-					// there is no treeView.RowsAutosize ()
-
-					// hack not needed when using col.FixedWidth & cellRendererPixBuf.FixedSize
-					// HACK shrinking row heights - no better method found yet
-					// disadvantage: does not maintain current selected row
-					//treeView.Model = null;
-					//treeView.Model = viewModel.TreeModel;
 				}
 			}
 		}
@@ -130,14 +118,21 @@ namespace ScoobyRom
 
 		protected void AjustIconCol ()
 		{
-			var iconSizing = this.viewModel.IconSizing;
-			cellRendererPixbuf.SetFixedSize (iconSizing.Width, iconSizing.Height);
-
 			var col = GetColumn (ColumnNrIcon);
-			// need some more width for PixBuf to be completely visible
-			// HACK icon column FixedWidth
-			col.FixedWidth = iconSizing.Width + 10;
-			col.Sizing = TreeViewColumnSizing.Fixed;
+			col.Visible = showIcons;
+
+			if (!showIcons) {
+				// HACK best solution to reduce row heights so far
+				treeView.ColumnsAutosize ();
+			} else {
+				var iconSizing = this.viewModel.IconSizing;
+				cellRendererPixbuf.SetFixedSize (iconSizing.Width, iconSizing.Height);
+
+				// need some more width for PixBuf to be completely visible
+				// HACK icon column FixedWidth
+				col.FixedWidth = iconSizing.Width + 10;
+				col.Sizing = TreeViewColumnSizing.Fixed;
+			}
 		}
 
 		public Subaru.Tables.Table Selected {
@@ -163,7 +158,7 @@ namespace ScoobyRom
 
 		protected void TreeCellDataFuncHex (TreeViewColumn treeViewColumn, CellRenderer renderer, TreeModel treeModel, TreeIter iter)
 		{
-			int nr = (int)treeModel.GetValue (iter, columnsDict[treeViewColumn]);
+			int nr = (int)treeModel.GetValue (iter, columnsDict [treeViewColumn]);
 			cellRendererText.Text = nr.ToString ("X");
 		}
 
@@ -171,14 +166,13 @@ namespace ScoobyRom
 		// ToString() only adds decimals where necessary - much better.
 		protected void TreeCellDataFuncFloat (TreeViewColumn treeViewColumn, CellRenderer renderer, TreeModel treeModel, TreeIter iter)
 		{
-			float nr = (float)treeModel.GetValue (iter, columnsDict[treeViewColumn]);
-			//((CellRendererText)renderer).Text = nr.ToString ();
+			float nr = (float)treeModel.GetValue (iter, columnsDict [treeViewColumn]);
 			cellRendererText.Text = nr.ToString ();
 		}
 
 		protected void TreeCellDataFuncTableType (TreeViewColumn treeViewColumn, CellRenderer renderer, TreeModel treeModel, TreeIter iter)
 		{
-			TableType tt = (TableType)treeModel.GetValue (iter, columnsDict[treeViewColumn]);
+			TableType tt = (TableType)treeModel.GetValue (iter, columnsDict [treeViewColumn]);
 			cellRendererCombo.Text = tt.ToStr ();
 		}
 
@@ -309,13 +303,13 @@ namespace ScoobyRom
 			treeView.SearchColumn = CursorColNr;
 		}
 
-//		void HandleTreeViewKeyPressEvent (object o, KeyPressEventArgs args)
-//		{
-//			Gdk.Key key = args.Event.Key;
-//			Console.WriteLine (key.ToString());
-//			if (key == (Gdk.Key.p | Gdk.Key.Control_L))
-//				Console.WriteLine ("p");
-//		}
+		//		void HandleTreeViewKeyPressEvent (object o, KeyPressEventArgs args)
+		//		{
+		//			Gdk.Key key = args.Event.Key;
+		//			Console.WriteLine (key.ToString());
+		//			if (key == (Gdk.Key.p | Gdk.Key.Control_L))
+		//				Console.WriteLine ("p");
+		//		}
 
 		// double click or Enter key
 		protected void HandleTreeViewRowActivated (object o, RowActivatedArgs args)
@@ -379,8 +373,59 @@ namespace ScoobyRom
 		protected int CursorColNr {
 			get {
 				TreeViewColumn column = CursorColumn;
-				return column != null ? columnsDict[CursorColumn] : 0;
+				return column != null ? columnsDict [CursorColumn] : 0;
 			}
 		}
+
+		#region CreateColumn
+
+		protected TreeViewColumn CreateTextColumn (string displayName, int colNr)
+		{
+			return new TreeViewColumn (displayName, cellRendererText, "text", colNr);
+		}
+
+		protected TreeViewColumn CreateTextEditableColumn (string displayName, int colNr)
+		{
+			return new TreeViewColumn (displayName, cellRendererTextEditable, "text", colNr);
+		}
+
+		protected TreeViewColumn CreateFloatColumn (string displayName, int colNr)
+		{
+			var col = new TreeViewColumn (displayName, cellRendererText, "text", colNr);
+			col.SetCellDataFunc (cellRendererText, TreeCellDataFuncFloat);
+			return col;
+		}
+
+		protected TreeViewColumn CreateHexColumn (string displayName, int colNr)
+		{
+			var col = new TreeViewColumn (displayName, cellRendererText, "text", colNr);
+			col.SetCellDataFunc (cellRendererText, TreeCellDataFuncHex);
+			return col;
+		}
+
+		protected TreeViewColumn CreateIconColumn (int colNr)
+		{
+			var col = new TreeViewColumn ("Icon", cellRendererPixbuf, "pixbuf", colNr);
+			col.Visible = showIcons;
+			//col.MaxWidth = 64;
+			// might help perf
+			//col.Sizing = TreeViewColumnSizing.Fixed;
+			//col.FixedWidth = 64;
+			return col;
+		}
+
+		protected TreeViewColumn CreateTypeColumn (int colNr)
+		{
+			var col = new TreeViewColumn ("Type", cellRendererCombo, "text", colNr);
+			col.SetCellDataFunc (cellRendererCombo, TreeCellDataFuncTableType);
+			return col;
+		}
+
+		protected TreeViewColumn CreateToggleColumn (int colNr)
+		{
+			return new TreeViewColumn ("S", cellRendererToggle, "active", colNr);
+		}
+
+		#endregion CreateColumn
 	}
 }

@@ -36,7 +36,7 @@ You can also get license text in different formats and further details there.
 
 ## 2) Purpose
 
-*ScoobyRom* is a car control unit ([ECU](http://en.wikipedia.org/wiki/Engine_Control_Unit), [TCU](http://en.wikipedia.org/wiki/Transmission_Control_Unit)) firmware (ROM) **data visualization viewer and metadata editor**.
+*ScoobyRom* is a car control unit ([ECU](http://en.wikipedia.org/wiki/Engine_Control_Unit), [TCU](http://en.wikipedia.org/wiki/Transmission_Control_Unit)) firmware (ROM) **data visualisation viewer and metadata editor**.
 Currently it is very [*Denso*](http://en.wikipedia.org/wiki/Denso) specific.
 
 Originally designed for *Subaru* Diesel (Euro 4 & 5) ROMs, some *Subaru* petrol models, as well as ROMs from other manufacturers like *Mazda*, *Mitsubishi*, *Nissan* etc. have been tested working (where *Denso* supplied control units).
@@ -44,7 +44,7 @@ In general, different car models are equipped with different ECUs (hardware and/
 
 Main features
 
-*	Find and visualize 2D (x-y) and 3D (x-y-z) tables ("maps").
+*	Find and visualise 2D (x-y) and 3D (x-y-z) tables ("maps").
 *	Allows adding metadata (category, title, axes names, units, description text) as ROMs (= compiled software + calibration data such as tables) do not contain such annotations.
 *	Display and verify checksums.
 
@@ -221,6 +221,7 @@ Installer for running Gtk#-based applications on Microsoft .NET:
 
 	1.	Click Button: **Download Gtk#** (currently links to <http://download.xamarin.com/GTKforWindows/Windows/gtk-sharp-2.12.26.msi>, 25 MiB)
 	2.	Run installer (`gtk-sharp-2.12.26.msi`)
+	3.	If launching ScoobyRom does nothing (no app window appears), do a Windows logout and login (tested working for Windows 10 at least). If this does not help, try a reboot.
 
 *	Alternative: **Mono + GTK#**
 
@@ -297,7 +298,7 @@ Tested example:
 
 Step 2: Run installer EXE (easiest method) or extract ZIP, respectively.
 
-The Windows installer can also set gnuplot's default terminal (`GNUTERM` environment variable). I recommend to try "qt" first as "wxt" in 5.0.1 x64 has a window-resize bug.
+Note: The Windows installer can also set gnuplot's default terminal (`GNUTERM` environment variable). I recommend to select "**qt**" as "wxt" in 5.0.1 x64 on Windows has a window-resize bug. "qt" also seems to render faster.
 
 Step 3: Check and edit file `ScoobyRom.exe.config` with a text editor.
 Enter the exact full path of `gnuplot.exe`, it will probably exist in a gnuplot subfolder like "bin".
@@ -351,13 +352,21 @@ Launch the binary (Windows: `gnuplot.exe`, Linux/Unix: `gnuplot`)
 	*	wxt
 
 	Try available ones to see which one works best.
-	If not specified (**`GNUTERM`** environment variable not set, see gnuplot documentation), gnuplot will use the default one.
+	If not specified (**`GNUTERM`** environment variable not set, see gnuplot documentation), gnuplot will use the default one. Windows: Advanced System Settings - Environment Variables.
+
+	Manually, temporary:
+
+	Windows example: choose terminal "qt" and launch ScoobyRom:
+
+		SET GNUTERM=qt
+		ScoobyRom.exe
+
 
 	Linux example, choose terminal "wxt" and launch ScoobyRom:
 
-	`GNUTERM="wxt" ScoobyRom.exe`
+	`GNUTERM=wxt ScoobyRom.exe`
 
-	You can also set it by editing gnuplot *template* files, insert command "set term wxt", see also chapter 5.7.
+	You can also set terminal by editing gnuplot *template* files (`.plt`), insert command "`set term qt`" near the beginning, see also chapter 5.7.
 
 ---
 
@@ -425,7 +434,7 @@ Applies to icon column in both 2D and 3D table lists.
 *	`"False"`: Icons are created on first demand. UI row heights are smaller without icons. Perhaps use this in case you rarely want icons visible.
 
 #### Icon size
-Errors or missing entries will result in default size (48 x 32) pixels. Both, width and height values are clamped to range 10..255. Larger icons are allowed via UI, though.
+Errors or missing entries will result in default size (48 x 32) pixels. Both, width and height values are clamped, max 255. Minimum in UI for zooming out will be 24 x 16, larger icons are allowed via zoom in.
 
 	<add key="iconWidth" value="48"/>
 	<add key="iconHeight" value="32"/>
@@ -513,7 +522,7 @@ Somewhat larger range will be almost as fast, in addition it might work for many
 
 *	If you want to annotate a new ROM, I recommend specifying metadata and a suitable search range sooner than later, you'll get proper ROM ID text (*internalidstring*, see next chapter) displayed in main window, better load speed and avoid looking at false maps.
 
-*	Records for 2D tables as well as 3D tables are often grouped together in the ROM. Looking at column *Record* (click column header to sort), you should see those table record addresses being close together. If record addresses differ a lot from most others, these are probably false results, easy to be excluded using tableSearch.
+*	Records for 2D tables as well as 3D tables are often grouped together in the ROM. Looking at column *Record* (click column header to sort), you should see those table record addresses being close together. If record addresses differ a lot from most others, these are probably false results, easy to be excluded using *tableSearch*.
 
 *	In many Denso ROMs, all 2D table records are stored together, then followed by all 3D ones. Therefore creating search range by taking addresses of first (valid) 2D table and last (valid) 3D table works very well.
 
@@ -575,11 +584,16 @@ The following ScoobyRom XML example file contains just two annotated tables for 
 
 ### 5.3) RomRaider ECU def export XML
 
-Currently the application only writes annotated tables into file.
-There is no UI for custom filtering or "export all" yet.
-
 You can use *RomRaider* to edit map values and modify the ROM.
 <http://www.romraider.com/>
+
+ScoobyRom will display statistics and ask whether you want to export all, selected only or annotated only tables.
+
+Empty categories will be named "Unknown 2D" and "Unknown 3D".
+
+Tables having empty names will appear named "Record 0x..." in RomRaider, indicating table (record) location which can be entered/searched/sorted in ScoobyRom's "Record" column.
+
+Note: For loading many hundreds of tables into *RomRaider*, you might need to increase allowed memory usage for RomRaider. See RomRaider documentation/forums on how to do this.
 
 Do not use very old versions of RomRaider: For signed data types (int16, int8) support,
 RomRaider v0.5.3b RC7 or newer is needed!
@@ -689,7 +703,7 @@ If `<ROM_file>` cannot be found, ScoobyRom ignores this error, starts in normal 
 
 Couple of things that may not be immediately obvious:
 
-*	Both tab pages have a horizontal splitter between list view (top) and visualization area (bottom).
+*	Both tab pages have a horizontal splitter between list view (top) and visualisation area (bottom).
 Click & drag splitter according to your needs. However, the app does not remember such UI settings.
 
 *	Using check mark columns has no effect at all, selection is not being saved/restored.
@@ -701,13 +715,13 @@ You can use it to temporarily select and sort items if you want to. Might have m
 
 	For example, if *Title* "Engine Speed" exists on a table, focus title column if not done already, type "`eng`" and it will probably jump to the first matching row.
 
-	Column *Record*: you need to type in complete address in hex, i.e. "`8ddc4`" or "`0x8ddc4`". Supported hexadecimal prefixes are "`0x`" and "`$`".
+	Hex columns *Record, X/Y/ZPos*: you need to type in complete address in hex, i.e. "`8ddc4`" or "`0x8ddc4`". Supported hexadecimal prefixes are "`0x`" and "`$`".
 
-*	Visualization (`Ctrl+Space`): Either displays coloured table values (3D) or 2D values + line graph in bottom tab pane.
-Any visualization (except icons) does not update on changed metadata (text, data type),
+*	Visualisation (`Ctrl+Space`): Either displays coloured table values (3D) or 2D values + line graph in bottom tab pane.
+Any visualisation (except icons) does not update on changed metadata (text, data type),
 you'll have to trigger updates manually (`Ctrl+Space`) and/or (`Ctrl+P`) for gnuplot window.
 Double-clicking or (`Enter`) key on a focused read-only row column (icon, numbers)
-also triggers internal visualization.
+also triggers internal visualisation.
 
 *	Icons update immediately on table type change as this is a fast operation.
 By looking a the icon you can often tell already whether current data type is correct or not ("stripe patterns", bad values).
@@ -731,9 +745,19 @@ Often these are valid tables and are actually used in ROM firmware logic.
 	*	(`Home` / `Pos1`) key to reset plot (auto-scale both axes)
 	*	(`Alt`) in addition to other keys for finer operation
 
-*	*"Edit -> Copy Table"* (`Ctrl+C`)
+*	*"Edit -> Copy Table"* (`Alt+C`)
 
 	*	Copies table values as text into clipboard.
 	*	The format is *RomRaider*-compatible but also works well for pasting into spreadsheet applications (*LibreOffice Calc, Microsoft Excel*). You can easily verify the output by pasting into a text editor.
 	*	Values only, no annotations (text)
-	*	The number format (decimal separator) depends on current operating system region settings.
+	*	The number format (decimal separator) depends on current operating system region settings. (Not sure yet if *RomRaider* also uses current locale or always needs English formatting for copy/paste.)
+
+*	Navigation Bar
+
+	*	Visualises ROM content using different colours: table records, axes and values.
+	*	Slim horizontal bars (dark yellow) on top of the content-rectangle indicate **checksummed regions**.
+	*	Currently **zoom** in/out/reset works by placing mouse pointer somewhere over NavBar area, holding (left) mouse button #1 depressed and pressing key (`+`), (`-`) or (`0`), respectively.
+	*	Tooltip shows ROM position (hex, byte size, decimal) as well as content type at mouse pointer. You should use this to find out the mapping between colour and content.
+	*	Since ScoobyRom deals with tables mostly, unlike *IDA* for example, it does not scan for other content types like code, empty space, misc data etc.
+	*	Vertical markers (red) show currently viewed table record and corresponding locations of axes and values. These markers only update using visualise-action.
+	*	Special markers (left + right) and coloured region (grey) appear when *tableSearch* is specified. Makes it easy to verify or improve table search range.

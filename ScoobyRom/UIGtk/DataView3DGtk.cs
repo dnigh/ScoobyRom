@@ -27,6 +27,37 @@ namespace ScoobyRom
 {
 	public sealed class DataView3DGtk : DataViewBaseGtk
 	{
+		static ColumnNr3D[] ColumnsOrder = new ColumnNr3D[] {
+			ColumnNr3D.Category,
+			ColumnNr3D.Toggle,
+			ColumnNr3D.Icon,
+			ColumnNr3D.Title,
+			ColumnNr3D.UnitZ,
+			ColumnNr3D.Type,
+			ColumnNr3D.Location,
+			ColumnNr3D.NameX,
+			ColumnNr3D.UnitX,
+			ColumnNr3D.NameY,
+			ColumnNr3D.UnitY,
+			ColumnNr3D.CountX,
+			ColumnNr3D.CountY,
+			ColumnNr3D.CountZ,
+			ColumnNr3D.Xmin,
+			ColumnNr3D.Xmax,
+			ColumnNr3D.Ymin,
+			ColumnNr3D.Ymax,
+			ColumnNr3D.Zmin,
+			ColumnNr3D.Zavg,
+			ColumnNr3D.Zmax,
+			ColumnNr3D.Multiplier,
+			ColumnNr3D.Offset,
+			ColumnNr3D.XPos,
+			ColumnNr3D.YPos,
+			ColumnNr3D.ZPos,
+			ColumnNr3D.Description,
+			ColumnNr3D.Obj
+		};
+
 		private DataView3DGtk ()
 		{
 		}
@@ -66,11 +97,8 @@ namespace ScoobyRom
 
 			#region Columns
 
-			// TODO avoid reflection
-			ColumnNr3D[] columns = (ColumnNr3D[])Enum.GetValues (typeof(ColumnNr3D));
-
 			// must be appended/inserted in correct order
-			foreach (ColumnNr3D colNr in columns) {
+			foreach (ColumnNr3D colNr in ColumnsOrder) {
 				TreeViewColumn column = CreateColumn (colNr);
 				// null means column is not being used on view
 				if (column == null)
@@ -103,7 +131,7 @@ namespace ScoobyRom
 			#region TreeView
 
 			// FixedHeightMode is not feasable here though it would improve performance.
-						/* Gtk+ doc: Fixed height mode speeds up GtkTreeView by assuming that all rows have the same height.
+			/* Gtk+ doc: Fixed height mode speeds up GtkTreeView by assuming that all rows have the same height.
 				Only enable this option if all rows are the same height and all columns are of
 				 type GTK_TREE_VIEW_COLUMN_FIXED. */
 			// TreeViewColumnSizing.Fixed needed is required by TreeView.FixedHeightMode.
@@ -211,93 +239,86 @@ namespace ScoobyRom
 			// 		Column number at end is necessary, otherwise content not being displayed.
 			// "markup" instead of "text" allows e.g. "<i>italic</i>"
 			switch (colNr) {
-			case ColumnNr3D.Category:
-				col = new TreeViewColumn ("Category", cellRendererTextEditable, "text", colNr);
-				break;
 			case ColumnNr3D.Toggle:
-				col = new TreeViewColumn (null, cellRendererToggle, "active", colNr);
-				// inconsistent state shows sort of "-" in check box or radio circle
-				//col.AddAttribute (cellRendererToggle, "inconsistent", (int)ColumnNr3D.ToggleInconsistent);
-				// not as expected on type bool, SortOrder does not help
-				//col.SortOrder = SortType.Descending;
+				col = CreateToggleColumn ((int)colNr);
 				break;
 			case ColumnNr3D.Icon:
-				col = new TreeViewColumn ("Icon", cellRendererPixbuf, "pixbuf", colNr);
-				col.Visible = showIcons;
-				//col.MaxWidth = 64;
-				// might help perf
-				//col.Sizing = TreeViewColumnSizing.Fixed;
-				//col.FixedWidth = 64;
-				break;
-			case ColumnNr3D.Title:
-				col = new TreeViewColumn ("Title", cellRendererTextEditable, "text", colNr);
+				col = CreateIconColumn ((int)colNr);
 				break;
 			case ColumnNr3D.Type:
-				col = new TreeViewColumn ("Type", cellRendererCombo, "text", colNr);
-				col.SetCellDataFunc (cellRendererCombo, TreeCellDataFuncTableType);
+				col = CreateTypeColumn ((int)colNr);
 				break;
-			case ColumnNr3D.Location:
-				col = new TreeViewColumn ("Record", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncHex);
+			case ColumnNr3D.Title:
+				col = CreateTextEditableColumn ("Title", (int)colNr);
+				break;
+			case ColumnNr3D.Category:
+				col = CreateTextEditableColumn ("Category", (int)colNr);
 				break;
 			case ColumnNr3D.NameX:
-				col = new TreeViewColumn ("NameX", cellRendererTextEditable, "text", colNr);
+				col = CreateTextEditableColumn ("NameX", (int)colNr);
 				break;
 			case ColumnNr3D.NameY:
-				col = new TreeViewColumn ("NameY", cellRendererTextEditable, "text", colNr);
+				col = CreateTextEditableColumn ("NameY", (int)colNr);
 				break;
 			case ColumnNr3D.UnitX:
-				col = new TreeViewColumn ("UnitX", cellRendererTextEditable, "text", colNr);
+				col = CreateTextEditableColumn ("UnitX", (int)colNr);
 				break;
 			case ColumnNr3D.UnitY:
-				col = new TreeViewColumn ("UnitY", cellRendererTextEditable, "text", colNr);
+				col = CreateTextEditableColumn ("UnitY", (int)colNr);
 				break;
 			case ColumnNr3D.UnitZ:
-				col = new TreeViewColumn ("UnitZ", cellRendererTextEditable, "text", colNr);
-				break;
-			case ColumnNr3D.CountX:
-				col = new TreeViewColumn ("CX", cellRendererText, "text", colNr);
-				break;
-			case ColumnNr3D.CountY:
-				col = new TreeViewColumn ("CY", cellRendererText, "text", colNr);
-				break;
-			case ColumnNr3D.CountZ:
-				col = new TreeViewColumn ("CZ", cellRendererText, "text", colNr);
-				break;
-			case ColumnNr3D.Xmin:
-				col = new TreeViewColumn ("Xmin", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncFloat);
-				break;
-			case ColumnNr3D.Xmax:
-				col = new TreeViewColumn ("Xmax", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncFloat);
-				break;
-			case ColumnNr3D.Ymin:
-				col = new TreeViewColumn ("Ymin", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncFloat);
-				break;
-			case ColumnNr3D.Ymax:
-				col = new TreeViewColumn ("Ymax", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncFloat);
-				break;
-			case ColumnNr3D.Zmin:
-				col = new TreeViewColumn ("Zmin", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncFloat);
-				break;
-			case ColumnNr3D.Zavg:
-				col = new TreeViewColumn ("Zavg", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncFloat);
-				break;
-			case ColumnNr3D.Zmax:
-				col = new TreeViewColumn ("Zmax", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncFloat);
-				break;
-			case ColumnNr3D.ZPos:
-				col = new TreeViewColumn ("ZPos", cellRendererText, "text", colNr);
-				col.SetCellDataFunc (cellRendererText, TreeCellDataFuncHex);
+				col = CreateTextEditableColumn ("UnitZ", (int)colNr);
 				break;
 			case ColumnNr3D.Description:
-				col = new TreeViewColumn ("Description", cellRendererTextEditable, "text", colNr);
+				col = CreateTextEditableColumn ("Description", (int)colNr);
+				break;
+			case ColumnNr3D.CountX:
+				col = CreateTextColumn ("CX", (int)colNr);
+				break;
+			case ColumnNr3D.CountY:
+				col = CreateTextColumn ("CY", (int)colNr);
+				break;
+			case ColumnNr3D.CountZ:
+				col = CreateTextColumn ("CZ", (int)colNr);
+				break;
+			case ColumnNr3D.Xmin:
+				col = CreateFloatColumn ("Xmin", (int)colNr);
+				break;
+			case ColumnNr3D.Xmax:
+				col = CreateFloatColumn ("Xmax", (int)colNr);
+				break;
+			case ColumnNr3D.Ymin:
+				col = CreateFloatColumn ("Ymin", (int)colNr);
+				break;
+			case ColumnNr3D.Ymax:
+				col = CreateFloatColumn ("Ymax", (int)colNr);
+				break;
+			case ColumnNr3D.Zmin:
+				col = CreateFloatColumn ("Zmin", (int)colNr);
+				break;
+			case ColumnNr3D.Zavg:
+				col = CreateFloatColumn ("Zavg", (int)colNr);
+				break;
+			case ColumnNr3D.Zmax:
+				col = CreateFloatColumn ("Zmax", (int)colNr);
+				break;
+			case ColumnNr3D.Multiplier:
+				col = CreateFloatColumn ("Multiplier", (int)colNr);
+				break;
+			case ColumnNr3D.Offset:
+				col = CreateFloatColumn ("Offset", (int)colNr);
+				break;
+			case ColumnNr3D.Location:
+				col = CreateHexColumn ("Record", (int)colNr);
+				break;
+			case ColumnNr3D.XPos:
+				col = CreateHexColumn ("XPos", (int)colNr);
+				break;
+			case ColumnNr3D.YPos:
+				col = CreateHexColumn ("YPos", (int)colNr);
+				break;
+			case ColumnNr3D.ZPos:
+				col = CreateHexColumn ("ZPos", (int)colNr);
 				break;
 			}
 			// only show columns supposed to be displayed
@@ -317,12 +338,15 @@ namespace ScoobyRom
 
 			GLib.GType gt = model.GetColumnType (column);
 			if (gt == GLib.GType.Float)
-				return EqualFuncFloat (key, (float)content); else if (gt == GLib.GType.String)
+				return EqualFuncFloat (key, (float)content);
+			else if (gt == GLib.GType.String)
 				return EqualFuncString (key, (string)content);
 
 			// type int needs further info!
 			switch ((ColumnNr3D)column) {
 			case ColumnNr3D.Location:
+			case ColumnNr3D.XPos:
+			case ColumnNr3D.YPos:
 			case ColumnNr3D.ZPos:
 				return EqualFuncHex (key, (int)content);
 			case ColumnNr3D.Type:

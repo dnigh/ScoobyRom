@@ -22,6 +22,7 @@
 #define UseBackGroundTask
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Gtk;
@@ -31,7 +32,7 @@ namespace ScoobyRom
 	// sort of ViewModel in M-V-VM (Model-View-ViewModel pattern)
 	public abstract class DataViewModelBaseGtk
 	{
-		protected CancellationTokenSource tokenSource = new CancellationTokenSource();
+		protected CancellationTokenSource tokenSource = new CancellationTokenSource ();
 		protected Task task;
 
 		// generates icons
@@ -53,7 +54,10 @@ namespace ScoobyRom
 		}
 
 		protected abstract int ColumnNrIcon { get; }
+
 		protected abstract int ColumnNrObj { get; }
+
+		protected abstract int ColumnNrToggle { get; }
 
 		public DataViewModelBaseGtk (Data data, PlotIconBase plotIcon)
 		{
@@ -74,8 +78,7 @@ namespace ScoobyRom
 			data.ChangeTableType (table, newType);
 		}
 
-		public bool IconsVisible
-		{
+		public bool IconsVisible {
 			get { return iconsVisible; }
 			set { iconsVisible = value; }
 		}
@@ -121,8 +124,7 @@ namespace ScoobyRom
 
 			#else
 
-			if (task != null && !task.IsCompleted)
-			{
+			if (task != null && !task.IsCompleted) {
 				tokenSource.Cancel ();
 				// "It is not necessary to wait on tasks that have canceled."
 				// https://msdn.microsoft.com/en-us/library/dd537607%28v=vs.100%29.aspx
@@ -142,17 +144,10 @@ namespace ScoobyRom
 			int objColumnNr = ColumnNrObj;
 			int iconColumnNr = ColumnNrIcon;
 
-			TreeIter iter;
-			if (!store.GetIterFirst (out iter))
-				return;
+			ForEach (delegate(TreeIter iter) {
+				if (ct.IsCancellationRequested)
+					return false;
 
-			if (ct.IsCancellationRequested)
-			{
-				return;
-			}
-
-			// Console.WriteLine ("CreateAllIcons Loop");
-			do {
 				Subaru.Tables.Table table = (Subaru.Tables.Table)store.GetValue (iter, objColumnNr);
 				Gdk.Pixbuf pixbuf = plotIcon.CreateIcon (table);
 
@@ -160,15 +155,10 @@ namespace ScoobyRom
 				// HACK Application.Invoke causes wrong iters ???
 				// IA__gtk_list_store_set_value: assertion 'VALID_ITER (iter, list_store)' failed
 				//Application.Invoke (delegate {
-					store.SetValue (iter, iconColumnNr, pixbuf);
-				//});
-				if (ct.IsCancellationRequested)
-				{
-					return;
-				}
-			} while (store.IterNext (ref iter));
+				store.SetValue (iter, iconColumnNr, pixbuf);
+				return false;
+			});
 			iconsCached = true;
-			//plotIcon.CleanupTemp ();
 		}
 
 		public abstract void SetNodeContentTypeChanged (TreeIter iter, Subaru.Tables.Table table);
@@ -201,5 +191,88 @@ namespace ScoobyRom
 		abstract protected void PopulateData ();
 
 		abstract protected void UpdateModel (TreeIter iter);
+
+		protected bool FindIter (Subaru.Tables.Table table, out TreeIter iter)
+		{
+			// not using ForEach - more complicated due to returning iter
+			if (!store.GetIterFirst (out iter))
+				return false;
+
+			Subaru.Tables.Table currentTable;
+			do {
+				currentTable = (Subaru.Tables.Table)store.GetValue (iter, ColumnNrObj);
+				if (currentTable.Equals (table)) {
+					return true;
+				}
+			} while (store.IterNext (ref iter));
+			iter = TreeIter.Zero;
+			return false;
+		}
+
+		/// <summary>
+		/// Calls func on each node in model in a depth-first fashion.
+		/// If func returns true, then the tree ceases to be walked, and this method returns.
+		/// like Gtk.TreeModel.Foreach method which uses delegate bool TreeModelForeachFunc (ITreeModel model, TreePath path, TreeIter iter)
+		/// Tested: slightly faster on Linux than Gtk.TreeModel.Foreach.Foreach, probably because of additional arguments.
+		/// </summary>
+		/// <param name="func">Func.</param>
+		public void ForEach (Func<TreeIter, bool> func)
+		{
+			TreeIter iter;
+			if (!store.GetIterFirst (out iter))
+				return;
+			do {
+				if (func (iter))
+					break;
+			} while (store.IterNext (ref iter));
+		}
+
+		protected void SetHandleRowChanged (bool on)
+		{
+			if (on) {
+				store.RowChanged += HandleTreeStoreRowChanged;
+			} else {
+				store.RowChanged -= HandleTreeStoreRowChanged;
+			}
+		}
+
+		protected void Toggle (TreeIter iter, bool on)
+		{
+			store.SetValue (iter, ColumnNrToggle, on);
+		}
+
+		public void ToggleAll (bool on)
+		{
+			ForEach (delegate(TreeIter iter) {
+				if (IsToggled (iter) != on) {
+					Toggle (iter, on);
+				}
+				return false;
+			});
+		}
+
+		protected bool IsToggled (TreeIter iter)
+		{
+			return (bool)store.GetValue (iter, ColumnNrToggle);
+		}
+
+		protected Subaru.Tables.Table GetTable (TreeIter iter)
+		{
+			return (Subaru.Tables.Table)store.GetValue (iter, ColumnNrObj);
+		}
+
+		/* not needed
+		public List<Subaru.Tables.Table> GetToggled (bool toggled)
+		{
+			List<Subaru.Tables.Table> list = new List<Subaru.Tables.Table> (64);
+			ForEach (delegate(TreeIter iter) {
+				if (IsToggled (iter) == toggled) {
+					list.Add (GetTable (iter));
+				}
+				return false;
+			});
+			return list;
+		}
+		*/
 	}
 }

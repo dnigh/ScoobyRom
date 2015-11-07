@@ -59,7 +59,7 @@ namespace Subaru.File
 		// table objects in here will only contain parsed metadata for merging into real data objects
 		List<Table2D> xml2D = new List<Table2D> (0);
 		List<Table3D> xml3D = new List<Table3D> (0);
-		int tableSearchStart, tableSearchEnd;
+		Util.Range? tableSearchRange;
 
 		public RomMetadata RomMetadata {
 			get { return romMetadata; }
@@ -73,14 +73,9 @@ namespace Subaru.File
 			set { romStream = value; }
 		}
 
-		public int TableSearchEnd {
-			get { return tableSearchEnd; }
-			set { tableSearchEnd = value; }
-		}
-
-		public int TableSearchStart {
-			get { return tableSearchStart; }
-			set { tableSearchStart = value; }
+		public Util.Range? TableSearchRange {
+			get { return tableSearchRange; }
+			set { tableSearchRange = value; }
 		}
 
 		public RomXml ()
@@ -213,18 +208,37 @@ namespace Subaru.File
 
 		void ParseTableSearch (XElement el)
 		{
-			if (el == null)
-				return;
+			TableSearchRange = null;
 
-			XAttribute at = el.Attribute (X_tableSearchStart);
-			tableSearchStart = ParseHexInt ((string)at, at);
-			at = el.Attribute (X_tableSearchEnd);
-			tableSearchEnd = ParseHexInt ((string)at, at);
+			if (el == null) {
+				return;
+			}
+
+			// allow empty element
+			int tableSearchStart = 0, tableSearchEnd = 0;
+			XAttribute at;
+			if ((at = el.Attribute (X_tableSearchStart)) != null) {
+				tableSearchStart = ParseHexInt ((string)at, at);
+			}
+			if ((at = el.Attribute (X_tableSearchEnd)) != null) {
+				tableSearchEnd = ParseHexInt ((string)at, at);
+			}
+			if (tableSearchStart > 0 && tableSearchEnd > 0) {
+				TableSearchRange = Util.Range.FromPositions (tableSearchStart, tableSearchEnd);
+			}
 		}
 
 		XElement TableSearchXElement ()
 		{
-			return new XElement (X_tableSearch, new XAttribute (X_tableSearchStart, HexNum (TableSearchStart)), new XAttribute (X_tableSearchEnd, HexNum (TableSearchEnd)));
+			if (tableSearchRange.HasValue) {
+				return new XElement (X_tableSearch,
+					new XAttribute (X_tableSearchStart, HexNum (tableSearchRange.Value.Pos)),
+					new XAttribute (X_tableSearchEnd, HexNum (tableSearchRange.Value.Last))
+				);
+			} else {
+				// create empty element
+				return new XElement (X_tableSearch);
+			}
 		}
 
 		public void WriteXml (string path, RomMetadata romMetadata, IList<Table2D> list2D, IList<Table3D> list3D)
@@ -233,8 +247,8 @@ namespace Subaru.File
 			// necessary, otherwise single line
 			xw.Formatting = Formatting.Indented;
 
-			var table2DXElements = list2D.Where (t => t.HasMetadata).Select (t => GetXElement (t)).AsParallel ();
-			var table3DXElements = list3D.Where (t => t.HasMetadata).Select (t => GetXElement (t)).AsParallel ();
+			var table2DXElements = list2D.Where (t => t.HasMetadata).OrderBy (t => t.Location).Select (t => GetXElement (t)).AsParallel ();
+			var table3DXElements = list3D.Where (t => t.HasMetadata).OrderBy (t => t.Location).Select (t => GetXElement (t)).AsParallel ();
 
 			XElement romEl = new XElement (X_rom, romMetadata.XElement, TableSearchXElement (), table2DXElements, table3DXElements);
 
@@ -422,7 +436,7 @@ namespace Subaru.File
 		public static XDocument XDoc (params object[] content)
 		{
 			// XDeclaration: null parameters --> "<?xml version="1.0" encoding="utf-8"?>"
-			return new XDocument (new XDeclaration (null, null, null), content);
+			return new XDocument (new XDeclaration (null, null, null), new XComment (ScoobyRom.MainClass.GeneratedBy), content);
 		}
 
 		static XElement GetXElement (Table2D table2D)

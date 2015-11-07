@@ -42,6 +42,10 @@ namespace ScoobyRom
 			get { return (int)ColumnNr2D.Obj; }
 		}
 
+		protected override int ColumnNrToggle {
+			get { return (int)ColumnNr2D.Toggle; }
+		}
+
 		public void ChangeTableType (Table2D table2D, TableType newType)
 		{
 			data.ChangeTableType (table2D, newType);
@@ -75,7 +79,11 @@ namespace ScoobyRom
 			types [(int)ColumnNr2D.Yavg] = typeof(float);
 			types [(int)ColumnNr2D.Ymax] = typeof(float);
 
+			types [(int)ColumnNr2D.Multiplier] = typeof(float);
+			types [(int)ColumnNr2D.Offset] = typeof(float);
+
 			types [(int)ColumnNr2D.Location] = typeof(int);
+			types [(int)ColumnNr2D.XPos] = typeof(int);
 			types [(int)ColumnNr2D.YPos] = typeof(int);
 
 			types [(int)ColumnNr2D.Description] = typeof(string);
@@ -92,14 +100,14 @@ namespace ScoobyRom
 		override protected void PopulateData ()
 		{
 			// performance, would get raised for each new row
-			store.RowChanged -= HandleTreeStoreRowChanged;
+			SetHandleRowChanged (false);
 
 			foreach (Table2D table2D in data.List2D) {
 				TreeIter newNode = store.Append ();
 				SetNodeContent (newNode, table2D);
 			}
 
-			store.RowChanged += HandleTreeStoreRowChanged;
+			SetHandleRowChanged (true);
 		}
 
 		public void SetNodeContent (TreeIter iter, Table2D table2D)
@@ -119,9 +127,14 @@ namespace ScoobyRom
 			store.SetValue (iter, (int)ColumnNr2D.Xmin, table2D.Xmin);
 			store.SetValue (iter, (int)ColumnNr2D.Xmax, table2D.Xmax);
 
+			store.SetValue (iter, (int)ColumnNr2D.Multiplier, table2D.Multiplier);
+			store.SetValue (iter, (int)ColumnNr2D.Offset, table2D.Offset);
+
 			store.SetValue (iter, (int)ColumnNr2D.Location, table2D.Location);
+			store.SetValue (iter, (int)ColumnNr2D.XPos, table2D.RangeX.Pos);
 			store.SetValue (iter, (int)ColumnNr2D.YPos, table2D.RangeY.Pos);
 			store.SetValue (iter, (int)ColumnNr2D.Description, table2D.Description);
+			Toggle (iter, table2D.Selected);
 
 			SetNodeContentTypeChanged (iter, table2D);
 		}
@@ -140,15 +153,47 @@ namespace ScoobyRom
 
 		protected override void UpdateModel (TreeIter iter)
 		{
+			// prevent loop when content might change in here (i.e. toggle)
+			SetHandleRowChanged (false);
+
 			Table2D table = store.GetValue (iter, (int)ColumnNr2D.Obj) as Table2D;
 			if (table == null)
 				return;
+
+			string nameX = (string)store.GetValue (iter, (int)ColumnNr2D.NameX);
+			string unitX = (string)store.GetValue (iter, (int)ColumnNr2D.UnitX);
+
+			nameX = nameX.Trim ();
+			unitX = unitX.Trim ();
+			if (unitX != table.UnitX || nameX != table.NameX) {
+				var shared = data.FindTablesSameAxisX (table);
+				if (shared.Count > 0) {
+					Console.WriteLine ("AxisX shared {0} times.", shared.Count);
+
+					#if SelectShared
+
+					ToggleAll (false);
+					foreach (var t in shared) {
+						t.Selected = true;
+						TreeIter iterDup;
+						if (FindIter (t, out iterDup)) {
+							Toggle (iterDup, true);
+						}
+					}
+
+					#endif
+				}
+			}
+
 			table.Category = (string)store.GetValue (iter, (int)ColumnNr2D.Category);
 			table.Title = (string)store.GetValue (iter, (int)ColumnNr2D.Title);
 			table.UnitY = (string)store.GetValue (iter, (int)ColumnNr2D.UnitY);
-			table.NameX = (string)store.GetValue (iter, (int)ColumnNr2D.NameX);
-			table.UnitX = (string)store.GetValue (iter, (int)ColumnNr2D.UnitX);
+			table.NameX = nameX;
+			table.UnitX = unitX;
 			table.Description = (string)store.GetValue (iter, (int)ColumnNr2D.Description);
+			table.Selected = IsToggled (iter);
+
+			SetHandleRowChanged (true);
 		}
 	}
 }

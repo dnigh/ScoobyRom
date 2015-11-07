@@ -24,45 +24,29 @@ using Gtk;
 
 namespace GtkWidgets
 {
-	public sealed class TableWidget3D
+	public sealed class TableWidget3D : TableWidgetBase
 	{
 		const int DataColLeft = 2;
 		const int DataRowTop = 3;
 
-		readonly int countX, countY, cols, rows;
+		readonly int countY;
 		string titleMarkup;
-		string axisMarkupX = "X Axis [-]";
-		string axisMarkupY = "Y Axis [-]";
-		string formatValues = "0.000";
-		readonly float[] axisX, axisY, values;
-		readonly float axisXmin, axisXmax, axisYmin, axisYmax, valuesMax, valuesMin;
-		readonly Util.Coloring coloring;
-
-		// Use LINQ to calc min/max
-		//		public TableWidget (Util.Coloring coloring, float[] axisX, float[] axisY, float[] valuesZ) :
-		//			this(coloring, axisX, axisY, valuesZ, valuesZ.Min (), valuesZ.Max ())
-		//		{
-		//		}
+		string axisYMarkup = "Y Axis [-]";
+		readonly float[] axisY;
+		readonly float axisYmin, axisYmax;
 
 		/// <summary>
-		///	Create Gtk.Table for 3D table data.
+		///	Create Gtk.Table visualising 3D table data.
 		/// </summary>
 		public TableWidget3D (Util.Coloring coloring, float[] axisX, float[] axisY, float[] valuesZ,
 		                      float axisXmin, float axisXmax, float axisYmin, float axisYmax, float valuesZmin, float valuesZmax)
+			: base (coloring, axisX, valuesZ, axisXmin, axisXmax, valuesZmin, valuesZmax)
 		{
-			this.coloring = coloring;
-			this.axisX = axisX;
 			this.axisY = axisY;
-			this.values = valuesZ;
 
-			this.axisXmin = axisXmin;
-			this.axisXmax = axisXmax;
 			this.axisYmin = axisYmin;
 			this.axisYmax = axisYmax;
-			this.valuesMin = valuesZmin;
-			this.valuesMax = valuesZmax;
 
-			this.countX = this.axisX.Length;
 			this.countY = this.axisY.Length;
 
 			if (axisX.Length * axisY.Length != valuesZ.Length)
@@ -77,24 +61,17 @@ namespace GtkWidgets
 			set { titleMarkup = value; }
 		}
 
-		public string AxisMarkupX {
-			get { return this.axisMarkupX; }
-			set { axisMarkupX = value; }
+		public string AxisYMarkup {
+			get { return this.axisYMarkup; }
+			set { axisYMarkup = value; }
 		}
 
-		public string AxisMarkupY {
-			get { return this.axisMarkupY; }
-			set { axisMarkupY = value; }
-		}
-
-		public string FormatValues {
-			get { return this.formatValues; }
-			set { formatValues = value; }
-		}
-
-		public Gtk.Widget Create ()
+		public override Gtk.Widget Create ()
 		{
 			var table = new Gtk.Table ((uint)rows, (uint)cols, false);
+
+			//var fontDescription = new Pango.FontDescription ();
+			//fontDescription.Family = "mono";
 
 			Gtk.Label title = new Label ();
 			title.Markup = this.titleMarkup;
@@ -138,14 +115,15 @@ namespace GtkWidgets
 			for (uint i = 0; i < countZ; i++) {
 				float val = values [i];
 				Gtk.Widget label = new Label (val.ToString (this.formatValues));
-				BorderWidget widget = new BorderWidget (CalcColor (val));
+				//label.ModifyFont (fontDescription);
+
+				BorderWidget widget = new BorderWidget (CalcValueColor (val));
 
 				// ShadowType differences might be minimal
 				if (val >= this.valuesMax)
 					widget.ShadowType = ShadowType.EtchedOut;
 				else if (val <= this.valuesMin)
 					widget.ShadowType = ShadowType.EtchedIn;
-
 				widget.Add (label);
 
 				uint row = DataRowTop + i / (uint)this.countX;
@@ -156,7 +134,7 @@ namespace GtkWidgets
 
 			// x axis name
 			Gtk.Label titleX = new Gtk.Label ();
-			titleX.Markup = "<b>" + this.axisMarkupX + "</b>";
+			titleX.Markup = "<b>" + this.axisXMarkup + "</b>";
 			//titleX.SetAlignment (0.5f, 0.5f);
 			table.Attach (titleX, DataColLeft, (uint)cols, DataRowTop - 2, DataRowTop - 1, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
 
@@ -167,27 +145,13 @@ namespace GtkWidgets
 			//titleY.LineWrap = true;
 			//titleY.LineWrapMode = Pango.WrapMode.WordChar;
 			titleY.Angle = 90;
-			titleY.Markup = "<b>" + this.axisMarkupY + "</b>";
+			titleY.Markup = "<b>" + this.axisYMarkup + "</b>";
 
 			//titleY.SetAlignment (0.5f, 0.5f);
 			table.Attach (titleY, 0, 1, DataRowTop, (uint)rows, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
 
 			//table.Homogeneous = true;
 			return table;
-		}
-
-		Cairo.Color CalcColor (float val)
-		{
-			double factor = (val - valuesMin) / (valuesMax - valuesMin);
-			// should be able to handle division by zero (NaN)
-			return coloring.GetColor (factor);
-		}
-
-		Cairo.Color CalcAxisXColor (float val)
-		{
-			double factor = (val - axisXmin) / (axisXmax - axisXmin);
-			// should be able to handle division by zero (NaN)
-			return coloring.GetColor (factor);
 		}
 
 		Cairo.Color CalcAxisYColor (float val)

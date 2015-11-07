@@ -27,6 +27,8 @@ using Extensions;
 
 namespace Subaru.Tables
 {
+	// Native ROM struct size is 28 bytes in cases where there are two MAC floats,
+	// 20 bytes without the two MAC floats
 	public sealed class Table3D : Table
 	{
 		const int CountXMax = CountMax;
@@ -47,6 +49,7 @@ namespace Subaru.Tables
 			s_tableInfo3D.rangeZ.Pos = stream.ReadInt32BigEndian ();
 			// first byte matters, rest probably just alignment (zeroes), read all four in one go by little endian
 			s_tableInfo3D.tableType = (TableType)(stream.ReadInt32LittleEndian ());
+			// 20 bytes read so far
 
 			// Float type never has MAC floats so far, makes sense.
 			// Shortcut, does not hurt (valid) results though.
@@ -110,8 +113,8 @@ namespace Subaru.Tables
 			c.rangeZ = rangeZ;
 
 			c.hasMAC = hasMAC;
-			c.multiplier = multiplier;
-			c.offset = offset;
+			c.multiplier = Multiplier;
+			c.offset = Offset;
 
 			// copy array references only for best performance, no deep copy
 			c.valuesX = valuesX;
@@ -126,6 +129,7 @@ namespace Subaru.Tables
 			// metadata
 			c.title = title ?? string.Empty;
 			c.category = category ?? string.Empty;
+			c.selected = selected;
 			c.description = description ?? string.Empty;
 			c.nameX = nameX ?? string.Empty;
 			c.nameY = nameY ?? string.Empty;
@@ -150,12 +154,12 @@ namespace Subaru.Tables
 
 		// valid object has increasing axis values
 		public float Ymin {
-			get { return valuesY != null ? valuesY[0] : float.NaN; }
+			get { return valuesY != null ? valuesY [0] : float.NaN; }
 		}
 
 		// valid object has increasing axis values
 		public float Ymax {
-			get { return valuesY != null ? valuesY[this.valuesY.Length - 1] : float.NaN; }
+			get { return valuesY != null ? valuesY [this.valuesY.Length - 1] : float.NaN; }
 		}
 
 		public float[] GetValuesZasFloats ()
@@ -205,14 +209,24 @@ namespace Subaru.Tables
 		{
 		}
 
+		public override int RecordSize {
+			get { return hasMAC ? 28 : 20; }
+		}
+
 		public override bool HasMetadata {
 			get { return base.HasMetadata || !string.IsNullOrEmpty (nameY) || !string.IsNullOrEmpty (unitY); }
+		}
+
+		public override bool IsDataConst {
+			get { return this.valuesZmin == this.valuesZmax; }
 		}
 
 		public override string ToString ()
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder (200);
-			sb.AppendFormat ("[TableInfo3D @ {0:X6} | XCount={1}, YCount={2} | RangeX={3}, RangeY={4}, RangeZ={5} | TableType={6}", Location, countX.ToString (), countY.ToString (), rangeX.ToString (), rangeY.ToString (), rangeZ.ToString (), tableType.ToStr ());
+			sb.AppendFormat ("[Table3D @ {0:X6} | Selected={1} XCount={2} YCount={3} | RangeX={4}, RangeY={5}, RangeZ={6} | TableType={7}",
+				location, selected, countX.ToString (), countY.ToString (),
+				rangeX.ToString (), rangeY.ToString (), rangeZ.ToString (), tableType.ToStr ());
 
 			sb.AppendFormat (" | Xmin={0} Xmax={1} | Ymin={2} Ymax={3} | Zmin={4} Zmax={5}", Xmin, Xmax, Ymin, Ymax, Zmin, Zmax);
 
@@ -291,8 +305,24 @@ namespace Subaru.Tables
 
 		public override XElement RRXml ()
 		{
-			return new XElement ("table", new XAttribute ("type", "3D"), new XAttribute ("name", title), new XAttribute ("category", category), new XAttribute ("storagetype", tableType.ToRRType ()), new XAttribute ("endian", endian), new XAttribute ("sizex", countX.ToString ()), new XAttribute ("sizey", countY.ToString ()), new XAttribute ("storageaddress", HexAddress (rangeZ.Pos)), new XComment (ValuesStats (valuesZmin, valuesZmax, valuesZavg)),
-			RRXmlScaling (unitZ, Expression, ExpressionBack, "0.000", 0.01f, 0.1f), RRXmlAxis ("X Axis", nameX, unitX, TableType.Float, rangeX, valuesX), RRXmlAxis ("Y Axis", nameY, unitY, TableType.Float, rangeY, valuesY), new XElement ("description", description));
+			return new XElement ("table",
+				new XAttribute ("type", "3D"),
+				new XAttribute ("name", RRName),
+				new XAttribute ("category", RRCategory),
+				new XAttribute ("storagetype", tableType.ToRRType ()),
+				new XAttribute ("endian", endian),
+				new XAttribute ("sizex", countX.ToString ()),
+				new XAttribute ("sizey", countY.ToString ()),
+				new XAttribute ("storageaddress", HexAddress (rangeZ.Pos)),
+				new XComment (ValuesStats (valuesZmin, valuesZmax, valuesZavg)),
+				RRXmlScaling (unitZ, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
+				RRXmlAxis ("X Axis", nameX, unitX, TableType.Float, rangeX, valuesX),
+				RRXmlAxis ("Y Axis", nameY, unitY, TableType.Float, rangeY, valuesY),
+				new XElement ("description", description));
+		}
+
+		public override string RRCategory {
+			get { return string.IsNullOrEmpty (this.category) ? "Unknown 3D" : this.category; }
 		}
 
 		public override string CopyTableRomRaider ()

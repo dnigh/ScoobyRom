@@ -29,6 +29,8 @@ namespace ScoobyRom
 {
 	public sealed class Data
 	{
+		public event EventHandler<EventArgs> RomChanged;
+
 		public event EventHandler<EventArgs> ItemsChanged2D;
 		public event EventHandler<EventArgs> ItemsChanged3D;
 
@@ -41,8 +43,7 @@ namespace ScoobyRom
 		string calIDfromRom;
 
 		// proper values can speed up searching a lot - e.g. 300 ms instead of several seconds
-		int tableSearchStart = 0;
-		int tableSearchEnd = int.MaxValue;
+		Util.Range? tableSearchRange;
 
 		IList<Table2D> list2D = new List<Table2D> (0);
 		IList<Table3D> list3D = new List<Table3D> (0);
@@ -59,12 +60,64 @@ namespace ScoobyRom
 			get { return this.list3D; }
 		}
 
-		public IList<Table2D> List2DAnnotated {
-			get { return list2D.Where (t => t.HasMetadata).AsParallel ().ToList (); }
+		public IEnumerable<Table> Enumerable2Dand3D ()
+		{
+			return list2D.Cast <Table> ().Concat (list3D.Cast <Table> ());
 		}
 
-		public IList<Table3D> List3DAnnotated {
-			get { return list3D.Where (t => t.HasMetadata).AsParallel ().ToList (); }
+		public IList<Table> List2Dand3D ()
+		{
+			return list2D.Cast <Table> ().Concat (list3D.Cast <Table> ()).AsParallel ().ToList ();
+		}
+
+		public IList<Table2D> List2DSorted ()
+		{
+			return list2D.OrderBy (t => t.Location).AsParallel ().ToList ();
+		}
+
+		public IList<Table3D> List3DSorted ()
+		{
+			return list3D.OrderBy (t => t.Location).AsParallel ().ToList ();
+		}
+
+		public IList<Table2D> List2DAnnotated ()
+		{
+			return list2D.Where (t => t.HasMetadata).AsParallel ().ToList ();
+		}
+
+		public IList<Table3D> List3DAnnotated ()
+		{
+			return list3D.Where (t => t.HasMetadata).AsParallel ().ToList ();
+		}
+
+		public IList<Table2D> List2DAnnotatedSorted ()
+		{
+			return list2D.Where (t => t.HasMetadata).OrderBy (t => t.Location).AsParallel ().ToList ();
+		}
+
+		public IList<Table3D> List3DAnnotatedSorted ()
+		{
+			return list3D.Where (t => t.HasMetadata).OrderBy (t => t.Location).AsParallel ().ToList ();
+		}
+
+		public IList<Table2D> List2DSelected ()
+		{
+			return list2D.Where (t => t.Selected).AsParallel ().ToList ();
+		}
+
+		public IList<Table3D> List3DSelected ()
+		{
+			return list3D.Where (t => t.Selected).AsParallel ().ToList ();
+		}
+
+		public IList<Table2D> List2DSelectedSorted ()
+		{
+			return list2D.Where (t => t.Selected).OrderBy (t => t.Location).AsParallel ().ToList ();
+		}
+
+		public IList<Table3D> List3DSelectedSorted ()
+		{
+			return list3D.Where (t => t.Selected).OrderBy (t => t.Location).AsParallel ().ToList ();
 		}
 
 
@@ -80,6 +133,9 @@ namespace ScoobyRom
 			get { return this.calIDfromRom; }
 		}
 
+		public Util.Range? TableSearchRange {
+			get { return this.tableSearchRange; }
+		}
 
 		public Data ()
 		{
@@ -101,20 +157,13 @@ namespace ScoobyRom
 				romXml = new Subaru.File.RomXml ();
 				romXml.Load (xmlPath);
 				romMetadata = romXml.RomMetadata;
-
-				tableSearchStart = romXml.TableSearchStart;
-				tableSearchEnd = romXml.TableSearchEnd > romXml.TableSearchStart ? romXml.TableSearchEnd : int.MaxValue;
+				tableSearchRange = romXml.TableSearchRange;
 			} else {
 				Console.WriteLine ("No existing XML file has been found!");
 				romXml = null;
 				romMetadata = new RomMetadata ();
-				// search through whole ROM file
-				tableSearchStart = 0;
-				tableSearchEnd = int.MaxValue;
+				tableSearchRange = null;
 			}
-
-			// correct tableSearchEnd if necessary
-			tableSearchEnd = tableSearchEnd > tableSearchStart ? tableSearchEnd : int.MaxValue;
 
 			romMetadata.Filesize = rom.Size;
 			int calIDpos = romMetadata.CalibrationIDPos;
@@ -126,7 +175,7 @@ namespace ScoobyRom
 			if (this.ProgressChanged != null)
 				rom.ProgressChanged += OnProgressChanged;
 
-			rom.FindMaps (tableSearchStart, tableSearchEnd, out list2D, out list3D);
+			rom.FindMaps (tableSearchRange, out list2D, out list3D);
 
 			rom.ProgressChanged -= OnProgressChanged;
 
@@ -137,6 +186,8 @@ namespace ScoobyRom
 				romXml.TryMergeWith (list2D);
 				romXml.TryMergeWith (list3D);
 			}
+
+			//PrintSharedStatistics ();
 		}
 
 		public static string PathWithNewExtension (string path, string extension)
@@ -152,23 +203,31 @@ namespace ScoobyRom
 		public void SaveXml (string path)
 		{
 			var romXml = new Subaru.File.RomXml ();
-			romXml.TableSearchStart = tableSearchStart;
-			romXml.TableSearchEnd = tableSearchEnd;
-
+			romXml.TableSearchRange = tableSearchRange;
 			romXml.WriteXml (path, romMetadata, list2D, list3D);
 		}
 
-		public void SaveAsRomRaiderXml (string path)
+		public void SaveAsRomRaiderXml (string path, SelectedChoice choice)
 		{
-			// TODO add filtering options
+			IList<Table2D> list2D;
+			IList<Table3D> list3D;
 
-			// only export annotated tables:
-			var list2D = List2DAnnotated;
-			var list3D = List3DAnnotated;
-
-			// export everything:
-			//var list2D = this.list2D;
-			//var list3D = this.list3D;
+			switch (choice) {
+			case SelectedChoice.All:
+				list2D = this.List2DSorted ();
+				list3D = this.List3DSorted ();
+				break;
+			case SelectedChoice.Selected:
+				list2D = this.List2DSelectedSorted ();
+				list3D = this.List3DSelectedSorted ();
+				break;
+			case SelectedChoice.Annotated:
+				list2D = this.List2DAnnotatedSorted ();
+				list3D = this.List3DAnnotatedSorted ();
+				break;
+			default:
+				return;
+			}
 
 			Subaru.File.RomRaiderEcuDefXml.WriteRRXmlFile (path, romMetadata.XElement, list2D, list3D);
 		}
@@ -180,6 +239,8 @@ namespace ScoobyRom
 
 		public void UpdateUI ()
 		{
+			if (RomChanged != null)
+				RomChanged (this, new EventArgs ());
 			if (ItemsChanged3D != null)
 				ItemsChanged3D (this, new EventArgs ());
 			if (ItemsChanged2D != null)
@@ -202,7 +263,7 @@ namespace ScoobyRom
 				bool found = true;
 				for (int i = 0; i < values.Length; i++) {
 					float value = values [i];
-					float rounded = (float)Math.Round (value, digits);
+					float rounded = Convert.ToSingle (Math.Round (value, digits));
 					if (Math.Abs (value - rounded) > float.Epsilon) {
 						++digits;
 						found = false;
@@ -232,6 +293,36 @@ namespace ScoobyRom
 					digits = 3;
 			}
 			return ValueFormat (digits);
+		}
+
+		// some x-axis is shared many times with both 2D and 3D tables
+		public IList<Table> FindTablesSameAxisX (Table table)
+		{
+			var r = Enumerable2Dand3D ().Where (t => t.RangeX.Pos == table.RangeX.Pos).AsParallel ().ToList ();
+
+			for (int i = 0; i < r.Count; i++) {
+				Console.WriteLine ("#{0}: {1}", i, r [i]);
+			}
+
+			return r;
+		}
+
+		public void PrintSharedStatistics ()
+		{
+			var all = List2Dand3D ();
+
+			Console.WriteLine ("Checking all tables for shared x-axis:", all.Count);
+			int num = 0;
+			for (int i = 0; i < all.Count; i++) {
+				var t = all [i];
+				var shared = FindTablesSameAxisX (t);
+
+				if (shared.Count > 1) {
+					num++;
+					Console.WriteLine ("table #{0} Location 0x{1:X}: shared AxisX {2} times", i.ToString (), t.Location, shared.Count.ToString ());
+				}
+			}
+			Console.WriteLine ("Result: {0} tables have shared x-axis", num);
 		}
 	}
 }

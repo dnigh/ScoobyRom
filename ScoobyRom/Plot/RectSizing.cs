@@ -28,8 +28,8 @@ namespace ScoobyRom
 	{
 		const double ZoomFactorMin = 1.1;
 		const double ZoomFactorMax = 2.0;
-		const int WidthMin = 12;
-		const int HeightMin = 10;
+		const int WidthMin = 24;
+		const int HeightMin = 16;
 
 		double zoomFactor = 1.2;
 		int width, height, originalWidth;
@@ -88,16 +88,26 @@ namespace ScoobyRom
 
 		void CalcFromNewWidth (double newWidth)
 		{
-			int w = (int)System.Math.Round (newWidth);
-			int h = (int)System.Math.Round (newWidth / aspectRatio);
+			int w = Convert.ToInt32 (newWidth);
+			int h = Convert.ToInt32 (newWidth / aspectRatio);
 			Calc (w, h);
 		}
 
 		void Calc (int width, int height)
 		{
-			this.width = Math.Max (width, WidthMin);
-			this.height = Math.Max (height, HeightMin);
-			this.bounds = new System.Drawing.Rectangle (0, 0, width, height);
+			if (width < WidthMin) {
+				this.width = WidthMin;
+				this.height = Convert.ToInt32 (this.width / aspectRatio);
+			} else {
+				this.width = width;
+			}
+			if (height < HeightMin) {
+				this.height = HeightMin;
+				this.width = Convert.ToInt32 (this.height * aspectRatio);
+			} else {
+				this.height = height;
+			}
+			this.bounds = new System.Drawing.Rectangle (0, 0, this.width, this.height);
 		}
 	}
 }

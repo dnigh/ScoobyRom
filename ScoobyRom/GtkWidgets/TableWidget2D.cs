@@ -24,34 +24,17 @@ using Gtk;
 
 namespace GtkWidgets
 {
-	public sealed class TableWidget2D
+	public sealed class TableWidget2D : TableWidgetBase
 	{
 		const int DataColLeft = 1;
 		const int DataRowTop = 1;
 
-		readonly int countX, cols, rows;
-		string axisMarkup = "X Axis [-]";
-		string valuesMarkup = "Y Axis [-]";
-		string formatValues = "0.000";
-		readonly float[] axisX, values;
-		readonly float axisXmin, axisXmax, valuesMax, valuesMin;
-		readonly Util.Coloring coloring;
-
 		/// <summary>
-		///	Create Gtk.Table for 2D table data.
+		///	Create Gtk.Table visualising 2D table data.
 		/// </summary>
 		public TableWidget2D (Util.Coloring coloring, float[] axisX, float[] valuesY, float axisXmin, float axisXmax, float valuesYmin, float valuesYmax)
+			: base (coloring, axisX, valuesY, axisXmin, axisXmax, valuesYmin, valuesYmax)
 		{
-			this.coloring = coloring;
-			this.axisX = axisX;
-			this.axisXmin = axisXmin;
-			this.axisXmax = axisXmax;
-			this.values = valuesY;
-			this.valuesMin = valuesYmin;
-			this.valuesMax = valuesYmax;
-
-			this.countX = this.axisX.Length;
-
 			if (axisX.Length != valuesY.Length)
 				throw new ArgumentException ("axisX.Length != valuesY.Length");
 
@@ -59,26 +42,7 @@ namespace GtkWidgets
 			this.rows = this.countX + DataRowTop;
 		}
 
-		public string AxisMarkup {
-			get { return this.axisMarkup; }
-			set { axisMarkup = value; }
-		}
-
-		public string ValuesMarkup {
-			get { return this.valuesMarkup; }
-			set { valuesMarkup = value; }
-		}
-
-		public string HeaderAxisMarkup { get; set; }
-
-		public string HeaderValuesMarkup { get; set; }
-
-		public string FormatValues {
-			get { return this.formatValues; }
-			set { formatValues = value; }
-		}
-
-		public Gtk.Widget Create ()
+		public override Gtk.Widget Create ()
 		{
 			var table = new Gtk.Table ((uint)rows, (uint)cols, false);
 
@@ -101,7 +65,7 @@ namespace GtkWidgets
 			// x axis title
 			Gtk.Label titleLeft = new Gtk.Label ();
 			titleLeft.Angle = 90;
-			titleLeft.Markup = "<b>" + this.axisMarkup + "</b>";
+			titleLeft.Markup = "<b>" + this.axisXMarkup + "</b>";
 			table.Attach (titleLeft, 0, 1, 0, (uint)rows, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
 
 			// y axis title
@@ -118,7 +82,7 @@ namespace GtkWidgets
 				label.Text = val.ToString ();
 				label.SetAlignment (1f, 0f);
 
-				BorderWidget widget = new BorderWidget (CalcAxisColor (val));
+				BorderWidget widget = new BorderWidget (CalcAxisXColor (val));
 				widget.Add (label);
 
 				table.Attach (widget, DataColLeft, DataColLeft + 1, DataRowTop + i, DataRowTop + 1 + i, AttachOptions.Fill, AttachOptions.Shrink, PadX, PadY);
@@ -147,20 +111,6 @@ namespace GtkWidgets
 			}
 
 			return table;
-		}
-
-		Cairo.Color CalcValueColor (float val)
-		{
-			double factor = (val - valuesMin) / (valuesMax - valuesMin);
-			// should be able to handle division by zero (NaN)
-			return coloring.GetColor (factor);
-		}
-
-		Cairo.Color CalcAxisColor (float val)
-		{
-			double factor = (val - axisXmin) / (axisXmax - axisXmin);
-			// should be able to handle division by zero (NaN)
-			return coloring.GetColor (factor);
 		}
 	}
 }

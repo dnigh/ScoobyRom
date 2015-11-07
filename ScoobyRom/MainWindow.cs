@@ -24,9 +24,11 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Linq;
 using Gtk;
 using ScoobyRom;
 using Subaru.Tables;
+using System.Collections.Generic;
 
 public partial class MainWindow : Gtk.Window
 {
@@ -50,7 +52,7 @@ public partial class MainWindow : Gtk.Window
 
 	// Gtk# integration: NPlot.Gtk.PlotSurface2D instead of generic NPlot.PlotSurface2D
 	//readonly NPlot.Gtk.NPlotSurface2D plotSurface = new NPlot.Gtk.NPlotSurface2D ();
-	readonly Florence.InteractivePlotSurface2D plotSurface = new Florence.InteractivePlotSurface2D();
+	readonly Florence.InteractivePlotSurface2D plotSurface = new Florence.InteractivePlotSurface2D ();
 
 
 	readonly Plot2D plot2D;
@@ -125,6 +127,18 @@ public partial class MainWindow : Gtk.Window
 				return ActiveUI.View3D;
 			else
 				return ActiveUI.Undefined;
+		}
+	}
+
+	DataViewModelBaseGtk CurrentViewModel {
+		get {
+			switch (CurrentUI) {
+			case ActiveUI.View2D:
+				return dataView2DModelGtk;
+			case ActiveUI.View3D:
+				return dataView3DModelGtk;
+			}
+			return null;
 		}
 	}
 
@@ -216,6 +230,8 @@ public partial class MainWindow : Gtk.Window
 				DoPendingEvents ();
 				Console.WriteLine (txt);
 
+				PopulateNavBar ();
+
 				dataView2DGtk.ShowIcons = false;
 				dataView3DGtk.ShowIcons = false;
 				ClearVisualizations ();
@@ -236,6 +252,53 @@ public partial class MainWindow : Gtk.Window
 		});
 	}
 
+	void PopulateNavBar ()
+	{
+		if (!data.RomLoaded) {
+			navbarwidget.Clear ();
+			return;
+		}
+
+		var regions = new List<Util.Region> (1024);
+
+		navbarwidget.FirstPos = 0;
+		navbarwidget.LastPos = data.Rom.Size - 1;
+
+		try {
+			var rcs = data.Rom.RomChecksumming;
+			var checksums = rcs.ReadTableRecords ();
+			var regionsTop = new List<Util.Region> (checksums.Count);
+			foreach (var cs in checksums) {
+				regionsTop.Add (new Util.Region (cs.StartAddress, cs.EndAddress, Util.RegionType.Checksummed));
+			}
+			navbarwidget.SetRegionsTop (regionsTop.ToArray ());
+		} catch (Exception ex) {
+			Console.Error.WriteLine (ex.ToString ());
+		}
+
+		var searchRange = data.TableSearchRange;
+		if (searchRange.HasValue) {
+			regions.Add (new Util.Region (searchRange.Value.Pos, searchRange.Value.Last, Util.RegionType.TableSearch));
+		}
+
+		var tables2D = data.List2D;
+		foreach (var t in tables2D) {
+			regions.Add (new Util.Region (t.Location, t.Location + t.RecordSize - 1, Util.RegionType.TableRecord2D));
+			regions.Add (new Util.Region (t.RangeX.Pos, t.RangeX.Last, Util.RegionType.AxisX));
+			regions.Add (new Util.Region (t.RangeY.Pos, t.RangeY.Last, Util.RegionType.ValuesY));
+		}
+
+		var tables3D = data.List3D;
+		foreach (var t in tables3D) {
+			regions.Add (new Util.Region (t.Location, t.Location + t.RecordSize - 1, Util.RegionType.TableRecord3D));
+			regions.Add (new Util.Region (t.RangeX.Pos, t.RangeX.Last, Util.RegionType.AxisX));
+			regions.Add (new Util.Region (t.RangeY.Pos, t.RangeY.Last, Util.RegionType.AxisY));
+			regions.Add (new Util.Region (t.RangeZ.Pos, t.RangeZ.Last, Util.RegionType.ValuesZ));
+		}
+
+		navbarwidget.SetRegions (regions.ToArray ());
+	}
+
 	static void DoPendingEvents ()
 	{
 		while (Application.EventsPending ()) {
@@ -250,6 +313,8 @@ public partial class MainWindow : Gtk.Window
 
 	void ClearVisualizations ()
 	{
+		navbarwidget.ClearMarkedPositions ();
+
 		plotSurface.Clear ();
 		plotSurface.Refresh ();
 
@@ -268,12 +333,16 @@ public partial class MainWindow : Gtk.Window
 		if (table == null)
 			return;
 
+		navbarwidget.CurrentPos = table.Location;
+
+		navbarwidget.SetMarkedPositions (new int[] { table.RangeX.Pos, table.RangeY.Pos, table.RangeZ.Pos });
+
 		var valuesZ = table.GetValuesZasFloats ();
 		var tableUI = new GtkWidgets.TableWidget3D (coloring, table.ValuesX, table.ValuesY, valuesZ,
 			              table.Xmin, table.Xmax, table.Ymin, table.Ymax, table.Zmin, table.Zmax);
 		tableUI.TitleMarkup = Util.Markup.NameUnit_Large (table.Title, table.UnitZ);
-		tableUI.AxisMarkupX = Util.Markup.NameUnit (table.NameX, table.UnitX);
-		tableUI.AxisMarkupY = Util.Markup.NameUnit (table.NameY, table.UnitY);
+		tableUI.AxisXMarkup = Util.Markup.NameUnit (table.NameX, table.UnitX);
+		tableUI.AxisYMarkup = Util.Markup.NameUnit (table.NameY, table.UnitY);
 		tableUI.FormatValues = ScoobyRom.Data.AutomaticValueFormat (valuesZ, table.Zmin, table.Zmax);
 
 		// Viewport needed for ScrolledWindow to work as generated table widget has no scroll support
@@ -300,16 +369,18 @@ public partial class MainWindow : Gtk.Window
 		if (table == null)
 			return;
 
+		navbarwidget.CurrentPos = table.Location;
+		navbarwidget.SetMarkedPositions (new int[] { table.RangeX.Pos, table.RangeY.Pos });
+
 		// plot
 		plot2D.Draw (table);
-		plotSurface.Refresh ();
 
 		// table data as text
 		var values = table.GetValuesYasFloats ();
 		var tableUI = new GtkWidgets.TableWidget2D (coloring, table.ValuesX, values, table.Xmin, table.Xmax, table.Ymin, table.Ymax);
 		tableUI.HeaderAxisMarkup = Util.Markup.Unit (table.UnitX);
 		tableUI.HeaderValuesMarkup = Util.Markup.Unit (table.UnitY);
-		tableUI.AxisMarkup = Util.Markup.NameUnit (table.NameX, table.UnitX);
+		tableUI.AxisXMarkup = Util.Markup.NameUnit (table.NameX, table.UnitX);
 		tableUI.ValuesMarkup = Util.Markup.NameUnit (table.Title, table.UnitY);
 		tableUI.FormatValues = ScoobyRom.Data.AutomaticValueFormat (values, table.Ymin, table.Ymax);
 
@@ -339,7 +410,7 @@ public partial class MainWindow : Gtk.Window
 	{
 		if (!data.RomLoaded)
 			return;
-		
+
 		var table = CurrentTable;
 		if (table is Table2D) {
 			Show2D ((Table2D)table);
@@ -350,12 +421,11 @@ public partial class MainWindow : Gtk.Window
 
 	void OnAbout (object sender, System.EventArgs e)
 	{
-		const string LicenseFilename = "COPYING.txt";
-
-		AboutDialog about = new AboutDialog {
+		AboutDialog dialog = new AboutDialog {
 			ProgramName = MainClass.AppName,
 			Version = MainClass.AppVersion,
-			Copyright = "© 2011-2015 SubaruDieselCrew",
+			Copyright = MainClass.AppCopyright,
+			Comments = MainClass.AppDescription,
 			Authors = new string[] { "subdiesel\thttp://subdiesel.wordpress.com/",
 				"\nThanks for any feedback!",
 				"\nEXTERNAL BINARY DEPENDENCIES:",
@@ -365,19 +435,28 @@ public partial class MainWindow : Gtk.Window
 			},
 			WrapLicense = true,
 		};
-		about.Icon = about.Logo = MainClass.AppIcon;
-		about.Comments = "License: GPL v3";
 
-		string licensePath = System.IO.Path.Combine(MainClass.AssemblyFolder, LicenseFilename);
+		dialog.Icon = dialog.Logo = MainClass.AppIcon;
+
+		string licensePath = MainClass.LicensePath;
 		try {
-			about.License = System.IO.File.ReadAllText (licensePath);
+			dialog.License = System.IO.File.ReadAllText (licensePath);
 		} catch (System.IO.FileNotFoundException) {
-			about.License = "Could not load license file '" + licensePath + "'.\nGo to http://www.fsf.org";
+			dialog.License = "Could not load license file '" + licensePath + "'.\nGo to http://www.fsf.org";
 		}
 
-		about.Run ();
-		about.Destroy ();
+		// default works fine on Linux, need extra work on Windows it seems...
+		//AboutDialog.SetUrlHook (HandleAboutDialogActivateLinkFunc);
+
+		dialog.Run ();
+		dialog.Destroy ();
 	}
+
+	/*
+	void HandleAboutDialogActivateLinkFunc (AboutDialog about, string uri)
+	{
+	}
+	*/
 
 	void OnOpenActionActivated (object sender, System.EventArgs e)
 	{
@@ -417,10 +496,25 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 
+	Gtk.ResponseType DisplaySelectDataDialog (out SelectedChoice choice)
+	{
+		var dialog = new SelectDataDialog (data);
+		var response = (Gtk.ResponseType)dialog.Run ();
+		choice = dialog.Choice;
+		dialog.Destroy ();
+		return response;
+	}
+
 	void OnExportAsRRActionActivated (object sender, System.EventArgs e)
 	{
+		SelectedChoice choice;
+		var responseType = DisplaySelectDataDialog (out choice);
+		if (responseType == ResponseType.Cancel)
+			return;
+
 		string pathSuggested = ScoobyRom.Data.PathWithNewExtension (data.Rom.Path, ".RR.xml");
-		var fc = new Gtk.FileChooserDialog ("Export as RomRaider definition file", this, FileChooserAction.Save, Gtk.Stock.Cancel, ResponseType.Cancel, Gtk.Stock.Save, ResponseType.Accept);
+		var fc = new Gtk.FileChooserDialog ("Export as RomRaider definition file", this,
+			         FileChooserAction.Save, Gtk.Stock.Cancel, ResponseType.Cancel, Gtk.Stock.Save, ResponseType.Accept);
 		try {
 			FileFilter filter = new FileFilter ();
 			filter.Name = "XML files";
@@ -434,12 +528,12 @@ public partial class MainWindow : Gtk.Window
 			fc.AddFilter (filter);
 
 			fc.DoOverwriteConfirmation = true;
-			// fc.CurrentFolder is read-only
 			fc.SetFilename (pathSuggested);
-			//fc.SetCurrentFolder (System.IO.Path.GetDirectoryName (pathSuggested));
+			// in addition this is necessary to populate filename when target file does not exist yet:
 			fc.CurrentName = System.IO.Path.GetFileName (pathSuggested);
+
 			if (fc.Run () == (int)ResponseType.Accept) {
-				data.SaveAsRomRaiderXml (fc.Filename);
+				data.SaveAsRomRaiderXml (fc.Filename, choice);
 			}
 		} catch (Exception ex) {
 			ErrorMsg ("Error writing file", ex.Message);
@@ -495,6 +589,15 @@ public partial class MainWindow : Gtk.Window
 		view.ResetIconSize ();
 	}
 
+	void OnNavigationBarActionActivated (object sender, EventArgs e)
+	{
+		if (navigationBarAction.Active) {
+			navScrolledWindow.ShowAll ();
+		} else {
+			navScrolledWindow.HideAll ();
+		}
+	}
+
 	// create or close gnuplot window
 	void OnPlotActionActivated (object sender, System.EventArgs e)
 	{
@@ -509,12 +612,15 @@ public partial class MainWindow : Gtk.Window
 			GnuPlot.ToggleGnuPlot (table);
 		} catch (GnuPlotProcessException ex) {
 			Console.Error.WriteLine (ex);
-			ErrorMsg ("Error launching gnuplot!", ex.Message + "\n\nHave you installed gnuplot?" + "\nYou also may need to edit file '" + MainClass.AppName + ".exe.config'." + "\nCurrent platform-ID is '" + System.Environment.OSVersion.Platform.ToString () + "'." + "\nSee 'README.txt' for details.");
+			ErrorMsg ("Error launching gnuplot!", ex.Message
+			+ "\n\nHave you installed gnuplot?"
+			+ "\nYou also may need to edit file '" + MainClass.AssemblyPath + ".exe.config'."
+			+ "\nCurrent platform-ID is '" + System.Environment.OSVersion.Platform.ToString () + "'."
+			+ "\nSee 'README.txt' for details.");
 		} catch (GnuPlotException ex) {
 			Console.Error.WriteLine (ex);
 			ErrorMsg ("Error launching gnuplot!", ex.Message);
-		}
-		catch (System.IO.FileNotFoundException ex) {
+		} catch (System.IO.FileNotFoundException ex) {
 			Console.Error.WriteLine (ex);
 			ErrorMsg ("Error using gnuplot!", ex.Message + "\nFile: " + ex.FileName);
 		}
@@ -584,16 +690,16 @@ public partial class MainWindow : Gtk.Window
 		// Use a Window (not Dialog) to allow working in main window with new window still open.
 		// Also supports multiple monitors.
 		var d = new ChecksumWindow ();
-		d.SetRom (data.Rom);
+		d.SetData (data);
 		d.Show ();
 	}
 
-	void OnStatisticsWindowActionActivated (object sender, System.EventArgs e)
+	void OnPropertiesWindowActionActivated (object sender, System.EventArgs e)
 	{
 		if (!data.RomLoaded)
 			return;
 
-		var d = new StatisticsWindow (data);
+		var d = new PropertiesWindow (data);
 		d.Show ();
 	}
 
@@ -605,7 +711,7 @@ public partial class MainWindow : Gtk.Window
 		Subaru.Tables.Table table = CurrentTable;
 		if (table == null)
 			return;
-		
+
 		if (table is Table3D) {
 			ErrorMsg ("Error", "Creating CSV for 3D table not implemented yet.");
 			return;
@@ -670,15 +776,18 @@ public partial class MainWindow : Gtk.Window
 		exportAsAction.Sensitive = sensitive;
 		exportAsRRAction.Sensitive = sensitive;
 
-		visualizationAction.Sensitive = sensitive;
+		visualisationAction.Sensitive = sensitive;
 
 		iconsAction.Sensitive = sensitive;
 		zoomInAction.Sensitive = sensitive;
 		zoomOutAction.Sensitive = sensitive;
 		zoomNormalAction.Sensitive = sensitive;
 
+		selectAllAction.Sensitive = sensitive;
+		selectNoneAction.Sensitive = sensitive;
+
 		checksumWindowAction.Sensitive = sensitive;
-		statisticsWindowAction.Sensitive = sensitive;
+		propertiesWindowAction.Sensitive = sensitive;
 
 		plotExternalAction.Sensitive = sensitive;
 		createSVGFileAction.Sensitive = sensitive;
@@ -702,5 +811,15 @@ public partial class MainWindow : Gtk.Window
 		md.Title = title;
 		md.Run ();
 		md.Destroy ();
+	}
+
+	protected void OnSelectAllActionActivated (object sender, EventArgs e)
+	{
+		CurrentViewModel.ToggleAll (true);
+	}
+
+	protected void OnSelectNoneActionActivated (object sender, EventArgs e)
+	{
+		CurrentViewModel.ToggleAll (false);
 	}
 }
