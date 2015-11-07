@@ -307,8 +307,8 @@ namespace Subaru.Tables
 		{
 			return new XElement ("table",
 				new XAttribute ("type", "3D"),
-				new XAttribute ("name", title),
-				new XAttribute ("category", category),
+				new XAttribute ("name", RRName),
+				new XAttribute ("category", RRCategory),
 				new XAttribute ("storagetype", tableType.ToRRType ()),
 				new XAttribute ("endian", endian),
 				new XAttribute ("sizex", countX.ToString ()),
@@ -319,6 +319,10 @@ namespace Subaru.Tables
 				RRXmlAxis ("X Axis", nameX, unitX, TableType.Float, rangeX, valuesX),
 				RRXmlAxis ("Y Axis", nameY, unitY, TableType.Float, rangeY, valuesY),
 				new XElement ("description", description));
+		}
+
+		public override string RRCategory {
+			get { return string.IsNullOrEmpty (this.category) ? "Unknown 3D" : this.category; }
 		}
 
 		public override string CopyTableRomRaider ()

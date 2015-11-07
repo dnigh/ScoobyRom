@@ -60,6 +60,16 @@ namespace ScoobyRom
 			get { return this.list3D; }
 		}
 
+		public IList<Table2D> List2DSorted ()
+		{
+			return list2D.OrderBy (t => t.Location).AsParallel ().ToList ();
+		}
+
+		public IList<Table3D> List3DSorted ()
+		{
+			return list3D.OrderBy (t => t.Location).AsParallel ().ToList ();
+		}
+
 		public IList<Table2D> List2DAnnotated ()
 		{
 			return list2D.Where (t => t.HasMetadata).AsParallel ().ToList ();
@@ -185,29 +195,26 @@ namespace ScoobyRom
 			romXml.WriteXml (path, romMetadata, list2D, list3D);
 		}
 
-		public void SaveAsRomRaiderXml (string path)
+		public void SaveAsRomRaiderXml (string path, SelectedChoice choice)
 		{
-			// TODO add filtering options
+			IList<Table2D> list2D;
+			IList<Table3D> list3D;
 
-			// only export annotated tables:
-			/*
-			var list2D = List2DAnnotated;
-			var list3D = List3DAnnotated;
-			*/
-			// export everything:
-			var list2D = this.List2DAnnotatedSorted ();
-			var list3D = this.List3DAnnotatedSorted ();
-
-			// provide record location as name, otherwise RomRaider names them "Unamed " + ValuesLocation
-			// HACK
-			foreach (var item in list2D) {
-				if (string.IsNullOrEmpty (item.Title))
-					item.Title = string.Format ("Record 0x{0:X}", item.Location);
-			}
-
-			foreach (var item in list3D) {
-				if (string.IsNullOrEmpty (item.Title))
-					item.Title = string.Format ("Record 0x{0:X}", item.Location);
+			switch (choice) {
+			case SelectedChoice.All:
+				list2D = this.List2DSorted ();
+				list3D = this.List3DSorted ();
+				break;
+			case SelectedChoice.Selected:
+				list2D = this.List2DSelectedSorted ();
+				list3D = this.List3DSelectedSorted ();
+				break;
+			case SelectedChoice.Annotated:
+				list2D = this.List2DAnnotatedSorted ();
+				list3D = this.List3DAnnotatedSorted ();
+				break;
+			default:
+				return;
 			}
 
 			Subaru.File.RomRaiderEcuDefXml.WriteRRXmlFile (path, romMetadata.XElement, list2D, list3D);

@@ -64,7 +64,7 @@ namespace ScoobyRom
 			global::Gtk.Viewport w1 = new global::Gtk.Viewport ();
 			w1.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child GtkViewport.Gtk.Container+ContainerChild
-			this.table1 = new global::Gtk.Table (((uint)(9)), ((uint)(3)), false);
+			this.table1 = new global::Gtk.Table (((uint)(8)), ((uint)(3)), false);
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
@@ -77,8 +77,8 @@ namespace ScoobyRom
 			this.buttonRefresh.Label = "gtk-refresh";
 			this.table1.Add (this.buttonRefresh);
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.buttonRefresh]));
-			w2.TopAttach = ((uint)(8));
-			w2.BottomAttach = ((uint)(9));
+			w2.TopAttach = ((uint)(7));
+			w2.BottomAttach = ((uint)(8));
 			w2.RightAttach = ((uint)(3));
 			w2.XOptions = ((global::Gtk.AttachOptions)(4));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -238,8 +238,8 @@ namespace ScoobyRom
 			this.labelRomDate.LabelProp = "-";
 			this.table1.Add (this.labelRomDate);
 			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRomDate]));
-			w15.TopAttach = ((uint)(7));
-			w15.BottomAttach = ((uint)(8));
+			w15.TopAttach = ((uint)(6));
+			w15.BottomAttach = ((uint)(7));
 			w15.LeftAttach = ((uint)(2));
 			w15.RightAttach = ((uint)(3));
 			w15.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -292,8 +292,8 @@ namespace ScoobyRom
 			this.labelRowRomDate.Wrap = true;
 			this.table1.Add (this.labelRowRomDate);
 			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowRomDate]));
-			w20.TopAttach = ((uint)(7));
-			w20.BottomAttach = ((uint)(8));
+			w20.TopAttach = ((uint)(6));
+			w20.BottomAttach = ((uint)(7));
 			w20.RightAttach = ((uint)(2));
 			w20.XOptions = ((global::Gtk.AttachOptions)(4));
 			w20.YOptions = ((global::Gtk.AttachOptions)(4));

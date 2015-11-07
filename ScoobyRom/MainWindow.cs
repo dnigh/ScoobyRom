@@ -496,8 +496,22 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 
+	Gtk.ResponseType DisplaySelectDataDialog (out SelectedChoice choice)
+	{
+		var dialog = new SelectDataDialog (data);
+		var response = (Gtk.ResponseType)dialog.Run ();
+		choice = dialog.Choice;
+		dialog.Destroy ();
+		return response;
+	}
+
 	void OnExportAsRRActionActivated (object sender, System.EventArgs e)
 	{
+		SelectedChoice choice;
+		var responseType = DisplaySelectDataDialog (out choice);
+		if (responseType == ResponseType.Cancel)
+			return;
+
 		string pathSuggested = ScoobyRom.Data.PathWithNewExtension (data.Rom.Path, ".RR.xml");
 		var fc = new Gtk.FileChooserDialog ("Export as RomRaider definition file", this,
 			         FileChooserAction.Save, Gtk.Stock.Cancel, ResponseType.Cancel, Gtk.Stock.Save, ResponseType.Accept);
@@ -515,9 +529,11 @@ public partial class MainWindow : Gtk.Window
 
 			fc.DoOverwriteConfirmation = true;
 			fc.SetFilename (pathSuggested);
+			// in addition this is necessary to populate filename when target file does not exist yet:
+			fc.CurrentName = System.IO.Path.GetFileName (pathSuggested);
 
 			if (fc.Run () == (int)ResponseType.Accept) {
-				data.SaveAsRomRaiderXml (fc.Filename);
+				data.SaveAsRomRaiderXml (fc.Filename, choice);
 			}
 		} catch (Exception ex) {
 			ErrorMsg ("Error writing file", ex.Message);

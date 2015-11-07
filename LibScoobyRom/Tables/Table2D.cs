@@ -218,8 +218,8 @@ namespace Subaru.Tables
 			// X-axis is being called "Y Axis" in RR!
 			return new XElement ("table",
 				new XAttribute ("type", "2D"),
-				new XAttribute ("name", title),
-				new XAttribute ("category", category),
+				new XAttribute ("name", RRName),
+				new XAttribute ("category", RRCategory),
 				new XAttribute ("storagetype", tableType.ToRRType ()),
 				new XAttribute ("endian", endian),
 				new XAttribute ("sizey", countX.ToString ()),
@@ -228,6 +228,11 @@ namespace Subaru.Tables
 				RRXmlScaling (unitX, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
 				RRXmlAxis ("Y Axis", nameX, unitX, TableType.Float, rangeX, valuesX),
 				new XElement ("description", description));
+		}
+
+		public override string RRCategory
+		{
+			get { return string.IsNullOrEmpty (this.category) ? "Unknown 2D" : this.category; }
 		}
 
 		public void WriteCSV (System.IO.TextWriter tw)

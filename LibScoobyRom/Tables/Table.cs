@@ -580,5 +580,11 @@ namespace Subaru.Tables
 				new XAttribute ("storageaddress", HexAddress (range.Pos)),
 				new XComment (ValuesStats (axis)), RRXmlScaling (unit, "x", "x", "0.00", 1f, 5f));
 		}
+
+		public string RRName {
+			get { return string.IsNullOrEmpty (this.title) ? string.Format ("Record 0x{0:X}", this.location) : this.title; }
+		}
+
+		public abstract string RRCategory { get; }
 	}
 }
