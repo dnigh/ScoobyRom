@@ -35,7 +35,7 @@ namespace Subaru
 		List<RomChecksumRecord> checksumRecords;
 
 
-		public RomChecksumming (RomType romType, System.IO.Stream stream) : this(GetTablePos (romType), stream)
+		public RomChecksumming (RomType romType, System.IO.Stream stream) : this (GetTablePos (romType), stream)
 		{
 		}
 
@@ -54,6 +54,8 @@ namespace Subaru
 				return 0xFFB80;
 			case RomType.SH7059:
 				return 0x17FB80;
+			case RomType.SH72531:
+				return 0x13F500;
 			default:
 				return 0;
 			}
@@ -116,10 +118,10 @@ namespace Subaru
 		{
 			// Could derive #3 from record.Checksum: sum3 = 0x5AA5A55A - record.Checksum
 			// Must not extend as signed for last line to work correctly.
-			ulong sum3 = (ulong)(uint)CalcSum (checksumRecords[3]);
+			ulong sum3 = (ulong)(uint)CalcSum (checksumRecords [3]);
 
 			// #4: Actual sum needed, record.Checksum is different!
-			ulong sum4 = (ulong)(uint)CalcSum (checksumRecords[4]);
+			ulong sum4 = (ulong)(uint)CalcSum (checksumRecords [4]);
 			//Console.WriteLine ("sum3: {0:X8} sum4: {1:X8} sum3<<32: {2:X8}", sum3, sum4, sum3 << 32);
 
 			// Use return type long (CLS-compliant) instead of ulong as it doesn't matter.

@@ -20,7 +20,6 @@
 
 
 using System;
-using System.Linq;
 using System.Xml.Linq;
 using Extensions;
 
@@ -96,6 +95,16 @@ namespace Subaru.Tables
 		public float[] GetValuesYasFloats ()
 		{
 			return valuesYasFloats;
+		}
+
+		public override void Reset ()
+		{
+			base.Reset ();
+			valuesY = null;
+			valuesYasFloats = null;
+			valuesYmin = FloatUndefined;
+			valuesYmax = FloatUndefined;
+			valuesYavg = FloatUndefined;
 		}
 
 		public Table2D Copy ()
@@ -176,7 +185,7 @@ namespace Subaru.Tables
 			rangeX.Size = FloatSize * countX;
 			rangeY.Size = tableType.ValueSize () * countX;
 
-			hasMAC = IsFloatValid (multiplier) && IsFloatValid (offset);
+			CheckMAC ();
 
 			return true;
 		}
@@ -187,9 +196,13 @@ namespace Subaru.Tables
 			this.rangeY.Size = tableType.ValueSize () * this.countX;
 			this.valuesY = ReadValues (stream, rangeY, tableType);
 			this.valuesYasFloats = ValuesAsFloats (this.valuesY);
+			/* // using LINQ
 			this.valuesYmin = valuesYasFloats.Min ();
 			this.valuesYmax = valuesYasFloats.Max ();
 			this.valuesYavg = valuesYasFloats.Average ();
+			*/
+			// manually calc min, max, average; probably faster
+			CalcMinMaxAverage (valuesYasFloats, out valuesYmin, out valuesYmax, out valuesYavg);
 		}
 
 		public override bool ReadValidateValues (System.IO.Stream stream)
@@ -204,9 +217,8 @@ namespace Subaru.Tables
 				typeUncertain = true;
 
 				// uncertain, e.g. might get all valid zero floats
-				if (!CheckFloatArray ((float[])valuesY)) {
+				if (!CheckFloatArray (valuesYasFloats)) {
 					ChangeTypeToAndReload (TableType.UInt16, stream);
-					valuesY = ReadValues (stream, rangeY, tableType);
 				}
 			}
 
@@ -224,9 +236,9 @@ namespace Subaru.Tables
 				new XAttribute ("endian", endian),
 				new XAttribute ("sizey", countX.ToString ()),
 				new XAttribute ("storageaddress", HexAddress (rangeY.Pos)),
-				new XComment (ValuesStats (valuesYmin, valuesYmax, valuesYavg)),
+				CommentValuesStats (valuesYmin, valuesYmax, valuesYavg),
 				RRXmlScaling (unitX, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
-				RRXmlAxis ("Y Axis", nameX, unitX, TableType.Float, rangeX, valuesX),
+				RRXmlAxis ("Y Axis", nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
 				new XElement ("description", description));
 		}
 

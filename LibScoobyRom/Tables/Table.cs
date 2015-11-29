@@ -19,7 +19,8 @@
  */
 using System;
 using System.Globalization;
-using System.Linq;
+
+//using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using Util;
@@ -69,6 +70,7 @@ namespace Subaru.Tables
 		}
 
 		public const int FloatSize = 4;
+		public const float FloatUndefined = float.NaN;
 
 		// floats like x.xxxxxxxxE-40 etc. suggest these are invalid, not to be included
 		public const float FloatMin = (float)1E-12;
@@ -81,8 +83,6 @@ namespace Subaru.Tables
 		protected TableType tableType;
 		protected bool typeUncertain = false;
 		protected float multiplier, offset;
-
-		// additional fields
 		protected int location;
 		protected Range rangeX, rangeY;
 		protected bool hasMAC = false;
@@ -121,16 +121,16 @@ namespace Subaru.Tables
 
 		// valid object has increasing axis values
 		public float Xmin {
-			get { return valuesX != null ? valuesX [0] : float.NaN; }
+			get { return valuesX != null ? valuesX [0] : FloatUndefined; }
 		}
 
 		// valid object has increasing axis values
 		public float Xmax {
-			get { return valuesX != null ? valuesX [this.valuesX.Length - 1] : float.NaN; }
+			get { return valuesX != null ? valuesX [this.valuesX.Length - 1] : FloatUndefined; }
 		}
 
 		/// <summary>
-		/// Might be wrong!
+		/// Can be be wrong! Not certain from parsing record.
 		/// </summary>
 		public TableType TableType {
 			get { return tableType; }
@@ -150,59 +150,59 @@ namespace Subaru.Tables
 
 		// these two floats are optional, usually for type non-float but not always
 		public float Multiplier {
-			get { return hasMAC ? multiplier : float.NaN; }
+			get { return hasMAC ? multiplier : FloatUndefined; }
 			set { multiplier = value; }
 		}
 
 		public float Offset {
-			get { return hasMAC ? offset : float.NaN; }
+			get { return hasMAC ? offset : FloatUndefined; }
 			set { offset = value; }
 		}
 
 		public Range RangeX {
-			get { return this.rangeX; }
+			get { return rangeX; }
 			set { rangeX = value; }
 		}
 
 		public Range RangeY {
-			get { return this.rangeY; }
+			get { return rangeY; }
 			set { rangeY = value; }
 		}
 
 		#region metadata properties
 
 		public string NameX {
-			get { return this.nameX; }
+			get { return nameX; }
 			set { nameX = value; }
 		}
 
 		public string Title {
-			get { return this.title; }
+			get { return title; }
 			set { title = value; }
 		}
 
 		public string Category {
-			get { return this.category; }
+			get { return category; }
 			set { category = value; }
 		}
 
 		public bool Selected {
-			get { return this.selected; }
+			get { return selected; }
 			set { selected = value; }
 		}
 
 		public string Description {
-			get { return this.description; }
+			get { return description; }
 			set { description = value; }
 		}
 
 		public string UnitX {
-			get { return this.unitX; }
+			get { return unitX; }
 			set { unitX = value; }
 		}
 
 		public string UnitY {
-			get { return this.unitY; }
+			get { return unitY; }
 			set { unitY = value; }
 		}
 
@@ -210,10 +210,13 @@ namespace Subaru.Tables
 
 		public virtual void Reset ()
 		{
+			tableType = TableType.Undefined;
+			rangeX = Range.Zero;
+			rangeY = Range.Zero;
 			hasMAC = false;
 			typeUncertain = false;
-			multiplier = float.NaN;
-			offset = float.NaN;
+			multiplier = FloatUndefined;
+			offset = FloatUndefined;
 		}
 
 		public abstract bool IsRecordValid ();
@@ -360,17 +363,19 @@ namespace Subaru.Tables
 			for (int i = 1; i < floats.Length; i++) {
 				// not all valid axis have strictly increasing values!!!
 				// Ex: MAF-Sensor has a duplicate point (X[32] == X[33] incl. corresponding Y-values)
-				// had to relaxe original condition: if (floats[i - 1] >= floats[i])
+				// had to relax original condition: if (floats[i - 1] >= floats[i])
 				if (floats [i - 1] > floats [i])
 					return false;
 			}
+			if (!CheckFloatArray (floats))
+				return false;
 			return true;
 		}
 
 		public static bool CheckFloatArray (float[] floats)
 		{
-			for (int i = 0; i < floats.Length; i++) {
-				if (!IsFloatValid (floats [i]))
+			foreach (float v in floats) {
+				if (!IsFloatValid (v))
 					return false;
 			}
 			return true;
@@ -549,15 +554,15 @@ namespace Subaru.Tables
 			}
 		}
 
-		public static string ValuesStats (float[] values)
+		public static XComment CommentValuesStats (float min, float max)
 		{
-			return string.Format (CultureInfo.InvariantCulture, " {0} to {1} ", values.Min (), values.Max ());
+			return new XComment (string.Format (CultureInfo.InvariantCulture, " {0} to {1} ", min, max));
 		}
 
-		public static string ValuesStats (float min, float max, float avg)
+		public static XComment CommentValuesStats (float min, float max, float avg)
 		{
-			return string.Format (CultureInfo.InvariantCulture, " min: {0}  max: {1}  average: {2} ",
-				min.ToString (), max.ToString (), avg.ToString ());
+			return new XComment (string.Format (CultureInfo.InvariantCulture, " min: {0}  max: {1}  average: {2} ",
+				min.ToString (), max.ToString (), avg.ToString ()));
 		}
 
 		public static XElement RRXmlScaling (string units, string expr, string to_byte, string format, float fineincrement, float coarseincrement)
@@ -571,14 +576,15 @@ namespace Subaru.Tables
 				new XAttribute ("coarseincrement", coarseincrement));
 		}
 
-		public XElement RRXmlAxis (string axisType, string name, string unit, TableType tableType, Range range, float[] axis)
+		public XElement RRXmlAxis (string axisType, string name, string unit, TableType tableType, Range range, float[] axis, float min, float max)
 		{
 			return new XElement ("table",
 				new XAttribute ("type", axisType),
 				new XAttribute ("name", name),
 				new XAttribute ("storagetype", "float"),
 				new XAttribute ("storageaddress", HexAddress (range.Pos)),
-				new XComment (ValuesStats (axis)), RRXmlScaling (unit, "x", "x", "0.00", 1f, 5f));
+				CommentValuesStats (min, max),
+				RRXmlScaling (unit, "x", "x", "0.00", 1f, 5f));
 		}
 
 		public string RRName {
@@ -586,5 +592,34 @@ namespace Subaru.Tables
 		}
 
 		public abstract string RRCategory { get; }
+
+		public static void CalcMinMaxAverage (float[] values, out float minimum, out float maximum, out float average)
+		{
+			float min = FloatUndefined;
+			float max = FloatUndefined;
+			float sum = FloatUndefined;
+			for (int i = 0; i < values.Length; i++) {
+				float v = values [i];
+				if (i == 0) {
+					min = v;
+					max = v;
+					sum = v;
+				} else {
+					if (v < min)
+						min = v;
+					if (v > max)
+						max = v;
+					sum += v;
+				}
+			}
+			minimum = min;
+			maximum = max;
+			average = sum / values.Length;
+		}
+
+		protected void CheckMAC ()
+		{
+			hasMAC = IsFloatValid (multiplier) && multiplier != 0f && IsFloatValid (offset);
+		}
 	}
 }

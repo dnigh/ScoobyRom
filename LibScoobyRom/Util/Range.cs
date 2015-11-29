@@ -33,6 +33,11 @@ namespace Util
 			return range;
 		}
 
+		public static Range Zero
+		{
+			get { return new Range (0, 0); }
+		}
+
 		// 2 fields
 		int pos;
 		int size;

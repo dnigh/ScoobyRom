@@ -27,6 +27,11 @@ namespace Subaru.Tables
 	/// </summary>
 	public enum TableType
 	{
+		/// <summary>
+		/// Artificial value indicating unknown/undefined table type.
+		/// </summary>
+		Undefined = -1,
+
 		Float = 0x00,
 		UInt8 = 0x04,
 		UInt16 = 0x08,

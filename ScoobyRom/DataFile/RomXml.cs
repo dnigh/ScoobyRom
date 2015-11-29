@@ -441,28 +441,45 @@ namespace Subaru.File
 
 		static XElement GetXElement (Table2D table2D)
 		{
-			return new XElement (X_table2D, new XAttribute (X_category, table2D.Category), new XAttribute (X_name, table2D.Title), new XAttribute (X_address, HexNum (table2D.Location)), ValueRangeComment (table2D.Xmin, table2D.Xmax), GetAxisXElement (X_axisX, table2D.RangeX.Pos, table2D.NameX, table2D.UnitX), ValueRangeComment (table2D.Ymin, table2D.Ymax), GetValuesElement (table2D.RangeY.Pos, table2D.UnitY, table2D.TableType), new XElement (X_description, table2D.Description));
+			return new XElement (X_table2D,
+				new XAttribute (X_category, table2D.Category),
+				new XAttribute (X_name, table2D.Title),
+				new XAttribute (X_address, HexNum (table2D.Location)),
+				Table.CommentValuesStats (table2D.Xmin, table2D.Xmax),
+				GetAxisXElement (X_axisX, table2D.RangeX.Pos, table2D.NameX, table2D.UnitX),
+				Table.CommentValuesStats (table2D.Ymin, table2D.Ymax, table2D.Yavg),
+				GetValuesElement (table2D.RangeY.Pos, table2D.UnitY, table2D.TableType), new XElement (X_description, table2D.Description));
 		}
 
 		static XElement GetXElement (Table3D table3D)
 		{
-			return new XElement (X_table3D, new XAttribute (X_category, table3D.Category), new XAttribute (X_name, table3D.Title), new XAttribute (X_address, HexNum (table3D.Location)), ValueRangeComment (table3D.Xmin, table3D.Xmax), GetAxisXElement (X_axisX, table3D.RangeX.Pos, table3D.NameX, table3D.UnitX), ValueRangeComment (table3D.Ymin, table3D.Ymax), GetAxisXElement (X_axisY, table3D.RangeY.Pos, table3D.NameY, table3D.UnitY), ValueRangeComment (table3D.Zmin, table3D.Zmax), GetValuesElement (table3D.RangeZ.Pos, table3D.UnitZ, table3D.TableType),
+			return new XElement (X_table3D,
+				new XAttribute (X_category, table3D.Category),
+				new XAttribute (X_name, table3D.Title),
+				new XAttribute (X_address, HexNum (table3D.Location)),
+				Table.CommentValuesStats (table3D.Xmin, table3D.Xmax),
+				GetAxisXElement (X_axisX, table3D.RangeX.Pos, table3D.NameX, table3D.UnitX),
+				Table.CommentValuesStats (table3D.Ymin, table3D.Ymax),
+				GetAxisXElement (X_axisY, table3D.RangeY.Pos, table3D.NameY, table3D.UnitY),
+				Table.CommentValuesStats (table3D.Zmin, table3D.Zmax, table3D.Zavg),
+				GetValuesElement (table3D.RangeZ.Pos, table3D.UnitZ, table3D.TableType),
 				new XElement (X_description, table3D.Description));
 		}
 
 		static XElement GetAxisXElement (string axisType, int address, string name, string unit)
 		{
-			return new XElement (axisType, new XAttribute (X_address, HexNum (address)), new XAttribute (X_name, name), new XAttribute (X_unit, unit));
+			return new XElement (axisType,
+				new XAttribute (X_address, HexNum (address)),
+				new XAttribute (X_name, name),
+				new XAttribute (X_unit, unit));
 		}
 
 		static XElement GetValuesElement (int address, string unit, TableType tableType)
 		{
-			return new XElement (X_values, new XAttribute (X_address, HexNum (address)), new XAttribute (X_unit, unit), new XAttribute (X_tableType, tableType.ToStr ()));
-		}
-
-		static XComment ValueRangeComment (float min, float max)
-		{
-			return new XComment (string.Format (" {0} to {1} ", min.ToString (), max.ToString ()));
+			return new XElement (X_values,
+				new XAttribute (X_address, HexNum (address)),
+				new XAttribute (X_unit, unit),
+				new XAttribute (X_tableType, tableType.ToStr ()));
 		}
 
 		static string HexNum (int num)

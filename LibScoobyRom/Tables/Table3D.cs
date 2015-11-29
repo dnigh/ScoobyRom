@@ -20,7 +20,6 @@
 
 
 using System;
-using System.Linq;
 using System.Xml.Linq;
 using Util;
 using Extensions;
@@ -96,6 +95,17 @@ namespace Subaru.Tables
 		// metadata
 		string nameY, unitZ;
 
+		public override void Reset ()
+		{
+			base.Reset ();
+			rangeZ = Range.Zero;
+			valuesY = null;
+			valuesZ = null;
+			valuesZasFloats = null;
+			valuesZmin = FloatUndefined;
+			valuesZmax = FloatUndefined;
+			valuesZavg = FloatUndefined;
+		}
 
 		public Table3D Copy ()
 		{
@@ -154,12 +164,12 @@ namespace Subaru.Tables
 
 		// valid object has increasing axis values
 		public float Ymin {
-			get { return valuesY != null ? valuesY [0] : float.NaN; }
+			get { return valuesY != null ? valuesY [0] : FloatUndefined; }
 		}
 
 		// valid object has increasing axis values
 		public float Ymax {
-			get { return valuesY != null ? valuesY [this.valuesY.Length - 1] : float.NaN; }
+			get { return valuesY != null ? valuesY [this.valuesY.Length - 1] : FloatUndefined; }
 		}
 
 		public float[] GetValuesZasFloats ()
@@ -224,11 +234,12 @@ namespace Subaru.Tables
 		public override string ToString ()
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder (200);
-			sb.AppendFormat ("[Table3D @ {0:X6} | Selected={1} XCount={2} YCount={3} | RangeX={4}, RangeY={5}, RangeZ={6} | TableType={7}",
-				location, selected, countX.ToString (), countY.ToString (),
-				rangeX.ToString (), rangeY.ToString (), rangeZ.ToString (), tableType.ToStr ());
+			sb.AppendFormat ("[Table3D @ {0:X6} | Selected={1} CountX={2} CountY={3} CountZ={4} Type={5} | RangeX={6}, RangeY={7}, RangeZ={8} | ",
+				location, selected, countX.ToString (), countY.ToString (), CountZ.ToString (), tableType.ToStr (),
+				rangeX.ToString (), rangeY.ToString (), rangeZ.ToString ());
 
-			sb.AppendFormat (" | Xmin={0} Xmax={1} | Ymin={2} Ymax={3} | Zmin={4} Zmax={5}", Xmin, Xmax, Ymin, Ymax, Zmin, Zmax);
+			sb.AppendFormat (" | Xmin={0} Xmax={1} | Ymin={2} Ymax={3} | Zmin={4} Zmax={5} Zavg={6}",
+				Xmin, Xmax, Ymin, Ymax, Zmin, Zmax, Zavg);
 
 			if (hasMAC) {
 				sb.AppendFormat (" | Multiplier={0}, Offset={1}]", Multiplier, Offset);
@@ -263,7 +274,7 @@ namespace Subaru.Tables
 			if (rangeX.Intersects (rangeY))
 				return false;
 
-			hasMAC = IsFloatValid (multiplier) && IsFloatValid (offset);
+			CheckMAC ();
 
 			return true;
 		}
@@ -275,16 +286,18 @@ namespace Subaru.Tables
 			valuesZ = ReadValues (stream, rangeZ, tableType);
 
 			this.valuesZasFloats = ValuesAsFloats (this.valuesZ);
+
+			/* // using LINQ
 			this.valuesZmin = valuesZasFloats.Min ();
 			this.valuesZmax = valuesZasFloats.Max ();
 			this.valuesZavg = valuesZasFloats.Average ();
+			*/
+			// manually calc min, max, average; probably faster
+			CalcMinMaxAverage (valuesZasFloats, out valuesZmin, out valuesZmax, out valuesZavg);
 		}
 
 		public override bool ReadValidateValues (System.IO.Stream stream)
 		{
-			//			if (location == 0x8FE30)
-			//				Console.WriteLine ();
-
 			if (!CheckAxisArray (valuesX = ReadValuesFloat (stream, rangeX)))
 				return false;
 			if (!CheckAxisArray (valuesY = ReadValuesFloat (stream, rangeY)))
@@ -314,10 +327,10 @@ namespace Subaru.Tables
 				new XAttribute ("sizex", countX.ToString ()),
 				new XAttribute ("sizey", countY.ToString ()),
 				new XAttribute ("storageaddress", HexAddress (rangeZ.Pos)),
-				new XComment (ValuesStats (valuesZmin, valuesZmax, valuesZavg)),
+				CommentValuesStats (valuesZmin, valuesZmax, valuesZavg),
 				RRXmlScaling (unitZ, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
-				RRXmlAxis ("X Axis", nameX, unitX, TableType.Float, rangeX, valuesX),
-				RRXmlAxis ("Y Axis", nameY, unitY, TableType.Float, rangeY, valuesY),
+				RRXmlAxis ("X Axis", nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
+				RRXmlAxis ("Y Axis", nameY, unitY, TableType.Float, rangeY, valuesY, Ymin, Ymax),
 				new XElement ("description", description));
 		}
 

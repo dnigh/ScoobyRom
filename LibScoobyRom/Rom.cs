@@ -455,6 +455,8 @@ namespace Subaru.File
 					return RomType.SH7058;
 				case (1024 + 512) * KiB:
 					return RomType.SH7059;
+				case 1280 * KiB:
+					return RomType.SH72531;
 				default:
 					return RomType.Unknown;
 				}

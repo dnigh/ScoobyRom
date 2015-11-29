@@ -21,7 +21,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using IDA;
 using Subaru.Tables;
 
@@ -45,12 +44,12 @@ namespace Subaru.Tables
 
 		public static string ToStr (this TableType tableType)
 		{
-			return tableTypeDict[tableType];
+			return tableTypeDict [tableType];
 		}
 
-		public static string[] GetStrings ()
+		public static ICollection<string> GetStrings ()
 		{
-			return tableTypeDict.Values.ToArray ();
+			return tableTypeDict.Values;
 		}
 
 		public static bool TryParse (string s, out TableType result)

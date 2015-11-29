@@ -26,16 +26,20 @@ namespace Subaru
 	{
 		Unknown,
 		/// <summary>
-		/// 512 KiB
+		/// 512 KiB = 524288 bytes
 		/// </summary>
 		SH7055,
 		/// <summary>
-		/// 1 MiB
+		/// 1 MiB = 1024 KiB = 1048576 bytes
 		/// </summary>
 		SH7058,
 		/// <summary>
-		/// 1.5 MiB
+		/// 1.5 MiB = 1536 KiB = 1572864 bytes
 		/// </summary>
-		SH7059
+		SH7059,
+		/// <summary>
+		/// 1.25 MiB = 1280 KiB = 1310720 bytes
+		/// </summary>
+		SH72531
 	}
 }
