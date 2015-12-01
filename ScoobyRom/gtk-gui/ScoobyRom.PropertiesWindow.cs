@@ -6,9 +6,13 @@ namespace ScoobyRom
 	{
 		private global::Gtk.ScrolledWindow scrolledwindow1;
 		
-		private global::Gtk.Table table1;
+		private global::Gtk.VBox vbox;
 		
-		private global::Gtk.Button buttonRefresh;
+		private global::Gtk.Frame frameTables;
+		
+		private global::Gtk.Alignment GtkAlignment;
+		
+		private global::Gtk.Table tableTables;
 		
 		private global::Gtk.Label label2DAnnotated;
 		
@@ -34,8 +38,6 @@ namespace ScoobyRom
 		
 		private global::Gtk.Label label3DSelected;
 		
-		private global::Gtk.Label labelRomDate;
-		
 		private global::Gtk.Label labelRowAnnotated;
 		
 		private global::Gtk.Label labelRowCountTotal;
@@ -44,9 +46,27 @@ namespace ScoobyRom
 		
 		private global::Gtk.Label labelRowLastRecord;
 		
+		private global::Gtk.Label labelRowSelected;
+		
+		private global::Gtk.Label GtkLabel;
+		
+		private global::Gtk.Frame frameMisc;
+		
+		private global::Gtk.Alignment GtkAlignment2;
+		
+		private global::Gtk.Table tableMisc;
+		
+		private global::Gtk.Label labelReflashCount;
+		
+		private global::Gtk.Label labelRomDate;
+		
+		private global::Gtk.Label labelRowReflashCount;
+		
 		private global::Gtk.Label labelRowRomDate;
 		
-		private global::Gtk.Label labelRowSelected;
+		private global::Gtk.Label GtkLabel2;
+		
+		private global::Gtk.Button buttonRefresh;
 
 		protected virtual void Build ()
 		{
@@ -64,257 +84,329 @@ namespace ScoobyRom
 			global::Gtk.Viewport w1 = new global::Gtk.Viewport ();
 			w1.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child GtkViewport.Gtk.Container+ContainerChild
-			this.table1 = new global::Gtk.Table (((uint)(8)), ((uint)(3)), false);
-			this.table1.Name = "table1";
-			this.table1.RowSpacing = ((uint)(6));
-			this.table1.ColumnSpacing = ((uint)(6));
-			// Container child table1.Gtk.Table+TableChild
+			this.vbox = new global::Gtk.VBox ();
+			this.vbox.Name = "vbox";
+			this.vbox.Spacing = 6;
+			this.vbox.BorderWidth = ((uint)(4));
+			// Container child vbox.Gtk.Box+BoxChild
+			this.frameTables = new global::Gtk.Frame ();
+			this.frameTables.Name = "frameTables";
+			this.frameTables.ShadowType = ((global::Gtk.ShadowType)(1));
+			// Container child frameTables.Gtk.Container+ContainerChild
+			this.GtkAlignment = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
+			this.GtkAlignment.Name = "GtkAlignment";
+			this.GtkAlignment.LeftPadding = ((uint)(12));
+			// Container child GtkAlignment.Gtk.Container+ContainerChild
+			this.tableTables = new global::Gtk.Table (((uint)(6)), ((uint)(3)), false);
+			this.tableTables.Name = "tableTables";
+			this.tableTables.RowSpacing = ((uint)(6));
+			this.tableTables.ColumnSpacing = ((uint)(6));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.label2DAnnotated = new global::Gtk.Label ();
+			this.label2DAnnotated.Name = "label2DAnnotated";
+			this.label2DAnnotated.LabelProp = "-";
+			this.label2DAnnotated.Selectable = true;
+			this.tableTables.Add (this.label2DAnnotated);
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.tableTables [this.label2DAnnotated]));
+			w2.TopAttach = ((uint)(3));
+			w2.BottomAttach = ((uint)(4));
+			w2.LeftAttach = ((uint)(1));
+			w2.RightAttach = ((uint)(2));
+			w2.XOptions = ((global::Gtk.AttachOptions)(4));
+			w2.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.label2DCol = new global::Gtk.Label ();
+			this.label2DCol.Name = "label2DCol";
+			this.label2DCol.LabelProp = "2D Tables";
+			this.tableTables.Add (this.label2DCol);
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.tableTables [this.label2DCol]));
+			w3.LeftAttach = ((uint)(1));
+			w3.RightAttach = ((uint)(2));
+			w3.XOptions = ((global::Gtk.AttachOptions)(4));
+			w3.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.label2DCountTotal = new global::Gtk.Label ();
+			this.label2DCountTotal.Name = "label2DCountTotal";
+			this.label2DCountTotal.LabelProp = "-";
+			this.label2DCountTotal.Selectable = true;
+			this.tableTables.Add (this.label2DCountTotal);
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.tableTables [this.label2DCountTotal]));
+			w4.TopAttach = ((uint)(1));
+			w4.BottomAttach = ((uint)(2));
+			w4.LeftAttach = ((uint)(1));
+			w4.RightAttach = ((uint)(2));
+			w4.XOptions = ((global::Gtk.AttachOptions)(4));
+			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.label2DFirstRecord = new global::Gtk.Label ();
+			this.label2DFirstRecord.Name = "label2DFirstRecord";
+			this.label2DFirstRecord.LabelProp = "-";
+			this.label2DFirstRecord.Selectable = true;
+			this.tableTables.Add (this.label2DFirstRecord);
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.tableTables [this.label2DFirstRecord]));
+			w5.TopAttach = ((uint)(4));
+			w5.BottomAttach = ((uint)(5));
+			w5.LeftAttach = ((uint)(1));
+			w5.RightAttach = ((uint)(2));
+			w5.XOptions = ((global::Gtk.AttachOptions)(4));
+			w5.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.label2DLastRecord = new global::Gtk.Label ();
+			this.label2DLastRecord.Name = "label2DLastRecord";
+			this.label2DLastRecord.LabelProp = "-";
+			this.label2DLastRecord.Selectable = true;
+			this.label2DLastRecord.SingleLineMode = true;
+			this.tableTables.Add (this.label2DLastRecord);
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.tableTables [this.label2DLastRecord]));
+			w6.TopAttach = ((uint)(5));
+			w6.BottomAttach = ((uint)(6));
+			w6.LeftAttach = ((uint)(1));
+			w6.RightAttach = ((uint)(2));
+			w6.XOptions = ((global::Gtk.AttachOptions)(4));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.label2DSelected = new global::Gtk.Label ();
+			this.label2DSelected.Name = "label2DSelected";
+			this.label2DSelected.LabelProp = "-";
+			this.label2DSelected.Selectable = true;
+			this.tableTables.Add (this.label2DSelected);
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.tableTables [this.label2DSelected]));
+			w7.TopAttach = ((uint)(2));
+			w7.BottomAttach = ((uint)(3));
+			w7.LeftAttach = ((uint)(1));
+			w7.RightAttach = ((uint)(2));
+			w7.XOptions = ((global::Gtk.AttachOptions)(4));
+			w7.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.label3DAnnotated = new global::Gtk.Label ();
+			this.label3DAnnotated.Name = "label3DAnnotated";
+			this.label3DAnnotated.LabelProp = "-";
+			this.label3DAnnotated.Selectable = true;
+			this.tableTables.Add (this.label3DAnnotated);
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.tableTables [this.label3DAnnotated]));
+			w8.TopAttach = ((uint)(3));
+			w8.BottomAttach = ((uint)(4));
+			w8.LeftAttach = ((uint)(2));
+			w8.RightAttach = ((uint)(3));
+			w8.XOptions = ((global::Gtk.AttachOptions)(4));
+			w8.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.label3DCol = new global::Gtk.Label ();
+			this.label3DCol.Name = "label3DCol";
+			this.label3DCol.LabelProp = "3D Tables";
+			this.tableTables.Add (this.label3DCol);
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.tableTables [this.label3DCol]));
+			w9.LeftAttach = ((uint)(2));
+			w9.RightAttach = ((uint)(3));
+			w9.XOptions = ((global::Gtk.AttachOptions)(4));
+			w9.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.label3DCountTotal = new global::Gtk.Label ();
+			this.label3DCountTotal.Name = "label3DCountTotal";
+			this.label3DCountTotal.LabelProp = "-";
+			this.label3DCountTotal.Selectable = true;
+			this.tableTables.Add (this.label3DCountTotal);
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.tableTables [this.label3DCountTotal]));
+			w10.TopAttach = ((uint)(1));
+			w10.BottomAttach = ((uint)(2));
+			w10.LeftAttach = ((uint)(2));
+			w10.RightAttach = ((uint)(3));
+			w10.XOptions = ((global::Gtk.AttachOptions)(4));
+			w10.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.label3DFirstRecord = new global::Gtk.Label ();
+			this.label3DFirstRecord.Name = "label3DFirstRecord";
+			this.label3DFirstRecord.LabelProp = "-";
+			this.label3DFirstRecord.Selectable = true;
+			this.tableTables.Add (this.label3DFirstRecord);
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.tableTables [this.label3DFirstRecord]));
+			w11.TopAttach = ((uint)(4));
+			w11.BottomAttach = ((uint)(5));
+			w11.LeftAttach = ((uint)(2));
+			w11.RightAttach = ((uint)(3));
+			w11.XOptions = ((global::Gtk.AttachOptions)(4));
+			w11.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.label3DLastRecord = new global::Gtk.Label ();
+			this.label3DLastRecord.Name = "label3DLastRecord";
+			this.label3DLastRecord.LabelProp = "-";
+			this.label3DLastRecord.Selectable = true;
+			this.tableTables.Add (this.label3DLastRecord);
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.tableTables [this.label3DLastRecord]));
+			w12.TopAttach = ((uint)(5));
+			w12.BottomAttach = ((uint)(6));
+			w12.LeftAttach = ((uint)(2));
+			w12.RightAttach = ((uint)(3));
+			w12.XOptions = ((global::Gtk.AttachOptions)(4));
+			w12.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.label3DSelected = new global::Gtk.Label ();
+			this.label3DSelected.Name = "label3DSelected";
+			this.label3DSelected.LabelProp = "-";
+			this.label3DSelected.Selectable = true;
+			this.tableTables.Add (this.label3DSelected);
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.tableTables [this.label3DSelected]));
+			w13.TopAttach = ((uint)(2));
+			w13.BottomAttach = ((uint)(3));
+			w13.LeftAttach = ((uint)(2));
+			w13.RightAttach = ((uint)(3));
+			w13.XOptions = ((global::Gtk.AttachOptions)(4));
+			w13.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.labelRowAnnotated = new global::Gtk.Label ();
+			this.labelRowAnnotated.Name = "labelRowAnnotated";
+			this.labelRowAnnotated.LabelProp = "Annotated";
+			this.tableTables.Add (this.labelRowAnnotated);
+			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.tableTables [this.labelRowAnnotated]));
+			w14.TopAttach = ((uint)(3));
+			w14.BottomAttach = ((uint)(4));
+			w14.XOptions = ((global::Gtk.AttachOptions)(4));
+			w14.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.labelRowCountTotal = new global::Gtk.Label ();
+			this.labelRowCountTotal.Name = "labelRowCountTotal";
+			this.labelRowCountTotal.LabelProp = "Count Total";
+			this.tableTables.Add (this.labelRowCountTotal);
+			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.tableTables [this.labelRowCountTotal]));
+			w15.TopAttach = ((uint)(1));
+			w15.BottomAttach = ((uint)(2));
+			w15.XOptions = ((global::Gtk.AttachOptions)(4));
+			w15.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.labelRowFirstRecord = new global::Gtk.Label ();
+			this.labelRowFirstRecord.Name = "labelRowFirstRecord";
+			this.labelRowFirstRecord.LabelProp = "First Record";
+			this.tableTables.Add (this.labelRowFirstRecord);
+			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.tableTables [this.labelRowFirstRecord]));
+			w16.TopAttach = ((uint)(4));
+			w16.BottomAttach = ((uint)(5));
+			w16.XOptions = ((global::Gtk.AttachOptions)(4));
+			w16.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.labelRowLastRecord = new global::Gtk.Label ();
+			this.labelRowLastRecord.Name = "labelRowLastRecord";
+			this.labelRowLastRecord.LabelProp = "Last Record";
+			this.tableTables.Add (this.labelRowLastRecord);
+			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.tableTables [this.labelRowLastRecord]));
+			w17.TopAttach = ((uint)(5));
+			w17.BottomAttach = ((uint)(6));
+			w17.XOptions = ((global::Gtk.AttachOptions)(4));
+			w17.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableTables.Gtk.Table+TableChild
+			this.labelRowSelected = new global::Gtk.Label ();
+			this.labelRowSelected.Name = "labelRowSelected";
+			this.labelRowSelected.LabelProp = "Selected";
+			this.tableTables.Add (this.labelRowSelected);
+			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.tableTables [this.labelRowSelected]));
+			w18.TopAttach = ((uint)(2));
+			w18.BottomAttach = ((uint)(3));
+			w18.XOptions = ((global::Gtk.AttachOptions)(4));
+			w18.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.GtkAlignment.Add (this.tableTables);
+			this.frameTables.Add (this.GtkAlignment);
+			this.GtkLabel = new global::Gtk.Label ();
+			this.GtkLabel.Name = "GtkLabel";
+			this.GtkLabel.LabelProp = "<b>Tables</b>";
+			this.GtkLabel.UseMarkup = true;
+			this.frameTables.LabelWidget = this.GtkLabel;
+			this.vbox.Add (this.frameTables);
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox [this.frameTables]));
+			w21.Position = 0;
+			w21.Expand = false;
+			w21.Fill = false;
+			// Container child vbox.Gtk.Box+BoxChild
+			this.frameMisc = new global::Gtk.Frame ();
+			this.frameMisc.Name = "frameMisc";
+			this.frameMisc.ShadowType = ((global::Gtk.ShadowType)(1));
+			// Container child frameMisc.Gtk.Container+ContainerChild
+			this.GtkAlignment2 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
+			this.GtkAlignment2.Name = "GtkAlignment2";
+			this.GtkAlignment2.LeftPadding = ((uint)(12));
+			// Container child GtkAlignment2.Gtk.Container+ContainerChild
+			this.tableMisc = new global::Gtk.Table (((uint)(2)), ((uint)(2)), true);
+			this.tableMisc.Name = "tableMisc";
+			this.tableMisc.RowSpacing = ((uint)(6));
+			this.tableMisc.ColumnSpacing = ((uint)(6));
+			// Container child tableMisc.Gtk.Table+TableChild
+			this.labelReflashCount = new global::Gtk.Label ();
+			this.labelReflashCount.Name = "labelReflashCount";
+			this.labelReflashCount.LabelProp = "-";
+			this.labelReflashCount.Selectable = true;
+			this.labelReflashCount.SingleLineMode = true;
+			this.tableMisc.Add (this.labelReflashCount);
+			global::Gtk.Table.TableChild w22 = ((global::Gtk.Table.TableChild)(this.tableMisc [this.labelReflashCount]));
+			w22.TopAttach = ((uint)(1));
+			w22.BottomAttach = ((uint)(2));
+			w22.LeftAttach = ((uint)(1));
+			w22.RightAttach = ((uint)(2));
+			w22.XOptions = ((global::Gtk.AttachOptions)(4));
+			w22.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableMisc.Gtk.Table+TableChild
+			this.labelRomDate = new global::Gtk.Label ();
+			this.labelRomDate.Name = "labelRomDate";
+			this.labelRomDate.LabelProp = "-";
+			this.labelRomDate.Selectable = true;
+			this.labelRomDate.SingleLineMode = true;
+			this.tableMisc.Add (this.labelRomDate);
+			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.tableMisc [this.labelRomDate]));
+			w23.LeftAttach = ((uint)(1));
+			w23.RightAttach = ((uint)(2));
+			w23.XOptions = ((global::Gtk.AttachOptions)(4));
+			w23.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableMisc.Gtk.Table+TableChild
+			this.labelRowReflashCount = new global::Gtk.Label ();
+			this.labelRowReflashCount.Name = "labelRowReflashCount";
+			this.labelRowReflashCount.LabelProp = "Reflash Count";
+			this.labelRowReflashCount.UseMarkup = true;
+			this.labelRowReflashCount.Wrap = true;
+			this.tableMisc.Add (this.labelRowReflashCount);
+			global::Gtk.Table.TableChild w24 = ((global::Gtk.Table.TableChild)(this.tableMisc [this.labelRowReflashCount]));
+			w24.TopAttach = ((uint)(1));
+			w24.BottomAttach = ((uint)(2));
+			w24.XOptions = ((global::Gtk.AttachOptions)(4));
+			w24.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableMisc.Gtk.Table+TableChild
+			this.labelRowRomDate = new global::Gtk.Label ();
+			this.labelRowRomDate.Name = "labelRowRomDate";
+			this.labelRowRomDate.LabelProp = "ROM Date";
+			this.labelRowRomDate.UseMarkup = true;
+			this.labelRowRomDate.Wrap = true;
+			this.tableMisc.Add (this.labelRowRomDate);
+			global::Gtk.Table.TableChild w25 = ((global::Gtk.Table.TableChild)(this.tableMisc [this.labelRowRomDate]));
+			w25.XOptions = ((global::Gtk.AttachOptions)(4));
+			w25.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.GtkAlignment2.Add (this.tableMisc);
+			this.frameMisc.Add (this.GtkAlignment2);
+			this.GtkLabel2 = new global::Gtk.Label ();
+			this.GtkLabel2.Name = "GtkLabel2";
+			this.GtkLabel2.LabelProp = "<b>Miscellaneous</b>";
+			this.GtkLabel2.UseMarkup = true;
+			this.frameMisc.LabelWidget = this.GtkLabel2;
+			this.vbox.Add (this.frameMisc);
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox [this.frameMisc]));
+			w28.Position = 1;
+			w28.Expand = false;
+			w28.Fill = false;
+			// Container child vbox.Gtk.Box+BoxChild
 			this.buttonRefresh = new global::Gtk.Button ();
 			this.buttonRefresh.CanFocus = true;
 			this.buttonRefresh.Name = "buttonRefresh";
 			this.buttonRefresh.UseStock = true;
 			this.buttonRefresh.UseUnderline = true;
 			this.buttonRefresh.Label = "gtk-refresh";
-			this.table1.Add (this.buttonRefresh);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.buttonRefresh]));
-			w2.TopAttach = ((uint)(7));
-			w2.BottomAttach = ((uint)(8));
-			w2.RightAttach = ((uint)(3));
-			w2.XOptions = ((global::Gtk.AttachOptions)(4));
-			w2.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label2DAnnotated = new global::Gtk.Label ();
-			this.label2DAnnotated.Name = "label2DAnnotated";
-			this.label2DAnnotated.LabelProp = "-";
-			this.label2DAnnotated.Selectable = true;
-			this.table1.Add (this.label2DAnnotated);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2DAnnotated]));
-			w3.TopAttach = ((uint)(3));
-			w3.BottomAttach = ((uint)(4));
-			w3.LeftAttach = ((uint)(1));
-			w3.RightAttach = ((uint)(2));
-			w3.XOptions = ((global::Gtk.AttachOptions)(4));
-			w3.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label2DCol = new global::Gtk.Label ();
-			this.label2DCol.Name = "label2DCol";
-			this.label2DCol.LabelProp = "2D Tables";
-			this.table1.Add (this.label2DCol);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2DCol]));
-			w4.LeftAttach = ((uint)(1));
-			w4.RightAttach = ((uint)(2));
-			w4.XOptions = ((global::Gtk.AttachOptions)(4));
-			w4.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label2DCountTotal = new global::Gtk.Label ();
-			this.label2DCountTotal.Name = "label2DCountTotal";
-			this.label2DCountTotal.LabelProp = "-";
-			this.label2DCountTotal.Selectable = true;
-			this.table1.Add (this.label2DCountTotal);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2DCountTotal]));
-			w5.TopAttach = ((uint)(1));
-			w5.BottomAttach = ((uint)(2));
-			w5.LeftAttach = ((uint)(1));
-			w5.RightAttach = ((uint)(2));
-			w5.XOptions = ((global::Gtk.AttachOptions)(4));
-			w5.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label2DFirstRecord = new global::Gtk.Label ();
-			this.label2DFirstRecord.Name = "label2DFirstRecord";
-			this.label2DFirstRecord.LabelProp = "-";
-			this.label2DFirstRecord.Selectable = true;
-			this.table1.Add (this.label2DFirstRecord);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2DFirstRecord]));
-			w6.TopAttach = ((uint)(4));
-			w6.BottomAttach = ((uint)(5));
-			w6.LeftAttach = ((uint)(1));
-			w6.RightAttach = ((uint)(2));
-			w6.XOptions = ((global::Gtk.AttachOptions)(4));
-			w6.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label2DLastRecord = new global::Gtk.Label ();
-			this.label2DLastRecord.Name = "label2DLastRecord";
-			this.label2DLastRecord.LabelProp = "-";
-			this.label2DLastRecord.Selectable = true;
-			this.table1.Add (this.label2DLastRecord);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2DLastRecord]));
-			w7.TopAttach = ((uint)(5));
-			w7.BottomAttach = ((uint)(6));
-			w7.LeftAttach = ((uint)(1));
-			w7.RightAttach = ((uint)(2));
-			w7.XOptions = ((global::Gtk.AttachOptions)(4));
-			w7.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label2DSelected = new global::Gtk.Label ();
-			this.label2DSelected.Name = "label2DSelected";
-			this.label2DSelected.LabelProp = "-";
-			this.label2DSelected.Selectable = true;
-			this.table1.Add (this.label2DSelected);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2DSelected]));
-			w8.TopAttach = ((uint)(2));
-			w8.BottomAttach = ((uint)(3));
-			w8.LeftAttach = ((uint)(1));
-			w8.RightAttach = ((uint)(2));
-			w8.XOptions = ((global::Gtk.AttachOptions)(4));
-			w8.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label3DAnnotated = new global::Gtk.Label ();
-			this.label3DAnnotated.Name = "label3DAnnotated";
-			this.label3DAnnotated.LabelProp = "-";
-			this.label3DAnnotated.Selectable = true;
-			this.table1.Add (this.label3DAnnotated);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3DAnnotated]));
-			w9.TopAttach = ((uint)(3));
-			w9.BottomAttach = ((uint)(4));
-			w9.LeftAttach = ((uint)(2));
-			w9.RightAttach = ((uint)(3));
-			w9.XOptions = ((global::Gtk.AttachOptions)(4));
-			w9.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label3DCol = new global::Gtk.Label ();
-			this.label3DCol.Name = "label3DCol";
-			this.label3DCol.LabelProp = "3D Tables";
-			this.table1.Add (this.label3DCol);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3DCol]));
-			w10.LeftAttach = ((uint)(2));
-			w10.RightAttach = ((uint)(3));
-			w10.XOptions = ((global::Gtk.AttachOptions)(4));
-			w10.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label3DCountTotal = new global::Gtk.Label ();
-			this.label3DCountTotal.Name = "label3DCountTotal";
-			this.label3DCountTotal.LabelProp = "-";
-			this.label3DCountTotal.Selectable = true;
-			this.table1.Add (this.label3DCountTotal);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3DCountTotal]));
-			w11.TopAttach = ((uint)(1));
-			w11.BottomAttach = ((uint)(2));
-			w11.LeftAttach = ((uint)(2));
-			w11.RightAttach = ((uint)(3));
-			w11.XOptions = ((global::Gtk.AttachOptions)(4));
-			w11.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label3DFirstRecord = new global::Gtk.Label ();
-			this.label3DFirstRecord.Name = "label3DFirstRecord";
-			this.label3DFirstRecord.LabelProp = "-";
-			this.label3DFirstRecord.Selectable = true;
-			this.table1.Add (this.label3DFirstRecord);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3DFirstRecord]));
-			w12.TopAttach = ((uint)(4));
-			w12.BottomAttach = ((uint)(5));
-			w12.LeftAttach = ((uint)(2));
-			w12.RightAttach = ((uint)(3));
-			w12.XOptions = ((global::Gtk.AttachOptions)(4));
-			w12.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label3DLastRecord = new global::Gtk.Label ();
-			this.label3DLastRecord.Name = "label3DLastRecord";
-			this.label3DLastRecord.LabelProp = "-";
-			this.label3DLastRecord.Selectable = true;
-			this.table1.Add (this.label3DLastRecord);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3DLastRecord]));
-			w13.TopAttach = ((uint)(5));
-			w13.BottomAttach = ((uint)(6));
-			w13.LeftAttach = ((uint)(2));
-			w13.RightAttach = ((uint)(3));
-			w13.XOptions = ((global::Gtk.AttachOptions)(4));
-			w13.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label3DSelected = new global::Gtk.Label ();
-			this.label3DSelected.Name = "label3DSelected";
-			this.label3DSelected.LabelProp = "-";
-			this.label3DSelected.Selectable = true;
-			this.table1.Add (this.label3DSelected);
-			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3DSelected]));
-			w14.TopAttach = ((uint)(2));
-			w14.BottomAttach = ((uint)(3));
-			w14.LeftAttach = ((uint)(2));
-			w14.RightAttach = ((uint)(3));
-			w14.XOptions = ((global::Gtk.AttachOptions)(4));
-			w14.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.labelRomDate = new global::Gtk.Label ();
-			this.labelRomDate.Name = "labelRomDate";
-			this.labelRomDate.LabelProp = "-";
-			this.table1.Add (this.labelRomDate);
-			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRomDate]));
-			w15.TopAttach = ((uint)(6));
-			w15.BottomAttach = ((uint)(7));
-			w15.LeftAttach = ((uint)(2));
-			w15.RightAttach = ((uint)(3));
-			w15.XOptions = ((global::Gtk.AttachOptions)(4));
-			w15.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.labelRowAnnotated = new global::Gtk.Label ();
-			this.labelRowAnnotated.Name = "labelRowAnnotated";
-			this.labelRowAnnotated.LabelProp = "Annotated";
-			this.table1.Add (this.labelRowAnnotated);
-			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowAnnotated]));
-			w16.TopAttach = ((uint)(3));
-			w16.BottomAttach = ((uint)(4));
-			w16.XOptions = ((global::Gtk.AttachOptions)(4));
-			w16.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.labelRowCountTotal = new global::Gtk.Label ();
-			this.labelRowCountTotal.Name = "labelRowCountTotal";
-			this.labelRowCountTotal.LabelProp = "Count Total";
-			this.table1.Add (this.labelRowCountTotal);
-			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowCountTotal]));
-			w17.TopAttach = ((uint)(1));
-			w17.BottomAttach = ((uint)(2));
-			w17.XOptions = ((global::Gtk.AttachOptions)(4));
-			w17.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.labelRowFirstRecord = new global::Gtk.Label ();
-			this.labelRowFirstRecord.Name = "labelRowFirstRecord";
-			this.labelRowFirstRecord.LabelProp = "First Record";
-			this.table1.Add (this.labelRowFirstRecord);
-			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowFirstRecord]));
-			w18.TopAttach = ((uint)(4));
-			w18.BottomAttach = ((uint)(5));
-			w18.XOptions = ((global::Gtk.AttachOptions)(4));
-			w18.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.labelRowLastRecord = new global::Gtk.Label ();
-			this.labelRowLastRecord.Name = "labelRowLastRecord";
-			this.labelRowLastRecord.LabelProp = "Last Record";
-			this.table1.Add (this.labelRowLastRecord);
-			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowLastRecord]));
-			w19.TopAttach = ((uint)(5));
-			w19.BottomAttach = ((uint)(6));
-			w19.XOptions = ((global::Gtk.AttachOptions)(4));
-			w19.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.labelRowRomDate = new global::Gtk.Label ();
-			this.labelRowRomDate.Name = "labelRowRomDate";
-			this.labelRowRomDate.LabelProp = "ROM Date";
-			this.labelRowRomDate.UseMarkup = true;
-			this.labelRowRomDate.Wrap = true;
-			this.table1.Add (this.labelRowRomDate);
-			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowRomDate]));
-			w20.TopAttach = ((uint)(6));
-			w20.BottomAttach = ((uint)(7));
-			w20.RightAttach = ((uint)(2));
-			w20.XOptions = ((global::Gtk.AttachOptions)(4));
-			w20.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.labelRowSelected = new global::Gtk.Label ();
-			this.labelRowSelected.Name = "labelRowSelected";
-			this.labelRowSelected.LabelProp = "Selected";
-			this.table1.Add (this.labelRowSelected);
-			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRowSelected]));
-			w21.TopAttach = ((uint)(2));
-			w21.BottomAttach = ((uint)(3));
-			w21.XOptions = ((global::Gtk.AttachOptions)(4));
-			w21.YOptions = ((global::Gtk.AttachOptions)(4));
-			w1.Add (this.table1);
+			this.vbox.Add (this.buttonRefresh);
+			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vbox [this.buttonRefresh]));
+			w29.Position = 2;
+			w29.Expand = false;
+			w29.Fill = false;
+			w1.Add (this.vbox);
 			this.scrolledwindow1.Add (w1);
 			this.Add (this.scrolledwindow1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 262;
-			this.DefaultHeight = 210;
+			this.DefaultWidth = 248;
+			this.DefaultHeight = 268;
 			this.Show ();
 			this.buttonRefresh.Clicked += new global::System.EventHandler (this.OnButtonRefreshClicked);
 		}
