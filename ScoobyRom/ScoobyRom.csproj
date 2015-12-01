@@ -139,6 +139,7 @@
     <Compile Include="UIGtk\SelectDataDialog.cs" />
     <Compile Include="gtk-gui\ScoobyRom.SelectDataDialog.cs" />
     <Compile Include="UIGtk\SelectedChoice.cs" />
+    <Compile Include="DataFile\TunerProXdf.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

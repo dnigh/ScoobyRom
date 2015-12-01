@@ -29,7 +29,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Subaru.Tables;
 
-namespace Subaru.File
+namespace ScoobyRom.DataFile
 {
 	public sealed class RomXml
 	{

@@ -508,11 +508,17 @@ public partial class MainWindow : Gtk.Window
 	void OnExportAsRRActionActivated (object sender, System.EventArgs e)
 	{
 		SelectedChoice choice;
+		/*
 		var responseType = DisplaySelectDataDialog (out choice);
 		if (responseType == ResponseType.Cancel)
 			return;
+		*/
+		choice = SelectedChoice.Annotated;
+		string pathSuggested = ScoobyRom.Data.PathWithNewExtension (data.Rom.Path, ".xdf");
+		data.SaveAsTunerProXdf (pathSuggested, choice);
+		return;
 
-		string pathSuggested = ScoobyRom.Data.PathWithNewExtension (data.Rom.Path, ".RR.xml");
+		pathSuggested = ScoobyRom.Data.PathWithNewExtension (data.Rom.Path, ".RR.xml");
 		var fc = new Gtk.FileChooserDialog ("Export as RomRaider definition file", this,
 			         FileChooserAction.Save, Gtk.Stock.Cancel, ResponseType.Cancel, Gtk.Stock.Save, ResponseType.Accept);
 		try {
