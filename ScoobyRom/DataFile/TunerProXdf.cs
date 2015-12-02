@@ -39,11 +39,13 @@ namespace ScoobyRom.DataFile
 			// necessary, otherwise single line
 			xw.Formatting = Formatting.Indented;
 
-			var l2D = list2D == null ? null : list2D.Select (t => t.RRXml ());
-			var l3D = list3D == null ? null : list3D.Select (t => t.RRXml ());
+			// XDF categories start at 1
+			var l2D = list2D == null ? null : list2D.Select (t => t.TunerProXdf (categories [t.Category] + 1));
+			//var l3D = list3D == null ? null : list3D.Select (t => t.TunerProXdf ());
 
 			XDocument doc = TunerProXdfDocument (
-				                Header (romMetadata, categories)
+				                Header (romMetadata, categories),
+				                l2D
 			                );
 
 			doc.WriteTo (xw);
@@ -96,9 +98,14 @@ namespace ScoobyRom.DataFile
 		{
 			var l = new List <XElement> (categories.Count);
 			foreach (var c in categories) {
+				string category = c.Key;
+				if (string.IsNullOrWhiteSpace (category))
+					category = "Unknown";
+
 				l.Add (new XElement ("CATEGORY",
-					new XAttribute ("index", c.Value.ToString ()),
-					new XAttribute ("name", c.Key)));
+					// index must be in hex
+					new XAttribute ("index", HexNum (c.Value)),
+					new XAttribute ("name", category)));
 			}
 			return l;
 		}

@@ -231,20 +231,32 @@ namespace Subaru.Tables
 			return new XElement ("table",
 				new XAttribute ("type", "2D"),
 				new XAttribute ("name", RRName),
-				new XAttribute ("category", RRCategory),
+				new XAttribute ("category", CategoryForExport),
 				new XAttribute ("storagetype", tableType.ToRRType ()),
 				new XAttribute ("endian", endian),
 				new XAttribute ("sizey", countX.ToString ()),
-				new XAttribute ("storageaddress", HexAddress (rangeY.Pos)),
+				new XAttribute ("storageaddress", HexNum (rangeY.Pos)),
 				CommentValuesStats (valuesYmin, valuesYmax, valuesYavg),
 				RRXmlScaling (unitX, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
 				RRXmlAxis ("Y Axis", nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
 				new XElement ("description", description));
 		}
 
-		public override string RRCategory
+		public override string CategoryForExport {
+			get { return string.IsNullOrWhiteSpace (this.category) ? "Unknown 2D" : this.category; }
+		}
+
+		public override XElement TunerProXdf (int categoryID)
 		{
-			get { return string.IsNullOrEmpty (this.category) ? "Unknown 2D" : this.category; }
+			return new XElement ("XDFTABLE",
+				new XAttribute ("uniqueid", HexNum (location)),
+				new XAttribute ("flags", HexNum (0)),
+				new XElement ("title", title),
+				CategoryXdf (categoryID),
+				EmptyXAxisXdf (),
+				YAxisXdf (TableType.Float, countX, rangeX.Pos, unitX),
+				ZAxisXdf (tableType, countX, rangeY.Pos, unitY, Expression.ToUpperInvariant ())
+			);
 		}
 
 		public void WriteCSV (System.IO.TextWriter tw)

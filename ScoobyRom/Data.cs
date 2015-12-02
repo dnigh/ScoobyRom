@@ -352,7 +352,8 @@ namespace ScoobyRom
 		{
 			var d = new Dictionary <string, int> (categories.Length);
 			for (int i = 0; i < categories.Length; i++) {
-				d.Add (categories [i], i);
+				string s = categories [i];
+				d.Add (s, i);
 			}
 			return d;
 		}

@@ -321,12 +321,12 @@ namespace Subaru.Tables
 			return new XElement ("table",
 				new XAttribute ("type", "3D"),
 				new XAttribute ("name", RRName),
-				new XAttribute ("category", RRCategory),
+				new XAttribute ("category", CategoryForExport),
 				new XAttribute ("storagetype", tableType.ToRRType ()),
 				new XAttribute ("endian", endian),
 				new XAttribute ("sizex", countX.ToString ()),
 				new XAttribute ("sizey", countY.ToString ()),
-				new XAttribute ("storageaddress", HexAddress (rangeZ.Pos)),
+				new XAttribute ("storageaddress", HexNum (rangeZ.Pos)),
 				CommentValuesStats (valuesZmin, valuesZmax, valuesZavg),
 				RRXmlScaling (unitZ, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
 				RRXmlAxis ("X Axis", nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
@@ -334,8 +334,18 @@ namespace Subaru.Tables
 				new XElement ("description", description));
 		}
 
-		public override string RRCategory {
+		public override string CategoryForExport {
 			get { return string.IsNullOrEmpty (this.category) ? "Unknown 3D" : this.category; }
+		}
+
+		public override XElement TunerProXdf (int categoryID)
+		{
+			return new XElement ("XDFTABLE",
+				new XAttribute ("uniqueid", HexNum (location)),
+				new XAttribute ("flags", HexNum (0)),
+				new XElement ("title", title),
+				CategoryXdf (categoryID));
+
 		}
 
 		public override string CopyTableRomRaider ()

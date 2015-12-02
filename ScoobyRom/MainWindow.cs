@@ -508,17 +508,11 @@ public partial class MainWindow : Gtk.Window
 	void OnExportAsRRActionActivated (object sender, System.EventArgs e)
 	{
 		SelectedChoice choice;
-		/*
 		var responseType = DisplaySelectDataDialog (out choice);
 		if (responseType == ResponseType.Cancel)
 			return;
-		*/
-		choice = SelectedChoice.Annotated;
-		string pathSuggested = ScoobyRom.Data.PathWithNewExtension (data.Rom.Path, ".xdf");
-		data.SaveAsTunerProXdf (pathSuggested, choice);
-		return;
 
-		pathSuggested = ScoobyRom.Data.PathWithNewExtension (data.Rom.Path, ".RR.xml");
+		string pathSuggested = ScoobyRom.Data.PathWithNewExtension (data.Rom.Path, ".RR.xml");
 		var fc = new Gtk.FileChooserDialog ("Export as RomRaider definition file", this,
 			         FileChooserAction.Save, Gtk.Stock.Cancel, ResponseType.Cancel, Gtk.Stock.Save, ResponseType.Accept);
 		try {
@@ -545,6 +539,42 @@ public partial class MainWindow : Gtk.Window
 			ErrorMsg ("Error writing file", ex.Message);
 		} finally {
 			// Don't forget to call Destroy() or the FileChooserDialog window won't get closed.
+			if (fc != null)
+				fc.Destroy ();
+		}
+	}
+
+	void OnExportAsXDFActionActivated (object sender, EventArgs e)
+	{
+		SelectedChoice choice;
+		var responseType = DisplaySelectDataDialog (out choice);
+		if (responseType == ResponseType.Cancel)
+			return;
+
+		string pathSuggested = ScoobyRom.Data.PathWithNewExtension (data.Rom.Path, ".xdf");
+		var fc = new Gtk.FileChooserDialog ("Export as TunerPro XDF file", this,
+			         FileChooserAction.Save, Gtk.Stock.Cancel, ResponseType.Cancel, Gtk.Stock.Save, ResponseType.Accept);
+		try {
+			FileFilter filter = new FileFilter ();
+			filter.Name = "XDF files";
+			filter.AddPattern ("*.xdf");
+			fc.AddFilter (filter);
+
+			filter = new FileFilter ();
+			filter.Name = "All files";
+			filter.AddPattern ("*");
+			fc.AddFilter (filter);
+
+			fc.DoOverwriteConfirmation = true;
+			fc.SetFilename (pathSuggested);
+			fc.CurrentName = System.IO.Path.GetFileName (pathSuggested);
+
+			if (fc.Run () == (int)ResponseType.Accept) {
+				data.SaveAsTunerProXdf (fc.Filename, choice);
+			}
+		} catch (Exception ex) {
+			ErrorMsg ("Error writing file", ex.Message);
+		} finally {
 			if (fc != null)
 				fc.Destroy ();
 		}
@@ -781,6 +811,7 @@ public partial class MainWindow : Gtk.Window
 		saveAction.Sensitive = sensitive;
 		exportAsAction.Sensitive = sensitive;
 		exportAsRRAction.Sensitive = sensitive;
+		exportAsXDFAction.Sensitive = sensitive;
 
 		visualisationAction.Sensitive = sensitive;
 

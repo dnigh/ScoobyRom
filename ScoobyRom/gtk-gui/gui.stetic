@@ -72,7 +72,7 @@
       </action>
       <action id="exportAsRRAction">
         <property name="Type">Action</property>
-        <property name="Label" translatable="yes">RomRaider Def XML</property>
+        <property name="Label" translatable="yes">_RomRaider Def XML</property>
         <property name="Sensitive">False</property>
         <property name="ShortLabel" translatable="yes">RomRaider Def XML</property>
         <property name="StockId">gtk-save-as</property>
@@ -203,6 +203,14 @@
         <property name="StockId">gtk-clear</property>
         <signal name="Activated" handler="OnSelectNoneActionActivated" />
       </action>
+      <action id="exportAsXDFAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">_TunerPro XDF</property>
+        <property name="Sensitive">False</property>
+        <property name="ShortLabel" translatable="yes">_TunerPro XDF</property>
+        <property name="StockId">gtk-save-as</property>
+        <signal name="Activated" handler="OnExportAsXDFActionActivated" />
+      </action>
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">ScoobyRom</property>
@@ -222,6 +230,7 @@
                 <node type="Separator" />
                 <node type="Menu" action="exportAsAction">
                   <node type="Menuitem" action="exportAsRRAction" />
+                  <node type="Menuitem" action="exportAsXDFAction" />
                 </node>
                 <node type="Separator" />
                 <node type="Menuitem" action="quitAction" />

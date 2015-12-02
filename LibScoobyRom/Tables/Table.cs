@@ -17,10 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with ScoobyRom.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+
 using System;
 using System.Globalization;
-
-//using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using Util;
@@ -226,6 +226,8 @@ namespace Subaru.Tables
 		public abstract void ChangeTypeToAndReload (TableType newType, System.IO.Stream stream);
 
 		public abstract XElement RRXml ();
+
+		public abstract XElement TunerProXdf (int categoryID);
 
 		public abstract string CopyTableRomRaider ();
 
@@ -502,7 +504,7 @@ namespace Subaru.Tables
 
 		#endregion Values as float[]
 
-		public static string HexAddress (int value)
+		public static string HexNum (int value)
 		{
 			return "0x" + value.ToString ("X");
 		}
@@ -582,7 +584,7 @@ namespace Subaru.Tables
 				new XAttribute ("type", axisType),
 				new XAttribute ("name", name),
 				new XAttribute ("storagetype", "float"),
-				new XAttribute ("storageaddress", HexAddress (range.Pos)),
+				new XAttribute ("storageaddress", HexNum (range.Pos)),
 				CommentValuesStats (min, max),
 				RRXmlScaling (unit, "x", "x", "0.00", 1f, 5f));
 		}
@@ -591,7 +593,107 @@ namespace Subaru.Tables
 			get { return string.IsNullOrEmpty (this.title) ? string.Format ("Record 0x{0:X}", this.location) : this.title; }
 		}
 
-		public abstract string RRCategory { get; }
+		public abstract string CategoryForExport { get; }
+
+		#region XDF
+
+		protected static XElement CategoryXdf (int categoryID)
+		{
+			return new XElement ("CATEGORYMEM",
+				new XAttribute ("index", 0),
+				new XAttribute ("category", categoryID));
+		}
+
+		protected static XElement YAxisXdf (TableType tableType, int count, int address, string units)
+		{
+			return new XElement ("XDFAXIS",
+				new XAttribute ("id", "y"),
+				new XAttribute ("uniqueid", HexNum (address)),
+				EmbeddedDataXdf (tableType, count, 0, address),
+				new XElement ("units", units),
+				new XElement ("indexcount", count.ToString ()),
+				new XElement ("decimalpl", "3"),
+				new XElement ("embedinfo",
+					new XAttribute ("type", "1")),
+				new XElement ("datatype", "0"),
+				new XElement ("unittype", "0"),
+				new XElement ("MATH",
+					new XAttribute ("equation", "X"),
+					new XElement ("VAR",
+						new XAttribute ("id", "X")))
+			);
+		}
+
+		// expression must use uppercase "X"
+		protected static XElement ZAxisXdf (TableType tableType, int count, int address, string units, string equation)
+		{
+			return new XElement ("XDFAXIS",
+				new XAttribute ("id", "z"),
+				new XAttribute ("uniqueid", HexNum (address)),
+				EmbeddedDataXdf (tableType, 0, count, address),
+				new XElement ("units", units),
+				new XElement ("decimalpl", "3"),
+				new XElement ("outputtype", "1"),
+				new XElement ("MATH",
+					new XAttribute ("equation", equation),
+					new XElement ("VAR",
+						new XAttribute ("id", "X")))
+			);
+		}
+
+		protected static XElement EmbeddedDataXdf (TableType tableType, int colcount, int rowcount, int address)
+		{
+			// <EMBEDDEDDATA mmedtypeflags="0x10000" mmedaddress="0xB94A4" mmedelementsizebits="32" mmedcolcount="40" mmedmajorstridebits="0" mmedminorstridebits="0" />
+			var el = new XElement ("EMBEDDEDDATA",
+				new XAttribute ("mmedtypeflags", HexNum (mmedtypeflagsXdf (tableType, MajorOrderXdf.Row))),
+				new XAttribute ("mmedaddress", HexNum (address)),
+				new XAttribute ("mmedelementsizebits", 8 * tableType.ValueSize ()));
+
+			if (colcount > 0)
+				el.Add (new XAttribute ("mmedcolcount", colcount));
+			if (rowcount > 0)
+				el.Add (new XAttribute ("mmedrowcount", rowcount));
+
+			el.Add (new XAttribute ("mmedmajorstridebits", "0"),
+				new XAttribute ("mmedminorstridebits", "0"));
+			return el;
+		}
+
+		protected static int mmedtypeflagsXdf (TableType tableType, MajorOrderXdf majorOrder)
+		{
+			// unsigned: 0, signed: 1
+			int flags = 0;
+
+			switch (tableType) {
+			case TableType.Int8:
+			case TableType.Int16:
+				flags = 0x1;
+				break;
+
+			case TableType.Float:
+				flags = 0x10000;
+				break;
+			}
+
+			// Major Order: Default = "Row"; "Column": mmedtypeflags += 4
+			if (majorOrder == MajorOrderXdf.Column)
+				flags += 4;
+			return flags;
+		}
+
+		protected static XElement EmptyXAxisXdf ()
+		{
+			// indexcount = 1 is required:
+			// <XDFAXIS id="x" uniqueid="0x0">
+			//   <indexcount>1</indexcount>
+			// </XDFAXIS>
+			return new XElement ("XDFAXIS",
+				new XAttribute ("id", "x"),
+				new XAttribute ("uniqueid", HexNum (0)),
+				new XElement ("indexcount", "1"));
+		}
+
+		#endregion XDF
 
 		public static void CalcMinMaxAverage (float[] values, out float minimum, out float maximum, out float average)
 		{

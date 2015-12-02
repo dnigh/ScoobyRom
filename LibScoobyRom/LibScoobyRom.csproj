@@ -59,6 +59,7 @@
     <Compile Include="RomType.cs" />
     <Compile Include="Util\SearchBinary.cs" />
     <Compile Include="ReflashCounter.cs" />
+    <Compile Include="Tables\MajorOrderXdf.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
