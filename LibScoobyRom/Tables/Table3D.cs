@@ -329,8 +329,8 @@ namespace Subaru.Tables
 				new XAttribute ("storageaddress", HexNum (rangeZ.Pos)),
 				CommentValuesStats (valuesZmin, valuesZmax, valuesZavg),
 				RRXmlScaling (unitZ, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
-				RRXmlAxis ("X Axis", nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
-				RRXmlAxis ("Y Axis", nameY, unitY, TableType.Float, rangeY, valuesY, Ymin, Ymax),
+				RRXmlAxis (AxisType.X, nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
+				RRXmlAxis (AxisType.Y, nameY, unitY, TableType.Float, rangeY, valuesY, Ymin, Ymax),
 				new XElement ("description", description));
 		}
 
@@ -344,8 +344,11 @@ namespace Subaru.Tables
 				new XAttribute ("uniqueid", HexNum (location)),
 				new XAttribute ("flags", HexNum (0)),
 				new XElement ("title", title),
-				CategoryXdf (categoryID));
-
+				CategoryXdf (categoryID),
+				AxisXdf (AxisType.X, TableType.Float, countX, rangeX.Pos, unitX),
+				AxisXdf (AxisType.Y, TableType.Float, countY, rangeY.Pos, unitY),
+				ZAxisXdf (tableType, countX, countY, rangeZ.Pos, unitZ, Expression.ToUpperInvariant ())
+			);
 		}
 
 		public override string CopyTableRomRaider ()

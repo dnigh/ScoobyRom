@@ -41,11 +41,12 @@ namespace ScoobyRom.DataFile
 
 			// XDF categories start at 1
 			var l2D = list2D == null ? null : list2D.Select (t => t.TunerProXdf (categories [t.Category] + 1));
-			//var l3D = list3D == null ? null : list3D.Select (t => t.TunerProXdf ());
+			var l3D = list3D == null ? null : list3D.Select (t => t.TunerProXdf (categories [t.Category] + 1));
 
 			XDocument doc = TunerProXdfDocument (
 				                Header (romMetadata, categories),
-				                l2D
+				                l2D,
+				                l3D
 			                );
 
 			doc.WriteTo (xw);

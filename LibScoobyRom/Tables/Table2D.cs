@@ -238,7 +238,7 @@ namespace Subaru.Tables
 				new XAttribute ("storageaddress", HexNum (rangeY.Pos)),
 				CommentValuesStats (valuesYmin, valuesYmax, valuesYavg),
 				RRXmlScaling (unitX, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
-				RRXmlAxis ("Y Axis", nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
+				RRXmlAxis (AxisType.Y, nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
 				new XElement ("description", description));
 		}
 
@@ -254,8 +254,8 @@ namespace Subaru.Tables
 				new XElement ("title", title),
 				CategoryXdf (categoryID),
 				EmptyXAxisXdf (),
-				YAxisXdf (TableType.Float, countX, rangeX.Pos, unitX),
-				ZAxisXdf (tableType, countX, rangeY.Pos, unitY, Expression.ToUpperInvariant ())
+				AxisXdf (AxisType.Y, TableType.Float, countX, rangeX.Pos, unitX),
+				ZAxisXdf (tableType, 0, countX, rangeY.Pos, unitY, Expression.ToUpperInvariant ())
 			);
 		}
 

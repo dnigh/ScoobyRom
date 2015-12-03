@@ -578,10 +578,10 @@ namespace Subaru.Tables
 				new XAttribute ("coarseincrement", coarseincrement));
 		}
 
-		public XElement RRXmlAxis (string axisType, string name, string unit, TableType tableType, Range range, float[] axis, float min, float max)
+		public XElement RRXmlAxis (AxisType axisType, string name, string unit, TableType tableType, Range range, float[] axis, float min, float max)
 		{
 			return new XElement ("table",
-				new XAttribute ("type", axisType),
+				new XAttribute ("type", axisType.RRStr ()),
 				new XAttribute ("name", name),
 				new XAttribute ("storagetype", "float"),
 				new XAttribute ("storageaddress", HexNum (range.Pos)),
@@ -604,12 +604,12 @@ namespace Subaru.Tables
 				new XAttribute ("category", categoryID));
 		}
 
-		protected static XElement YAxisXdf (TableType tableType, int count, int address, string units)
+		protected static XElement AxisXdf (AxisType axisType, TableType tableType, int count, int address, string units)
 		{
 			return new XElement ("XDFAXIS",
-				new XAttribute ("id", "y"),
+				new XAttribute ("id", axisType.XdfStr ()),
 				new XAttribute ("uniqueid", HexNum (address)),
-				EmbeddedDataXdf (tableType, count, 0, address),
+				EmbeddedDataXdf (tableType, 0, count, address),
 				new XElement ("units", units),
 				new XElement ("indexcount", count.ToString ()),
 				new XElement ("decimalpl", "3"),
@@ -625,14 +625,15 @@ namespace Subaru.Tables
 		}
 
 		// expression must use uppercase "X"
-		protected static XElement ZAxisXdf (TableType tableType, int count, int address, string units, string equation)
+		protected static XElement ZAxisXdf (TableType tableType, int colcount, int rowcount, int address, string units, string equation)
 		{
+			const int DecimalPl = 3;
 			return new XElement ("XDFAXIS",
-				new XAttribute ("id", "z"),
+				new XAttribute ("id", AxisType.Z.XdfStr ()),
 				new XAttribute ("uniqueid", HexNum (address)),
-				EmbeddedDataXdf (tableType, 0, count, address),
+				EmbeddedDataXdf (tableType, colcount, rowcount, address),
 				new XElement ("units", units),
-				new XElement ("decimalpl", "3"),
+				new XElement ("decimalpl", DecimalPl),
 				new XElement ("outputtype", "1"),
 				new XElement ("MATH",
 					new XAttribute ("equation", equation),
@@ -645,9 +646,9 @@ namespace Subaru.Tables
 		{
 			// <EMBEDDEDDATA mmedtypeflags="0x10000" mmedaddress="0xB94A4" mmedelementsizebits="32" mmedcolcount="40" mmedmajorstridebits="0" mmedminorstridebits="0" />
 			var el = new XElement ("EMBEDDEDDATA",
-				new XAttribute ("mmedtypeflags", HexNum (mmedtypeflagsXdf (tableType, MajorOrderXdf.Row))),
-				new XAttribute ("mmedaddress", HexNum (address)),
-				new XAttribute ("mmedelementsizebits", 8 * tableType.ValueSize ()));
+				         new XAttribute ("mmedtypeflags", HexNum (mmedtypeflagsXdf (tableType, MajorOrderXdf.Row))),
+				         new XAttribute ("mmedaddress", HexNum (address)),
+				         new XAttribute ("mmedelementsizebits", 8 * tableType.ValueSize ()));
 
 			if (colcount > 0)
 				el.Add (new XAttribute ("mmedcolcount", colcount));
@@ -688,7 +689,7 @@ namespace Subaru.Tables
 			//   <indexcount>1</indexcount>
 			// </XDFAXIS>
 			return new XElement ("XDFAXIS",
-				new XAttribute ("id", "x"),
+				new XAttribute ("id", AxisType.X.XdfStr ()),
 				new XAttribute ("uniqueid", HexNum (0)),
 				new XElement ("indexcount", "1"));
 		}
