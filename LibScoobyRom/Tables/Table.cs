@@ -25,8 +25,9 @@ using System.Text;
 using System.Xml.Linq;
 using Util;
 using Extensions;
+using Tables;
 
-namespace Subaru.Tables
+namespace Tables.Denso
 {
 	/// <summary>
 	/// Common functionality for 2D and 3D Table types.

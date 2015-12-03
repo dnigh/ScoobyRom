@@ -22,8 +22,9 @@
 using System;
 using System.Xml.Linq;
 using Extensions;
+using Tables;
 
-namespace Subaru.Tables
+namespace Tables.Denso
 {
 	// Native ROM struct size is 20 bytes in cases where there are two MAC floats,
 	// 12 bytes without the two MAC floats

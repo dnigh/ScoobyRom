@@ -23,12 +23,10 @@
 //#define LOAD_SYNC
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Linq;
 using Gtk;
 using ScoobyRom;
-using Subaru.Tables;
-using System.Collections.Generic;
 
 public partial class MainWindow : Gtk.Window
 {
@@ -81,7 +79,7 @@ public partial class MainWindow : Gtk.Window
 		dataView3DModelGtk = new DataView3DModelGtk (this.data, iconWidth, iconHeight);
 		dataView3DGtk = new DataView3DGtk (dataView3DModelGtk, treeview3D);
 		dataView3DGtk.Activated += delegate(object sender, ActionEventArgs e) {
-			Table3D table3D = (Table3D)e.Tag;
+			var table3D = (Tables.Denso.Table3D)e.Tag;
 			if (table3D != null) {
 				this.Show3D (table3D);
 			}
@@ -90,7 +88,7 @@ public partial class MainWindow : Gtk.Window
 		dataView2DModelGtk = new DataView2DModelGtk (this.data, iconWidth, iconHeight);
 		dataView2DGtk = new DataView2DGtk (dataView2DModelGtk, treeview2D);
 		dataView2DGtk.Activated += delegate(object sender, ActionEventArgs e) {
-			Table2D table2D = (Table2D)e.Tag;
+			var table2D = (Tables.Denso.Table2D)e.Tag;
 			if (table2D != null) {
 				this.Show2D (table2D);
 			}
@@ -154,7 +152,7 @@ public partial class MainWindow : Gtk.Window
 		}
 	}
 
-	Subaru.Tables.Table CurrentTable {
+	Tables.Denso.Table CurrentTable {
 		get {
 			var view = CurrentView;
 			if (view == null)
@@ -328,7 +326,7 @@ public partial class MainWindow : Gtk.Window
 			this.scrolledwindowTable3D.Remove (widget);
 	}
 
-	void Show3D (Table3D table)
+	void Show3D (Tables.Denso.Table3D table)
 	{
 		if (table == null)
 			return;
@@ -364,7 +362,7 @@ public partial class MainWindow : Gtk.Window
 		cb.Text = s;
 	}
 
-	void Show2D (Table2D table)
+	void Show2D (Tables.Denso.Table2D table)
 	{
 		if (table == null)
 			return;
@@ -412,10 +410,10 @@ public partial class MainWindow : Gtk.Window
 			return;
 
 		var table = CurrentTable;
-		if (table is Table2D) {
-			Show2D ((Table2D)table);
+		if (table is Tables.Denso.Table2D) {
+			Show2D ((Tables.Denso.Table2D)table);
 		} else {
-			Show3D ((Table3D)table);
+			Show3D ((Tables.Denso.Table3D)table);
 		}
 	}
 
@@ -744,11 +742,11 @@ public partial class MainWindow : Gtk.Window
 		if (data.RomLoaded == false)
 			return;
 
-		Subaru.Tables.Table table = CurrentTable;
+		Tables.Denso.Table table = CurrentTable;
 		if (table == null)
 			return;
 
-		if (table is Table3D) {
+		if (table is Tables.Denso.Table3D) {
 			ErrorMsg ("Error", "Creating CSV for 3D table not implemented yet.");
 			return;
 		}
@@ -776,7 +774,7 @@ public partial class MainWindow : Gtk.Window
 			fc.CurrentName = filenameSuggested;
 			if (fc.Run () == (int)ResponseType.Accept) {
 				using (System.IO.StreamWriter sw = new System.IO.StreamWriter (fc.Filename, false, System.Text.Encoding.UTF8)) {
-					((Table2D)table).WriteCSV (sw);
+					((Tables.Denso.Table2D)table).WriteCSV (sw);
 				}
 			}
 			// remember used dir

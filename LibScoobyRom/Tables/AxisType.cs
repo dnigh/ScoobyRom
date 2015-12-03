@@ -19,7 +19,7 @@
  */
 
 
-namespace Subaru
+namespace Tables
 {
 	public enum AxisType
 	{

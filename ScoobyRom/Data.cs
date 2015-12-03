@@ -23,7 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Subaru.File;
-using Subaru.Tables;
+using Tables.Denso;
 
 namespace ScoobyRom
 {
@@ -247,7 +247,7 @@ namespace ScoobyRom
 			DataFile.TunerProXdf.WriteXdfFile (path, romMetadata, categories, list2D, list3D);
 		}
 
-		public void ChangeTableType (Table table, TableType newType)
+		public void ChangeTableType (Table table, Tables.TableType newType)
 		{
 			table.ChangeTypeToAndReload (newType, rom.Stream);
 		}

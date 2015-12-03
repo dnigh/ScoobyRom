@@ -23,7 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
-using Subaru.Tables;
+using Tables.Denso;
 
 namespace ScoobyRom.DataFile
 {
@@ -34,7 +34,7 @@ namespace ScoobyRom.DataFile
 		public static void WriteXdfFile (string path, RomMetadata romMetadata, Dictionary <string, int> categories,
 		                                 IList<Table2D> list2D, IList<Table3D> list3D)
 		{
-			// TunerPro parser does not support UTF-8 language encoding!
+			// TunerPro (v5.00.8853 2015-11-26) parser does not support UTF-8 language encoding!
 			XmlTextWriter xw = new XmlTextWriter (path, System.Text.Encoding.ASCII);
 			// necessary, otherwise single line
 			xw.Formatting = Formatting.Indented;

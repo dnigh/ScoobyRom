@@ -24,7 +24,7 @@
 
 using System;
 using System.IO;
-using Subaru.Tables;
+using Tables;
 using Util;
 
 namespace Extensions
@@ -109,26 +109,26 @@ namespace Extensions
 			}
 		}
 
-		public static string XdfStr (this Subaru.AxisType axisType)
+		public static string XdfStr (this AxisType axisType)
 		{
 			switch (axisType) {
-			case Subaru.AxisType.X:
+			case AxisType.X:
 				return "x";
-			case Subaru.AxisType.Y:
+			case AxisType.Y:
 				return "y";
-			case Subaru.AxisType.Z:
+			case AxisType.Z:
 				return "z";
 			default:
 				throw new ArgumentOutOfRangeException ("axisType");
 			}
 		}
 
-		public static string RRStr (this Subaru.AxisType axisType)
+		public static string RRStr (this AxisType axisType)
 		{
 			switch (axisType) {
-			case Subaru.AxisType.X:
+			case AxisType.X:
 				return "X Axis";
-			case Subaru.AxisType.Y:
+			case AxisType.Y:
 				return "Y Axis";
 			default:
 				throw new ArgumentOutOfRangeException ("axisType");

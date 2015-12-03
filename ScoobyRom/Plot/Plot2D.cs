@@ -55,7 +55,7 @@ namespace ScoobyRom
 		/// <param name="table2D">
 		/// A <see cref="Table2D"/>
 		/// </param>
-		public void Draw (Subaru.Tables.Table2D table2D)
+		public void Draw (Tables.Denso.Table2D table2D)
 		{
 			float[] valuesY = table2D.GetValuesYasFloats ();
 

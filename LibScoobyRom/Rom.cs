@@ -23,7 +23,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using Subaru.Tables;
+using Tables;
+using Tables.Denso;
 
 namespace Subaru.File
 {

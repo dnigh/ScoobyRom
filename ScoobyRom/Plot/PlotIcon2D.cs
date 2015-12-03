@@ -46,18 +46,18 @@ namespace ScoobyRom
 			pen = new System.Drawing.Pen (System.Drawing.Color.Red, penWidth);
 		}
 
-		public override Gdk.Pixbuf CreateIcon (Subaru.Tables.Table t)
+		public override Gdk.Pixbuf CreateIcon (Tables.Denso.Table table)
 		{
-			Subaru.Tables.Table2D table = t as Subaru.Tables.Table2D;
+			var t = (Tables.Denso.Table2D)table;
 
-			if (table.IsDataConst)
+			if (t.IsDataConst)
 				return ConstDataIcon;
 
 			plotSurface.Clear ();
 			plotSurface.SmoothingMode = SmoothingMode;
 
 			// y-values, x-values (!)
-			LinePlot lp = new LinePlot (table.GetValuesYasFloats (), table.ValuesX);
+			LinePlot lp = new LinePlot (t.GetValuesYasFloats (), t.ValuesX);
 			lp.Pen = pen;
 
 			plotSurface.Add (lp);

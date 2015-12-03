@@ -20,7 +20,7 @@
 
 
 using Florence;
-using Subaru.Tables;
+using Tables.Denso;
 
 namespace ScoobyRom
 {

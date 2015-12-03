@@ -33,14 +33,14 @@ namespace ScoobyRom
 		{
 		}
 
-		public override Gdk.Pixbuf CreateIcon (Subaru.Tables.Table t)
+		public override Gdk.Pixbuf CreateIcon (Tables.Denso.Table table)
 		{
-			Subaru.Tables.Table3D table = t as Subaru.Tables.Table3D;
+			var t = (Tables.Denso.Table3D)table;
 
-			if (table.IsDataConst)
+			if (t.IsDataConst)
 				return ConstDataIcon;
 
-			Plot3D.Draw (plotSurface, table);
+			Plot3D.Draw (plotSurface, t);
 			return DrawAndConvert ();
 		}
 	}
