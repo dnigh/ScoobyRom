@@ -76,6 +76,10 @@ namespace Tables.Denso
 		// floats like x.xxxxxxxxE-40 etc. suggest these are invalid, not to be included
 		public const float FloatMin = (float)1E-12;
 		public const float FloatMax = (float)1E+12;
+
+		public const string ExpressionVarName = "x";
+		public const string ExpressionVarNameXdf = "X";
+
 		public static string endian = "big";
 
 		#region Fields
@@ -511,50 +515,56 @@ namespace Tables.Denso
 		}
 
 		public string Expression {
-			get {
-				if (!hasMAC || (multiplier == 1f && offset == 0f))
-					return "x";
-				StringBuilder sb = new StringBuilder ();
-				sb.Append ('x');
-				if (multiplier != 1f) {
-					sb.Append ('*');
-					sb.Append (multiplier.ToString (CultureInfo.InvariantCulture));
-				}
-				if (offset != 0f) {
-					if (offset > 0f)
-						sb.Append ('+');
-					sb.Append (offset.ToString (CultureInfo.InvariantCulture));
-				}
-				return sb.ToString ();
-			}
+			get { return GenerateExpression (ExpressionVarName); }
 		}
 
-		public string ExpressionBack {
-			// tested: 0.09999999f to double yields 0.0999999940395355
-			get {
-				if (!hasMAC || (multiplier == 1f && offset == 0f))
-					return "x";
-				bool needParantheses = multiplier != 1f && offset != 0f;
+		public string ExpressionReverse {
+			get { return GenerateExpressionReverse (ExpressionVarName); }
+		}
 
-				StringBuilder sb = new StringBuilder ();
-				if (needParantheses)
-					sb.Append ('(');
-
-				sb.Append ('x');
-				if (offset != 0f) {
-					if (offset < 0f)
-						sb.Append ('+');
-					sb.Append ((-offset).ToString (CultureInfo.InvariantCulture));
-				}
-				if (needParantheses)
-					sb.Append (')');
-
-				if (multiplier != 1f) {
-					sb.Append ('/');
-					sb.Append (multiplier.ToString (CultureInfo.InvariantCulture));
-				}
-				return sb.ToString ();
+		public string GenerateExpression (string varName)
+		{
+			if (!hasMAC || (multiplier == 1f && offset == 0f))
+				return varName;
+			StringBuilder sb = new StringBuilder ();
+			sb.Append (varName);
+			if (multiplier != 1f) {
+				sb.Append ('*');
+				sb.Append (multiplier.ToString (CultureInfo.InvariantCulture));
 			}
+			if (offset != 0f) {
+				if (offset > 0f)
+					sb.Append ('+');
+				sb.Append (offset.ToString (CultureInfo.InvariantCulture));
+			}
+			return sb.ToString ();
+		}
+
+		public string GenerateExpressionReverse (string varName)
+		{
+			// tested: 0.09999999f to double yields 0.0999999940395355
+			if (!hasMAC || (multiplier == 1f && offset == 0f))
+				return varName;
+			bool needParantheses = multiplier != 1f && offset != 0f;
+
+			StringBuilder sb = new StringBuilder ();
+			if (needParantheses)
+				sb.Append ('(');
+
+			sb.Append (varName);
+			if (offset != 0f) {
+				if (offset < 0f)
+					sb.Append ('+');
+				sb.Append ((-offset).ToString (CultureInfo.InvariantCulture));
+			}
+			if (needParantheses)
+				sb.Append (')');
+
+			if (multiplier != 1f) {
+				sb.Append ('/');
+				sb.Append (multiplier.ToString (CultureInfo.InvariantCulture));
+			}
+			return sb.ToString ();
 		}
 
 		public static XComment CommentValuesStats (float min, float max)
@@ -587,11 +597,11 @@ namespace Tables.Denso
 				new XAttribute ("storagetype", "float"),
 				new XAttribute ("storageaddress", HexNum (range.Pos)),
 				CommentValuesStats (min, max),
-				RRXmlScaling (unit, "x", "x", "0.00", 1f, 5f));
+				RRXmlScaling (unit, ExpressionVarName, ExpressionVarName, "0.00", 1f, 5f));
 		}
 
-		public string RRName {
-			get { return string.IsNullOrEmpty (this.title) ? string.Format ("Record 0x{0:X}", this.location) : this.title; }
+		public string TitleForExport {
+			get { return string.IsNullOrWhiteSpace (this.title) ? string.Format ("Record 0x{0:X}", this.location) : this.title; }
 		}
 
 		public abstract string CategoryForExport { get; }
@@ -619,13 +629,12 @@ namespace Tables.Denso
 				new XElement ("datatype", "0"),
 				new XElement ("unittype", "0"),
 				new XElement ("MATH",
-					new XAttribute ("equation", "X"),
+					new XAttribute ("equation", ExpressionVarNameXdf),
 					new XElement ("VAR",
-						new XAttribute ("id", "X")))
+						new XAttribute ("id", ExpressionVarNameXdf)))
 			);
 		}
 
-		// expression must use uppercase "X"
 		protected static XElement ZAxisXdf (TableType tableType, int colcount, int rowcount, int address, string units, string equation)
 		{
 			const int DecimalPl = 3;
@@ -639,7 +648,7 @@ namespace Tables.Denso
 				new XElement ("MATH",
 					new XAttribute ("equation", equation),
 					new XElement ("VAR",
-						new XAttribute ("id", "X")))
+						new XAttribute ("id", ExpressionVarNameXdf)))
 			);
 		}
 
@@ -663,7 +672,7 @@ namespace Tables.Denso
 
 		protected static int mmedtypeflagsXdf (TableType tableType, MajorOrderXdf majorOrder)
 		{
-			// unsigned: 0, signed: 1
+			// unsigned: 0, signed: 1, LSB first: 2
 			int flags = 0;
 
 			switch (tableType) {
@@ -677,9 +686,9 @@ namespace Tables.Denso
 				break;
 			}
 
-			// Major Order: Default = "Row"; "Column": mmedtypeflags += 4
+			// Major Order: Default = "Row"; "Column": 4
 			if (majorOrder == MajorOrderXdf.Column)
-				flags += 4;
+				flags |= 0x4;
 			return flags;
 		}
 

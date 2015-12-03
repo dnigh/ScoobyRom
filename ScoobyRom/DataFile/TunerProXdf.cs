@@ -35,13 +35,14 @@ namespace ScoobyRom.DataFile
 		                                 IList<Table2D> list2D, IList<Table3D> list3D)
 		{
 			// TunerPro (v5.00.8853 2015-11-26) parser does not support UTF-8 language encoding!
-			XmlTextWriter xw = new XmlTextWriter (path, System.Text.Encoding.ASCII);
+			// using Encoding.ASCII results in wrong translation of special characters like "°, ³"
+			XmlTextWriter xw = new XmlTextWriter (path, System.Text.Encoding.GetEncoding ("ISO-8859-1"));
 			// necessary, otherwise single line
 			xw.Formatting = Formatting.Indented;
 
 			// XDF categories start at 1
-			var l2D = list2D == null ? null : list2D.Select (t => t.TunerProXdf (categories [t.Category] + 1));
-			var l3D = list3D == null ? null : list3D.Select (t => t.TunerProXdf (categories [t.Category] + 1));
+			var l2D = list2D == null ? null : list2D.Select (t => t.TunerProXdf (categories [t.CategoryForExport] + 1));
+			var l3D = list3D == null ? null : list3D.Select (t => t.TunerProXdf (categories [t.CategoryForExport] + 1));
 
 			XDocument doc = TunerProXdfDocument (
 				                Header (romMetadata, categories),
@@ -99,14 +100,10 @@ namespace ScoobyRom.DataFile
 		{
 			var l = new List <XElement> (categories.Count);
 			foreach (var c in categories) {
-				string category = c.Key;
-				if (string.IsNullOrWhiteSpace (category))
-					category = "Unknown";
-
 				l.Add (new XElement ("CATEGORY",
-					// index must be in hex
+					// TunerPro expects index in hex, tested not working in decimal
 					new XAttribute ("index", HexNum (c.Value)),
-					new XAttribute ("name", category)));
+					new XAttribute ("name", c.Key)));
 			}
 			return l;
 		}

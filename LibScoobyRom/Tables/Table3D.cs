@@ -321,7 +321,7 @@ namespace Tables.Denso
 		{
 			return new XElement ("table",
 				new XAttribute ("type", "3D"),
-				new XAttribute ("name", RRName),
+				new XAttribute ("name", TitleForExport),
 				new XAttribute ("category", CategoryForExport),
 				new XAttribute ("storagetype", tableType.ToRRType ()),
 				new XAttribute ("endian", endian),
@@ -329,7 +329,7 @@ namespace Tables.Denso
 				new XAttribute ("sizey", countY.ToString ()),
 				new XAttribute ("storageaddress", HexNum (rangeZ.Pos)),
 				CommentValuesStats (valuesZmin, valuesZmax, valuesZavg),
-				RRXmlScaling (unitZ, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
+				RRXmlScaling (unitZ, Expression, ExpressionReverse, "0.000", 0.01f, 0.1f),
 				RRXmlAxis (AxisType.X, nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
 				RRXmlAxis (AxisType.Y, nameY, unitY, TableType.Float, rangeY, valuesY, Ymin, Ymax),
 				new XElement ("description", description));
@@ -344,11 +344,11 @@ namespace Tables.Denso
 			return new XElement ("XDFTABLE",
 				new XAttribute ("uniqueid", HexNum (location)),
 				new XAttribute ("flags", HexNum (0)),
-				new XElement ("title", title),
+				new XElement ("title", TitleForExport),
 				CategoryXdf (categoryID),
 				AxisXdf (AxisType.X, TableType.Float, countX, rangeX.Pos, unitX),
 				AxisXdf (AxisType.Y, TableType.Float, countY, rangeY.Pos, unitY),
-				ZAxisXdf (tableType, countX, countY, rangeZ.Pos, unitZ, Expression.ToUpperInvariant ())
+				ZAxisXdf (tableType, countX, countY, rangeZ.Pos, unitZ, GenerateExpression (ExpressionVarNameXdf))
 			);
 		}
 

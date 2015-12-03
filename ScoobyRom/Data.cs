@@ -243,7 +243,7 @@ namespace ScoobyRom
 			IList<Table3D> list3D;
 			GetChosenTables (choice, out list2D, out list3D);
 
-			var categories = GetCategoriesDictionary (GetCategories (list2D, list3D));
+			var categories = GetCategoriesDictionary (GetCategoriesForExport (list2D, list3D));
 			DataFile.TunerProXdf.WriteXdfFile (path, romMetadata, categories, list2D, list3D);
 		}
 
@@ -340,10 +340,10 @@ namespace ScoobyRom
 			Console.WriteLine ("Result: {0} tables have shared x-axis", num);
 		}
 
-		public string[] GetCategories (IList<Table2D> list2D, IList<Table3D> list3D)
+		public string[] GetCategoriesForExport (IList<Table2D> list2D, IList<Table3D> list3D)
 		{
-			var categories2D = list2D.Select (t => t.Category);
-			var categories3D = list3D.Select (t => t.Category);
+			var categories2D = list2D.Select (t => t.CategoryForExport);
+			var categories3D = list3D.Select (t => t.CategoryForExport);
 
 			return categories2D.Concat (categories3D).Distinct ().OrderBy (c => c).AsParallel ().ToArray ();
 		}

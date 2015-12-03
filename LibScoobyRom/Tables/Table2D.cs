@@ -231,14 +231,14 @@ namespace Tables.Denso
 			// X-axis is being called "Y Axis" in RR!
 			return new XElement ("table",
 				new XAttribute ("type", "2D"),
-				new XAttribute ("name", RRName),
+				new XAttribute ("name", TitleForExport),
 				new XAttribute ("category", CategoryForExport),
 				new XAttribute ("storagetype", tableType.ToRRType ()),
 				new XAttribute ("endian", endian),
 				new XAttribute ("sizey", countX.ToString ()),
 				new XAttribute ("storageaddress", HexNum (rangeY.Pos)),
 				CommentValuesStats (valuesYmin, valuesYmax, valuesYavg),
-				RRXmlScaling (unitX, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
+				RRXmlScaling (unitX, Expression, ExpressionReverse, "0.000", 0.01f, 0.1f),
 				RRXmlAxis (AxisType.Y, nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
 				new XElement ("description", description));
 		}
@@ -252,11 +252,11 @@ namespace Tables.Denso
 			return new XElement ("XDFTABLE",
 				new XAttribute ("uniqueid", HexNum (location)),
 				new XAttribute ("flags", HexNum (0)),
-				new XElement ("title", title),
+				new XElement ("title", TitleForExport),
 				CategoryXdf (categoryID),
 				EmptyXAxisXdf (),
 				AxisXdf (AxisType.Y, TableType.Float, countX, rangeX.Pos, unitX),
-				ZAxisXdf (tableType, 0, countX, rangeY.Pos, unitY, Expression.ToUpperInvariant ())
+				ZAxisXdf (tableType, 0, countX, rangeY.Pos, unitY, GenerateExpression (ExpressionVarNameXdf))
 			);
 		}
 
