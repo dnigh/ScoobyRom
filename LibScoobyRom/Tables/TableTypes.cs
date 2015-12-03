@@ -22,9 +22,8 @@
 using System;
 using System.Collections.Generic;
 using IDA;
-using Subaru.Tables;
 
-namespace Subaru.Tables
+namespace Tables
 {
 	public static class TableTypes
 	{

@@ -22,8 +22,9 @@
 using System;
 using System.Xml.Linq;
 using Extensions;
+using Tables;
 
-namespace Subaru.Tables
+namespace Tables.Denso
 {
 	// Native ROM struct size is 20 bytes in cases where there are two MAC floats,
 	// 12 bytes without the two MAC floats
@@ -230,21 +231,33 @@ namespace Subaru.Tables
 			// X-axis is being called "Y Axis" in RR!
 			return new XElement ("table",
 				new XAttribute ("type", "2D"),
-				new XAttribute ("name", RRName),
-				new XAttribute ("category", RRCategory),
+				new XAttribute ("name", TitleForExport),
+				new XAttribute ("category", CategoryForExport),
 				new XAttribute ("storagetype", tableType.ToRRType ()),
 				new XAttribute ("endian", endian),
 				new XAttribute ("sizey", countX.ToString ()),
-				new XAttribute ("storageaddress", HexAddress (rangeY.Pos)),
+				new XAttribute ("storageaddress", HexNum (rangeY.Pos)),
 				CommentValuesStats (valuesYmin, valuesYmax, valuesYavg),
-				RRXmlScaling (unitX, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
-				RRXmlAxis ("Y Axis", nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
+				RRXmlScaling (unitX, Expression, ExpressionReverse, "0.000", 0.01f, 0.1f),
+				RRXmlAxis (AxisType.Y, nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
 				new XElement ("description", description));
 		}
 
-		public override string RRCategory
+		public override string CategoryForExport {
+			get { return string.IsNullOrWhiteSpace (this.category) ? "Unknown 2D" : this.category; }
+		}
+
+		public override XElement TunerProXdf (int categoryID)
 		{
-			get { return string.IsNullOrEmpty (this.category) ? "Unknown 2D" : this.category; }
+			return new XElement ("XDFTABLE",
+				new XAttribute ("uniqueid", HexNum (location)),
+				new XAttribute ("flags", HexNum (0)),
+				new XElement ("title", TitleForExport),
+				CategoryXdf (categoryID),
+				EmptyXAxisXdf (),
+				AxisXdf (AxisType.Y, TableType.Float, countX, rangeX.Pos, unitX),
+				ZAxisXdf (tableType, 0, countX, rangeY.Pos, unitY, GenerateExpression (ExpressionVarNameXdf))
+			);
 		}
 
 		public void WriteCSV (System.IO.TextWriter tw)

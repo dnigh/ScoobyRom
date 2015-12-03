@@ -22,7 +22,8 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
-using Subaru.Tables;
+using Tables;
+using Tables.Denso;
 
 namespace ScoobyRom
 {
@@ -135,9 +136,9 @@ namespace ScoobyRom
 			}
 		}
 
-		public Subaru.Tables.Table Selected {
+		public Tables.Denso.Table Selected {
 			get {
-				Subaru.Tables.Table table = null;
+				Tables.Denso.Table table = null;
 				TreeSelection selection = treeView.Selection;
 				TreeModel model;
 				TreeIter iter;
@@ -146,7 +147,7 @@ namespace ScoobyRom
 				if (selection.GetSelected (out model, out iter)) {
 					// Depth begins at 1 !
 					//TreePath path = model.GetPath (iter);
-					table = (Subaru.Tables.Table)model.GetValue (iter, ColumnNrObj);
+					table = (Tables.Denso.Table)model.GetValue (iter, ColumnNrObj);
 				}
 				return table;
 			}
@@ -172,7 +173,7 @@ namespace ScoobyRom
 
 		protected void TreeCellDataFuncTableType (TreeViewColumn treeViewColumn, CellRenderer renderer, TreeModel treeModel, TreeIter iter)
 		{
-			TableType tt = (TableType)treeModel.GetValue (iter, columnsDict [treeViewColumn]);
+			var tt = (TableType)treeModel.GetValue (iter, columnsDict [treeViewColumn]);
 			cellRendererCombo.Text = tt.ToStr ();
 		}
 
@@ -213,7 +214,7 @@ namespace ScoobyRom
 			int colNr = CursorColNr;
 
 			// so far there's only ComboBox for TableType column
-			TableType ttOld = (TableType)treeModel.GetValue (iter, colNr);
+			var ttOld = (TableType)treeModel.GetValue (iter, colNr);
 			if (ttOld != ttNew) {
 				treeModel.SetValue (iter, colNr, (int)ttNew);
 				OnTableTypeChanged (iter, ttNew);
@@ -224,7 +225,7 @@ namespace ScoobyRom
 
 		protected void OnTableTypeChanged (TreeIter iter, TableType newTableType)
 		{
-			var table = (Subaru.Tables.Table)treeModel.GetValue (iter, ColumnNrObj);
+			var table = (Tables.Denso.Table)treeModel.GetValue (iter, ColumnNrObj);
 			viewModel.ChangeTableType (table, newTableType);
 			viewModel.SetNodeContentTypeChanged (iter, table);
 		}
@@ -314,7 +315,7 @@ namespace ScoobyRom
 		// double click or Enter key
 		protected void HandleTreeViewRowActivated (object o, RowActivatedArgs args)
 		{
-			Subaru.Tables.Table table = Selected;
+			var table = Selected;
 			if (table != null && Activated != null) {
 				Activated (this, new ActionEventArgs (table));
 			}

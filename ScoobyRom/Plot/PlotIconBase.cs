@@ -84,7 +84,7 @@ namespace ScoobyRom
 			constDataIcon = DrawConstDataIcon ();
 		}
 
-		abstract public Gdk.Pixbuf CreateIcon (Subaru.Tables.Table table);
+		abstract public Gdk.Pixbuf CreateIcon (Tables.Denso.Table table);
 
 		public void ZoomIn ()
 		{

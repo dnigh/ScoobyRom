@@ -23,8 +23,9 @@ using System;
 using System.Xml.Linq;
 using Util;
 using Extensions;
+using Tables;
 
-namespace Subaru.Tables
+namespace Tables.Denso
 {
 	// Native ROM struct size is 28 bytes in cases where there are two MAC floats,
 	// 20 bytes without the two MAC floats
@@ -320,22 +321,35 @@ namespace Subaru.Tables
 		{
 			return new XElement ("table",
 				new XAttribute ("type", "3D"),
-				new XAttribute ("name", RRName),
-				new XAttribute ("category", RRCategory),
+				new XAttribute ("name", TitleForExport),
+				new XAttribute ("category", CategoryForExport),
 				new XAttribute ("storagetype", tableType.ToRRType ()),
 				new XAttribute ("endian", endian),
 				new XAttribute ("sizex", countX.ToString ()),
 				new XAttribute ("sizey", countY.ToString ()),
-				new XAttribute ("storageaddress", HexAddress (rangeZ.Pos)),
+				new XAttribute ("storageaddress", HexNum (rangeZ.Pos)),
 				CommentValuesStats (valuesZmin, valuesZmax, valuesZavg),
-				RRXmlScaling (unitZ, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
-				RRXmlAxis ("X Axis", nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
-				RRXmlAxis ("Y Axis", nameY, unitY, TableType.Float, rangeY, valuesY, Ymin, Ymax),
+				RRXmlScaling (unitZ, Expression, ExpressionReverse, "0.000", 0.01f, 0.1f),
+				RRXmlAxis (AxisType.X, nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
+				RRXmlAxis (AxisType.Y, nameY, unitY, TableType.Float, rangeY, valuesY, Ymin, Ymax),
 				new XElement ("description", description));
 		}
 
-		public override string RRCategory {
+		public override string CategoryForExport {
 			get { return string.IsNullOrEmpty (this.category) ? "Unknown 3D" : this.category; }
+		}
+
+		public override XElement TunerProXdf (int categoryID)
+		{
+			return new XElement ("XDFTABLE",
+				new XAttribute ("uniqueid", HexNum (location)),
+				new XAttribute ("flags", HexNum (0)),
+				new XElement ("title", TitleForExport),
+				CategoryXdf (categoryID),
+				AxisXdf (AxisType.X, TableType.Float, countX, rangeX.Pos, unitX),
+				AxisXdf (AxisType.Y, TableType.Float, countY, rangeY.Pos, unitY),
+				ZAxisXdf (tableType, countX, countY, rangeZ.Pos, unitZ, GenerateExpression (ExpressionVarNameXdf))
+			);
 		}
 
 		public override string CopyTableRomRaider ()

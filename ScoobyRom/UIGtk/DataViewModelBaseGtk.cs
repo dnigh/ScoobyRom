@@ -22,7 +22,6 @@
 #define UseBackGroundTask
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Gtk;
@@ -73,7 +72,7 @@ namespace ScoobyRom
 			PopulateData ();
 		}
 
-		public void ChangeTableType (Subaru.Tables.Table table, Subaru.Tables.TableType newType)
+		public void ChangeTableType (Tables.Denso.Table table, Tables.TableType newType)
 		{
 			data.ChangeTableType (table, newType);
 		}
@@ -148,7 +147,7 @@ namespace ScoobyRom
 				if (ct.IsCancellationRequested)
 					return false;
 
-				Subaru.Tables.Table table = (Subaru.Tables.Table)store.GetValue (iter, objColumnNr);
+				var table = (Tables.Denso.Table)store.GetValue (iter, objColumnNr);
 				Gdk.Pixbuf pixbuf = plotIcon.CreateIcon (table);
 
 				// update model reference in GUI Thread to make sure UI display is ok
@@ -161,9 +160,9 @@ namespace ScoobyRom
 			iconsCached = true;
 		}
 
-		public abstract void SetNodeContentTypeChanged (TreeIter iter, Subaru.Tables.Table table);
+		public abstract void SetNodeContentTypeChanged (TreeIter iter, Tables.Denso.Table table);
 
-		protected void CreateSetNewIcon (TreeIter iter, Subaru.Tables.Table table)
+		protected void CreateSetNewIcon (TreeIter iter, Tables.Denso.Table table)
 		{
 			store.SetValue (iter, ColumnNrIcon, plotIcon.CreateIcon (table));
 		}
@@ -192,15 +191,15 @@ namespace ScoobyRom
 
 		abstract protected void UpdateModel (TreeIter iter);
 
-		protected bool FindIter (Subaru.Tables.Table table, out TreeIter iter)
+		protected bool FindIter (Tables.Denso.Table table, out TreeIter iter)
 		{
 			// not using ForEach - more complicated due to returning iter
 			if (!store.GetIterFirst (out iter))
 				return false;
 
-			Subaru.Tables.Table currentTable;
+			Tables.Denso.Table currentTable;
 			do {
-				currentTable = (Subaru.Tables.Table)store.GetValue (iter, ColumnNrObj);
+				currentTable = (Tables.Denso.Table)store.GetValue (iter, ColumnNrObj);
 				if (currentTable.Equals (table)) {
 					return true;
 				}
@@ -256,9 +255,9 @@ namespace ScoobyRom
 			return (bool)store.GetValue (iter, ColumnNrToggle);
 		}
 
-		protected Subaru.Tables.Table GetTable (TreeIter iter)
+		protected Tables.Denso.Table GetTable (TreeIter iter)
 		{
-			return (Subaru.Tables.Table)store.GetValue (iter, ColumnNrObj);
+			return (Tables.Denso.Table)store.GetValue (iter, ColumnNrObj);
 		}
 
 		/* not needed

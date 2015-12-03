@@ -24,7 +24,7 @@
 
 using System;
 using System.IO;
-using Subaru.Tables;
+using Tables;
 using Util;
 
 namespace Extensions
@@ -43,7 +43,7 @@ namespace Extensions
 			#endif
 			stream.Read (buf, 0, Length);
 			// could also use: return BitConverter.ToInt16 (buf, 0);
-			return (short)((buf[1] << 8) | buf[0]);
+			return (short)((buf [1] << 8) | buf [0]);
 		}
 
 		public static short ReadInt16BigEndian (this Stream stream)
@@ -106,6 +106,32 @@ namespace Extensions
 			default:
 				// unknown, invalid
 				return 0;
+			}
+		}
+
+		public static string XdfStr (this AxisType axisType)
+		{
+			switch (axisType) {
+			case AxisType.X:
+				return "x";
+			case AxisType.Y:
+				return "y";
+			case AxisType.Z:
+				return "z";
+			default:
+				throw new ArgumentOutOfRangeException ("axisType");
+			}
+		}
+
+		public static string RRStr (this AxisType axisType)
+		{
+			switch (axisType) {
+			case AxisType.X:
+				return "X Axis";
+			case AxisType.Y:
+				return "Y Axis";
+			default:
+				throw new ArgumentOutOfRangeException ("axisType");
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-// PlotIcon3D.cs: Create color bitmaps using Florence/NPlot.
+﻿// AxisType.cs: axis type enumeration
 
 /* Copyright (C) 2011-2015 SubaruDieselCrew
  *
@@ -19,29 +19,12 @@
  */
 
 
-using Florence;
-
-namespace ScoobyRom
+namespace Tables
 {
-	/// <summary>
-	/// Creates Florence/NPlot ImagePlots (heatmap) without any annotation, useful for icons.
-	/// Methods are not thread safe!
-	/// </summary>
-	public sealed class PlotIcon3D : PlotIconBase
+	public enum AxisType
 	{
-		public PlotIcon3D (int width, int height) : base (width, height)
-		{
-		}
-
-		public override Gdk.Pixbuf CreateIcon (Tables.Denso.Table table)
-		{
-			var t = (Tables.Denso.Table3D)table;
-
-			if (t.IsDataConst)
-				return ConstDataIcon;
-
-			Plot3D.Draw (plotSurface, t);
-			return DrawAndConvert ();
-		}
+		X,
+		Y,
+		Z
 	}
 }

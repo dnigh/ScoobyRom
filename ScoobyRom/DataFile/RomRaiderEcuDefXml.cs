@@ -1,4 +1,4 @@
-// RomRaiderEcuDefXml.cs: Export data in RomRaider ECu definition format.
+// RomRaiderEcuDefXml.cs: Export data in RomRaider ECU definition format.
 
 /* Copyright (C) 2011-2015 SubaruDieselCrew
  *
@@ -23,9 +23,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
-using Subaru.Tables;
+using Tables.Denso;
 
-namespace Subaru.File
+namespace ScoobyRom.DataFile
 {
 	public static class RomRaiderEcuDefXml
 	{

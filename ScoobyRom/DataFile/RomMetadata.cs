@@ -25,7 +25,7 @@ using System;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Subaru.File
+namespace ScoobyRom.DataFile
 {
 
 	/// <summary>
