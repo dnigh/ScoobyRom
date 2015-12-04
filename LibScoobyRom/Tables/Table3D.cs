@@ -59,21 +59,20 @@ namespace Tables.Denso
 				s_tableInfo3D.multiplier = stream.ReadSingleBigEndian ();
 				s_tableInfo3D.offset = stream.ReadSingleBigEndian ();
 
+				long afterRecord = stream.Position;
+
 				if (s_tableInfo3D.IsRecordValid ()) {
 					if (!s_tableInfo3D.hasMAC) {
 						// must back off to adjust stream position for next possible struct
-						stream.Seek (-2 * FloatSize, System.IO.SeekOrigin.Current);
+						afterRecord -= 2 * FloatSize;
 					}
-
-					long afterInfoPos = stream.Position;
 
 					bool valuesOk = s_tableInfo3D.ReadValidateValues (stream);
-					if (!valuesOk) {
-						//Console.Error.WriteLine ("Error in values");
-					}
+//					if (!valuesOk) {
+//						Console.Error.WriteLine ("3D: Error in values");
+//					}
 
-
-					stream.Seek (afterInfoPos, System.IO.SeekOrigin.Begin);
+					stream.Position = afterRecord;
 
 					return valuesOk ? s_tableInfo3D.Copy () : null;
 				} else
@@ -269,11 +268,14 @@ namespace Tables.Denso
 			// range checking eliminates a few bad candidates
 			rangeX.Size = FloatSize * countX;
 			rangeY.Size = FloatSize * countY;
-			rangeZ.Size = tableType.ValueSize () * CountZ;
 
-			// don't check rangeZ as type might be wrong
-			if (rangeX.Intersects (rangeY))
+			int countZ = CountZ;
+			// assume smallest value type which is (u)int8 for safe intersect check as type might be wrong
+			rangeZ.Size = countZ;
+			if (rangeX.Intersects (rangeY) || rangeX.Intersects (rangeZ) || rangeY.Intersects (rangeZ))
 				return false;
+
+			rangeZ.Size = tableType.ValueSize () * countZ;
 
 			CheckMAC ();
 
@@ -336,7 +338,7 @@ namespace Tables.Denso
 		}
 
 		public override string CategoryForExport {
-			get { return string.IsNullOrEmpty (this.category) ? "Unknown 3D" : this.category; }
+			get { return string.IsNullOrWhiteSpace (this.category) ? "Unknown 3D" : this.category; }
 		}
 
 		public override XElement TunerProXdf (int categoryID)

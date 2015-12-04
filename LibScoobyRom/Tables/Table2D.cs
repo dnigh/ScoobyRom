@@ -53,19 +53,20 @@ namespace Tables.Denso
 			s_tableInfo2D.multiplier = stream.ReadSingleBigEndian ();
 			s_tableInfo2D.offset = stream.ReadSingleBigEndian ();
 
+			long afterRecord = stream.Position;
+
 			if (s_tableInfo2D.IsRecordValid ()) {
 				if (!s_tableInfo2D.hasMAC) {
 					// must back off stream position for next possible struct
-					stream.Seek (-2 * FloatSize, System.IO.SeekOrigin.Current);
+					afterRecord -= 2 * FloatSize;
 				}
-				long afterRecord = stream.Position;
 
 				bool valuesOk = s_tableInfo2D.ReadValidateValues (stream);
 //				if (!valuesOk) {
 //					Console.Error.WriteLine ("2D: Error in values");
 //				}
 
-				stream.Seek (afterRecord, System.IO.SeekOrigin.Begin);
+				stream.Position = afterRecord;
 
 				return valuesOk ? s_tableInfo2D.Copy () : null;
 			} else
@@ -168,23 +169,25 @@ namespace Tables.Denso
 
 		public override bool IsRecordValid ()
 		{
-			if (countX > CountMax || countX < CountMin)
+			int count = this.countX;
+			if (count > CountMax || count < CountMin)
 				return false;
 
 			if (!tableType.IsValid ())
 				return false;
 
-			// zero (=float) is often wrong when there are not MAC floats?
-			//			if (tableType == TableType.Float && !hasMAC)
-			//				tableType = TableType.UInt8;
-
-
 			if (rangeX.Pos > posMax || rangeX.Pos < posMin || rangeY.Pos > posMax || rangeY.Pos < posMin || rangeX.Pos == rangeY.Pos)
 				return false;
 
 			// range checking eliminates a few bad candidates
-			rangeX.Size = FloatSize * countX;
-			rangeY.Size = tableType.ValueSize () * countX;
+			rangeX.Size = FloatSize * count;
+
+			// assume smallest value type which is (u)int8 for safe intersect check as type might be wrong
+			rangeY.Size = count;
+			if (rangeX.Intersects (rangeY))
+				return false;
+
+			rangeY.Size = tableType.ValueSize () * count;
 
 			CheckMAC ();
 
