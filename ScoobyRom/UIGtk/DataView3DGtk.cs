@@ -19,9 +19,7 @@
  */
 
 
-using System;
 using Gtk;
-using Subaru.Tables;
 
 namespace ScoobyRom
 {
@@ -350,7 +348,7 @@ namespace ScoobyRom
 			case ColumnNr3D.ZPos:
 				return EqualFuncHex (key, (int)content);
 			case ColumnNr3D.Type:
-				return EqualFuncTableType (key, (TableType)content);
+				return EqualFuncTableType (key, (Tables.TableType)content);
 			case ColumnNr3D.CountX:
 			case ColumnNr3D.CountY:
 			case ColumnNr3D.CountZ:

@@ -12,7 +12,7 @@ Project homepage on *GitHub*: <http://github.com/SubaruDieselCrew/ScoobyRom/>
 
 1. License
 2. Purpose
-3. ScoobyRom Installation
+3. Installation
 4. Dependencies
 5. Files
 6. Launch and Command Line Parameters
@@ -68,14 +68,23 @@ Worst thing that can happen is the app finds nothing at all or false items only.
 This application is **not a ROM editor** (yet), you cannot change table values or modify a ROM in any way!
 Remember, in this version the ROM file is only being read.
 All additional data is saved into an extra XML file.
-However, ScoobyRom has a *RomRaider ECU definition* export feature.
+However, ScoobyRom **supports multiple ROM editors via "export as"** features:
 
->*RomRaider* is a free, open source tuning suite created for viewing, logging and tuning of modern Subaru Engine Control Units and some older BMW M3 (MS41/42/43) DME."
+a)	*RomRaider ECU definition* format
+
+"RomRaider is a free, open source tuning suite created for viewing, logging and tuning of modern Subaru Engine Control Units and some older BMW M3 (MS41/42/43) DME."
+
 <http://www.romraider.com>
+
+b)	*TunerPro XDF* format
+
+"TunerPro is a free, donate-if-you-like-it tuning platform aimed at making tuning easier and cheaper for the hobbyist and professional alike. It uses a versatile and extensible calibration definition format (XDF) that is user-defineable and is quite powerful."
+ 
+<http://tunerpro.net/>
 
 ---
 
-## 3) ScoobyRom Installation
+## 3) Installation
 
 ### 3.1) Binary archive
 
@@ -585,7 +594,8 @@ The following ScoobyRom XML example file contains just two annotated tables for 
 ### 5.3) RomRaider ECU def export XML
 
 You can use *RomRaider* to edit map values and modify the ROM.
-<http://www.romraider.com/>
+
+Homepage: <http://www.romraider.com/>
 
 ScoobyRom will display statistics and ask whether you want to export all, selected only or annotated only tables.
 
@@ -593,14 +603,28 @@ Empty categories will be named "Unknown 2D" and "Unknown 3D".
 
 Tables having empty names will appear named "Record 0x..." in RomRaider, indicating table (record) location which can be entered/searched/sorted in ScoobyRom's "Record" column.
 
-Note: For loading many hundreds of tables into *RomRaider*, you might need to increase allowed memory usage for RomRaider. See RomRaider documentation/forums on how to do this.
+Note: For loading many hundreds of tables into RomRaider, you might need to increase allowed memory usage for RomRaider. See RomRaider documentation/forums on how to do this.
 
 Do not use very old versions of RomRaider: For signed data types (int16, int8) support,
 RomRaider v0.5.3b RC7 or newer is needed!
 <http://www.romraider.com/forum/viewtopic.php?f=14&t=6801>
 
 
-### 5.4) SVG export
+### 5.4) TunerPro XDF export
+
+*TunerPro* is a fully featured generic ROM editor. Loading big definition files is very fast compared to *RomRaider*. Unlike RomRaider, TunerPro supports creating definitions from scratch via user interface, no text/XML editor needed. This also applies to editing imported data of course.
+
+Some disadvantages compared to RR: Windows only, closed-source
+
+Homepage: <http://tunerpro.net/>
+
+ScoobyRom will display statistics and ask whether you want to export all, selected only or annotated only tables.
+
+Empty categories will be named "Unknown 2D" and "Unknown 3D".
+
+Tables having empty names will appear named "Record 0x..." in TunerPro, indicating table (record) location which can be entered/searched/sorted in ScoobyRom's "Record" column.
+
+### 5.5) SVG export
 
 <http://en.wikipedia.org/wiki/Scalable_Vector_Graphics>
 
@@ -627,7 +651,7 @@ Recommended full featured editor, uses SVG format natively:
 *Inkscape* (free OSS, multi-platform): <http://inkscape.org/>
 
 
-### 5.5) Other export formats
+### 5.6) Other export formats
 
 Not implemented yet.
 
@@ -635,7 +659,7 @@ gnuplot also supports many other export formats like PDF, EPS, PNG and so on.
 Would be easy to add support in the same way as SVG.
 Nowadays some gnuplot terminals (i.e. "qt", "wxt" - check menus/toolbar) also provide their own export features (SVG, PDF, bitmap image).
 
-### 5.6) Temporary files
+### 5.7) Temporary files
 
 Only a single one: `gnuplot_data.tmp`
 
@@ -650,7 +674,7 @@ This binary data file is being used for all gnuplot plots - overwritten on each 
 
 Although gnuplot supports parsing text data via standard input - no need for temp file, I prefer binary transfer where full accuracy is guaranteed (32 bit floating point), similar like a 32 bit car control unit microcontroller would see the maps. No need to generate text and parse in gnuplot, no worries about decimal places etc.
 
-### 5.7) gnuplot template files
+### 5.8) gnuplot template files
 
 These two text files
 

@@ -19,7 +19,7 @@
  */
 
 
-namespace Subaru.Tables
+namespace Tables
 {
 	/// <summary>
 	/// Actually ROM code cares about first byte only. Residual 3 bytes should be zero.

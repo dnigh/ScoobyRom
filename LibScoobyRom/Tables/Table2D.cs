@@ -22,8 +22,9 @@
 using System;
 using System.Xml.Linq;
 using Extensions;
+using Tables;
 
-namespace Subaru.Tables
+namespace Tables.Denso
 {
 	// Native ROM struct size is 20 bytes in cases where there are two MAC floats,
 	// 12 bytes without the two MAC floats
@@ -52,19 +53,20 @@ namespace Subaru.Tables
 			s_tableInfo2D.multiplier = stream.ReadSingleBigEndian ();
 			s_tableInfo2D.offset = stream.ReadSingleBigEndian ();
 
+			long afterRecord = stream.Position;
+
 			if (s_tableInfo2D.IsRecordValid ()) {
 				if (!s_tableInfo2D.hasMAC) {
 					// must back off stream position for next possible struct
-					stream.Seek (-2 * FloatSize, System.IO.SeekOrigin.Current);
+					afterRecord -= 2 * FloatSize;
 				}
-				long afterRecord = stream.Position;
 
 				bool valuesOk = s_tableInfo2D.ReadValidateValues (stream);
 //				if (!valuesOk) {
 //					Console.Error.WriteLine ("2D: Error in values");
 //				}
 
-				stream.Seek (afterRecord, System.IO.SeekOrigin.Begin);
+				stream.Position = afterRecord;
 
 				return valuesOk ? s_tableInfo2D.Copy () : null;
 			} else
@@ -167,23 +169,25 @@ namespace Subaru.Tables
 
 		public override bool IsRecordValid ()
 		{
-			if (countX > CountMax || countX < CountMin)
+			int count = this.countX;
+			if (count > CountMax || count < CountMin)
 				return false;
 
 			if (!tableType.IsValid ())
 				return false;
 
-			// zero (=float) is often wrong when there are not MAC floats?
-			//			if (tableType == TableType.Float && !hasMAC)
-			//				tableType = TableType.UInt8;
-
-
 			if (rangeX.Pos > posMax || rangeX.Pos < posMin || rangeY.Pos > posMax || rangeY.Pos < posMin || rangeX.Pos == rangeY.Pos)
 				return false;
 
 			// range checking eliminates a few bad candidates
-			rangeX.Size = FloatSize * countX;
-			rangeY.Size = tableType.ValueSize () * countX;
+			rangeX.Size = FloatSize * count;
+
+			// assume smallest value type which is (u)int8 for safe intersect check as type might be wrong
+			rangeY.Size = count;
+			if (rangeX.Intersects (rangeY))
+				return false;
+
+			rangeY.Size = tableType.ValueSize () * count;
 
 			CheckMAC ();
 
@@ -230,21 +234,33 @@ namespace Subaru.Tables
 			// X-axis is being called "Y Axis" in RR!
 			return new XElement ("table",
 				new XAttribute ("type", "2D"),
-				new XAttribute ("name", RRName),
-				new XAttribute ("category", RRCategory),
+				new XAttribute ("name", TitleForExport),
+				new XAttribute ("category", CategoryForExport),
 				new XAttribute ("storagetype", tableType.ToRRType ()),
 				new XAttribute ("endian", endian),
 				new XAttribute ("sizey", countX.ToString ()),
-				new XAttribute ("storageaddress", HexAddress (rangeY.Pos)),
+				new XAttribute ("storageaddress", HexNum (rangeY.Pos)),
 				CommentValuesStats (valuesYmin, valuesYmax, valuesYavg),
-				RRXmlScaling (unitX, Expression, ExpressionBack, "0.000", 0.01f, 0.1f),
-				RRXmlAxis ("Y Axis", nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
+				RRXmlScaling (unitX, Expression, ExpressionReverse, "0.000", 0.01f, 0.1f),
+				RRXmlAxis (AxisType.Y, nameX, unitX, TableType.Float, rangeX, valuesX, Xmin, Xmax),
 				new XElement ("description", description));
 		}
 
-		public override string RRCategory
+		public override string CategoryForExport {
+			get { return string.IsNullOrWhiteSpace (this.category) ? "Unknown 2D" : this.category; }
+		}
+
+		public override XElement TunerProXdf (int categoryID)
 		{
-			get { return string.IsNullOrEmpty (this.category) ? "Unknown 2D" : this.category; }
+			return new XElement ("XDFTABLE",
+				new XAttribute ("uniqueid", HexNum (location)),
+				new XAttribute ("flags", HexNum (0)),
+				new XElement ("title", TitleForExport),
+				CategoryXdf (categoryID),
+				EmptyXAxisXdf (),
+				AxisXdf (AxisType.Y, TableType.Float, countX, rangeX.Pos, unitX),
+				ZAxisXdf (tableType, 0, countX, rangeY.Pos, unitY, GenerateExpression (ExpressionVarNameXdf))
+			);
 		}
 
 		public void WriteCSV (System.IO.TextWriter tw)

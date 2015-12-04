@@ -148,6 +148,7 @@ namespace ScoobyRom
 			this.radiobuttonAll = new global::Gtk.RadioButton ("_All");
 			this.radiobuttonAll.CanFocus = true;
 			this.radiobuttonAll.Name = "radiobuttonAll";
+			this.radiobuttonAll.Active = true;
 			this.radiobuttonAll.DrawIndicator = true;
 			this.radiobuttonAll.UseUnderline = true;
 			this.radiobuttonAll.Group = new global::GLib.SList (global::System.IntPtr.Zero);

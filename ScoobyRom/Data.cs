@@ -23,7 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Subaru.File;
-using Subaru.Tables;
+using Tables.Denso;
 
 namespace ScoobyRom
 {
@@ -39,7 +39,7 @@ namespace ScoobyRom
 
 		bool romLoaded = false;
 		Subaru.File.Rom rom;
-		RomMetadata romMetadata = new RomMetadata ();
+		DataFile.RomMetadata romMetadata = new DataFile.RomMetadata ();
 		string calIDfromRom;
 
 		// proper values can speed up searching a lot - e.g. 300 ms instead of several seconds
@@ -151,17 +151,17 @@ namespace ScoobyRom
 			string xmlPath = PathWithNewExtension (path, ".xml");
 			bool xmlExists = System.IO.File.Exists (xmlPath);
 
-			Subaru.File.RomXml romXml = null;
+			DataFile.RomXml romXml = null;
 			if (xmlExists) {
 				Console.WriteLine ("Loading existing XML file " + xmlPath);
-				romXml = new Subaru.File.RomXml ();
+				romXml = new DataFile.RomXml ();
 				romXml.Load (xmlPath);
 				romMetadata = romXml.RomMetadata;
 				tableSearchRange = romXml.TableSearchRange;
 			} else {
 				Console.WriteLine ("No existing XML file has been found!");
 				romXml = null;
-				romMetadata = new RomMetadata ();
+				romMetadata = new DataFile.RomMetadata ();
 				tableSearchRange = null;
 			}
 
@@ -202,16 +202,15 @@ namespace ScoobyRom
 
 		public void SaveXml (string path)
 		{
-			var romXml = new Subaru.File.RomXml ();
+			var romXml = new DataFile.RomXml ();
 			romXml.TableSearchRange = tableSearchRange;
 			romXml.WriteXml (path, romMetadata, list2D, list3D);
 		}
 
-		public void SaveAsRomRaiderXml (string path, SelectedChoice choice)
+		void GetChosenTables (SelectedChoice choice, out IList<Table2D> list2D, out IList<Table3D> list3D)
 		{
-			IList<Table2D> list2D;
-			IList<Table3D> list3D;
-
+			list2D = null;
+			list3D = null;
 			switch (choice) {
 			case SelectedChoice.All:
 				list2D = this.List2DSorted ();
@@ -226,13 +225,29 @@ namespace ScoobyRom
 				list3D = this.List3DAnnotatedSorted ();
 				break;
 			default:
-				return;
+				throw new ArgumentOutOfRangeException ("choice", "unknown");
 			}
-
-			Subaru.File.RomRaiderEcuDefXml.WriteRRXmlFile (path, romMetadata.XElement, list2D, list3D);
 		}
 
-		public void ChangeTableType (Table table, TableType newType)
+		public void SaveAsRomRaiderXml (string path, SelectedChoice choice)
+		{
+			IList<Table2D> list2D;
+			IList<Table3D> list3D;
+			GetChosenTables (choice, out list2D, out list3D);
+			DataFile.RomRaiderEcuDefXml.WriteRRXmlFile (path, romMetadata.XElement, list2D, list3D);
+		}
+
+		public void SaveAsTunerProXdf (string path, SelectedChoice choice)
+		{
+			IList<Table2D> list2D;
+			IList<Table3D> list3D;
+			GetChosenTables (choice, out list2D, out list3D);
+
+			var categories = GetCategoriesDictionary (GetCategoriesForExport (list2D, list3D));
+			DataFile.TunerProXdf.WriteXdfFile (path, romMetadata, categories, list2D, list3D);
+		}
+
+		public void ChangeTableType (Table table, Tables.TableType newType)
 		{
 			table.ChangeTypeToAndReload (newType, rom.Stream);
 		}
@@ -323,6 +338,24 @@ namespace ScoobyRom
 				}
 			}
 			Console.WriteLine ("Result: {0} tables have shared x-axis", num);
+		}
+
+		public string[] GetCategoriesForExport (IList<Table2D> list2D, IList<Table3D> list3D)
+		{
+			var categories2D = list2D.Select (t => t.CategoryForExport);
+			var categories3D = list3D.Select (t => t.CategoryForExport);
+
+			return categories2D.Concat (categories3D).Distinct ().OrderBy (c => c).AsParallel ().ToArray ();
+		}
+
+		public Dictionary <string, int> GetCategoriesDictionary (string[] categories)
+		{
+			var d = new Dictionary <string, int> (categories.Length);
+			for (int i = 0; i < categories.Length; i++) {
+				string s = categories [i];
+				d.Add (s, i);
+			}
+			return d;
 		}
 	}
 }

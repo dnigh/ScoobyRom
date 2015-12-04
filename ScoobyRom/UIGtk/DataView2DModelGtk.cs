@@ -20,9 +20,8 @@
 
 
 using System;
-using System.Threading.Tasks;
 using Gtk;
-using Subaru.Tables;
+using Tables.Denso;
 
 namespace ScoobyRom
 {
@@ -46,7 +45,7 @@ namespace ScoobyRom
 			get { return (int)ColumnNr2D.Toggle; }
 		}
 
-		public void ChangeTableType (Table2D table2D, TableType newType)
+		public void ChangeTableType (Table2D table2D, Tables.TableType newType)
 		{
 			data.ChangeTableType (table2D, newType);
 		}
@@ -139,9 +138,9 @@ namespace ScoobyRom
 			SetNodeContentTypeChanged (iter, table2D);
 		}
 
-		public override void SetNodeContentTypeChanged (TreeIter iter, Subaru.Tables.Table table)
+		public override void SetNodeContentTypeChanged (TreeIter iter, Tables.Denso.Table table)
 		{
-			var t = (Subaru.Tables.Table2D)table;
+			var t = (Table2D)table;
 			store.SetValue (iter, (int)ColumnNr2D.Type, (int)t.TableType);
 			store.SetValue (iter, (int)ColumnNr2D.Ymin, t.Ymin);
 			store.SetValue (iter, (int)ColumnNr2D.Yavg, t.Yavg);

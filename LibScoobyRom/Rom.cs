@@ -23,7 +23,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using Subaru.Tables;
+using Tables;
+using Tables.Denso;
 
 namespace Subaru.File
 {
@@ -43,6 +44,7 @@ namespace Subaru.File
 		int startPos, lastPos;
 		int percentDoneLastReport;
 		DateTime? romDate;
+		int? reflashCount;
 
 		public string Path {
 			get { return this.path; }
@@ -70,6 +72,14 @@ namespace Subaru.File
 
 		public string RomDateStr {
 			get { return this.romDate.HasValue ? this.romDate.Value.ToString ("yyyy-MM-dd") : "-"; }
+		}
+
+		public int? ReflashCount {
+			get { return reflashCount; }
+		}
+
+		public string ReflashCountStr {
+			get { return reflashCount.HasValue ? reflashCount.Value.ToString () : "-"; }
 		}
 
 		public Rom (string path)
@@ -365,6 +375,7 @@ namespace Subaru.File
 				Console.WriteLine ("CID: {0}", CID);
 			}
 
+			// HACK
 			bool isDiesel = posDenso > 0x4000;
 
 			if (posDenso > 0) {
@@ -386,6 +397,16 @@ namespace Subaru.File
 					Console.WriteLine ("RomDate: {0}", RomDateStr);
 				} catch (Exception) {
 					Console.Error.WriteLine ("RomDate failed");
+				}
+			}
+
+			if (posDenso > 0) {
+				try {
+					var reflashCounterObj = new ReflashCounter (romType, stream);
+					reflashCount = reflashCounterObj.Read ();
+					Console.WriteLine ("ReflashCount @ 0x{0:X} = {1}", reflashCounterObj.Position, ReflashCountStr);
+				} catch (Exception) {
+					Console.Error.WriteLine ("ReflashCount failed");
 				}
 			}
 
