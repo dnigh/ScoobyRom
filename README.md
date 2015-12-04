@@ -38,8 +38,11 @@ Currently it is very [*Denso*](http://en.wikipedia.org/wiki/Denso) specific.
 Originally designed for *Subaru* Diesel (Euro 4 & 5) ROMs, some *Subaru* petrol models, as well as ROMs from other manufacturers like *Mazda*, *Mitsubishi*, *Nissan* etc. have been tested working (where *Denso* supplied control units).
 In general, different car models are equipped with different ECUs (hardware and/or firmware), therefore success varies.
 
-Currently it can find and visualise 2D (x-y) and 3D (x-y-z) tables ("maps").
-Also it displays and verifies checksums.
+Main features
+
+*	Find and visualise 2D (x-y) and 3D (x-y-z) tables ("maps").
+*	Allows adding metadata (category, title, axes names, units, description text) as ROMs (= compiled software + calibration data such as tables) do not contain such annotations.
+*	Display and verify checksums.
 
 ROM memory model is supposed to be **32 bit, big endian**, others are unlikely to work.
 
@@ -61,10 +64,19 @@ Worst thing that can happen is the app finds nothing at all or false items only.
 This application is **not a ROM editor** (yet), you cannot change table values or modify a ROM in any way!
 Remember, in this version the ROM file is only being read.
 All additional data is saved into an extra XML file.
-However, ScoobyRom has a *RomRaider ECU definition* export feature.
+However, ScoobyRom **supports multiple ROM editors via "export as"** features:
 
->*RomRaider* is a free, open source tuning suite created for viewing, logging and tuning of modern Subaru Engine Control Units and some older BMW M3 (MS41/42/43) DME."
+a)	*RomRaider ECU definition* format
+
+"RomRaider is a free, open source tuning suite created for viewing, logging and tuning of modern Subaru Engine Control Units and some older BMW M3 (MS41/42/43) DME."
+
 <http://www.romraider.com>
+
+b)	*TunerPro XDF* format
+
+"TunerPro is a free, donate-if-you-like-it tuning platform aimed at making tuning easier and cheaper for the hobbyist and professional alike. It uses a versatile and extensible calibration definition format (XDF) that is user-defineable and is quite powerful."
+ 
+<http://tunerpro.net/>
 
 ---
 
