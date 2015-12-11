@@ -2,39 +2,60 @@
 
 ![](Images/AppIcon.png)
 
-Author: <http://subdiesel.wordpress.com/>
+*	Author: subdiesel, Subaru Diesel Crew <http://subdiesel.wordpress.com/>
 
-Project homepage on *GitHub*: <http://github.com/SubaruDieselCrew/ScoobyRom/>
+*	ScoobyRom Homepage: <http://subdiesel.wordpress.com/ecu-analysis/scoobyrom-software/>
+
+*	Source code repository and downloads: <http://github.com/SubaruDieselCrew/ScoobyRom/>
 
 # Documentation
 
 ## CONTENTS
 
-1. License
-2. Purpose
-3. Installation
-4. Dependencies
-5. Files
-6. Launch and Command Line Parameters
-7. User Interface Hints
+1.	[Purpose](#purpose)
+
+2.	[License](#license)
+
+3.	[Installation](#installation)
+
+	3.1	[Binary archive](#binary)
+
+	3.2	[Source Code](#source)
+
+4.	[Dependencies](#dependencies)
+
+	4.1 [.NET or compatible runtime](#dotnet)
+
+	4.2 [Gtk#](#gtksharp)
+
+	4.3 [Florence](#florence)
+
+	4.4 [gnuplot](#gnuplot)
+
+5.	[Files](#files)
+
+	5.1 [ScoobyRom.exe.config](#config)
+
+	5.2 [ScoobyRom XML](#scoobyrom_xml)
+
+	5.3 [RomRaider ECU def export](#romraider_export)
+
+	5.4 [TunerPro XDF export](#tunerpro_export)
+
+	5.5 [SVG export](#svg_export)
+
+	5.6 [Other export formats](#other_export)
+
+	5.7 [Temporary files](#temp_files)
+
+	5.8 [gnuplot template files](#gnuplot_template_files)
+
+6.	[Launch and Command Line Parameters](#launch)
+7.	[User Interface Hints](#ui)
 
 ---
 
-## 1) License
-
-GPLv3. See text file [COPYING.txt](COPYING.txt) for license text.
-
-[http://fsf.org/](http://fsf.org/ "Free Software Foundation")
-
-You can also get license text in different formats and further details there.
-
-[http://www.gnu.org/licenses/gpl.html](http://www.gnu.org/licenses/gpl.html)
-
-[http://www.gnu.org/licenses/gpl-faq.html](http://www.gnu.org/licenses/gpl-faq.html)
-
----
-
-## 2) Purpose
+## <a name="purpose"></a> 1) Purpose
 
 *ScoobyRom* is a car control unit ([ECU](http://en.wikipedia.org/wiki/Engine_Control_Unit), [TCU](http://en.wikipedia.org/wiki/Transmission_Control_Unit)) firmware (ROM) **data visualisation viewer and metadata editor**.
 Currently it is very [*Denso*](http://en.wikipedia.org/wiki/Denso) specific.
@@ -84,9 +105,23 @@ b)	*TunerPro XDF* format
 
 ---
 
-## 3) Installation
+## <a name="license"></a> 2) License
 
-### 3.1) Binary archive
+GPLv3. See text file [COPYING.txt](COPYING.txt) for license text.
+
+[http://fsf.org/](http://fsf.org/ "Free Software Foundation")
+
+You can also get license text in different formats and further details there.
+
+[http://www.gnu.org/licenses/gpl.html](http://www.gnu.org/licenses/gpl.html)
+
+[http://www.gnu.org/licenses/gpl-faq.html](http://www.gnu.org/licenses/gpl-faq.html)
+
+---
+
+## <a name="installation"></a> 3) Installation
+
+### <a name="binary"></a> 3.1) Binary archive
 
 REQUIRED!
 
@@ -109,7 +144,7 @@ This applies only to the ScoobyRom (GUI app) itself. Extra plot windows are gene
 automatically launching independent external tool _gnuplot_, therefore *gnuplot* x64 is working fine and recommended on 64 bit operating systems.
 
 
-### 3.2) Source Code
+### <a name="source"></a> 3.2) Source Code
 
 OPTIONAL.
 
@@ -137,11 +172,13 @@ For instructions and hints see file [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ---
 
-## 4) Dependencies
+## <a name="dependencies"></a> 4) Dependencies
 
-### 4.1) .NET or compatible runtime, v4.0 or higher
+### <a name="dotnet"></a> 4.1) .NET or compatible runtime
 
 REQUIRED!
+
+Version: **.NET v4.0 or higher**
 
 *	Windows 10
 
@@ -196,7 +233,7 @@ REQUIRED!
 	*	Arch Linux: [mono](http://www.archlinux.org/packages/?q=mono)
 
 
-### 4.2) Gtk\# 
+### <a name="gtksharp"></a> 4.2) Gtk\# 
 
 REQUIRED!
 
@@ -248,7 +285,7 @@ package names:
 *	Arch Linux: [gtk-sharp-2](https://www.archlinux.org/packages/?q=gtk-sharp-2)
 
 
-### 4.3) Florence (fork of *NPlot*, .NET plotting library)
+### <a name="florence"></a> 4.3) Florence (fork of *NPlot*, .NET plotting library)
 
 Required. Nothing to do as this library is already included pre-compiled (`/vendor/Florence.dll`).
 
@@ -267,7 +304,7 @@ Development is rather inactive for years but pretty good and compact. Cannot do 
 <http://netcontrols.org/nplot/wiki/>
 
 
-### 4.4) gnuplot
+### <a name="gnuplot"></a> 4.4) gnuplot
 
 OPTIONAL.
 
@@ -283,6 +320,12 @@ ScoobyRom uses gnuplot for **external** plotting (opening extra windows).
 	Nowadays however, some gnuplot terminals (i.e. "qt", "wxt" - check menus/toolbar) also provide their own export features (SVG, PDF, bitmap image).
 
 #### Installation
+
+##### Version
+
+ScoobyRom since v0.7.x is designed to work with gnuplot v5+. There are new/modified/obsolete commands compared to gnuplot v4 used by older ScoobyRom v0.6.x.
+
+Try latest version first. In case of troubles tested version gnuplot v5.0.1 is recommended.
 
 ##### Windows
 
@@ -379,7 +422,7 @@ Launch the binary (Windows: `gnuplot.exe`, Linux/Unix: `gnuplot`)
 
 ---
 
-## 5) Files
+## <a name="files"></a> 5) Files
 
 General note regarding (XML) file line endings:
 
@@ -390,7 +433,7 @@ When new files are written, such as by action *Save* (`Ctrl+S`), these will be i
 [Wikipedia: Newline](http://en.wikipedia.org/wiki/Newline)
 
 
-### 5.1) ScoobyRom.exe.config
+### <a name="config"></a> 5.1) ScoobyRom.exe.config
 
 *Extensible Markup Language* ([XML](http://en.wikipedia.org/wiki/XML)) file, contains application settings, comes with descriptive comments for convenience.
 
@@ -449,7 +492,7 @@ Errors or missing entries will result in default size (48 x 32) pixels. Both, wi
 	<add key="iconHeight" value="32"/>
 
 
-### 5.2) ScoobyRom XML
+### <a name="scoobyrom_xml"></a> 5.2) ScoobyRom XML
 
 #### 5.2.1) Description
 
@@ -591,7 +634,7 @@ The following ScoobyRom XML example file contains just two annotated tables for 
 	  </table3D>
 	</rom>
 
-### 5.3) RomRaider ECU def export XML
+### <a name="romraider_export"></a> 5.3) RomRaider ECU def export
 
 You can use *RomRaider* to edit map values and modify the ROM.
 
@@ -610,7 +653,7 @@ RomRaider v0.5.3b RC7 or newer is needed!
 <http://www.romraider.com/forum/viewtopic.php?f=14&t=6801>
 
 
-### 5.4) TunerPro XDF export
+### <a name="tunerpro_export"></a> 5.4) TunerPro XDF export
 
 *TunerPro* is a fully featured generic ROM editor. Loading big definition files is very fast compared to *RomRaider*. Unlike RomRaider, TunerPro supports creating definitions from scratch via user interface, no text/XML editor needed. This also applies to editing imported data of course.
 
@@ -624,7 +667,7 @@ Empty categories will be named "Unknown 2D" and "Unknown 3D".
 
 Tables having empty names will appear named "Record 0x..." in TunerPro, indicating table (record) location which can be entered/searched/sorted in ScoobyRom's "Record" column.
 
-### 5.5) SVG export
+### <a name="svg_export"></a> 5.5) SVG export
 
 <http://en.wikipedia.org/wiki/Scalable_Vector_Graphics>
 
@@ -651,7 +694,7 @@ Recommended full featured editor, uses SVG format natively:
 *Inkscape* (free OSS, multi-platform): <http://inkscape.org/>
 
 
-### 5.6) Other export formats
+### <a name="other_export"></a> 5.6) Other export formats
 
 Not implemented yet.
 
@@ -659,7 +702,7 @@ gnuplot also supports many other export formats like PDF, EPS, PNG and so on.
 Would be easy to add support in the same way as SVG.
 Nowadays some gnuplot terminals (i.e. "qt", "wxt" - check menus/toolbar) also provide their own export features (SVG, PDF, bitmap image).
 
-### 5.7) Temporary files
+### <a name="temp_files"></a> 5.7) Temporary files
 
 Only a single one: `gnuplot_data.tmp`
 
@@ -674,7 +717,7 @@ This binary data file is being used for all gnuplot plots - overwritten on each 
 
 Although gnuplot supports parsing text data via standard input - no need for temp file, I prefer binary transfer where full accuracy is guaranteed (32 bit floating point), similar like a 32 bit car control unit microcontroller would see the maps. No need to generate text and parse in gnuplot, no worries about decimal places etc.
 
-### 5.8) gnuplot template files
+### <a name="gnuplot_template_files"></a> 5.8) gnuplot template files
 
 These two text files
 
@@ -701,7 +744,7 @@ A few (text labeling) commands are generated within ScoobyRom on the fly, you ne
 
 ---
 
-## 6) Launch and Command Line Parameters
+## <a name="launch"></a> 6) Launch and Command Line Parameters
 
 ScoobyRom is designed to only load a **single ROM**!
 However you can start the app multiple times, load any ROM in each instance,
@@ -723,7 +766,7 @@ If `<ROM_file>` cannot be found, ScoobyRom ignores this error, starts in normal 
 
 ---
 
-## 7) User Interface Hints
+## <a name="ui"></a> 7) User Interface Hints
 
 Couple of things that may not be immediately obvious:
 
@@ -782,6 +825,6 @@ Often these are valid tables and are actually used in ROM firmware logic.
 	*	Slim horizontal bars (dark yellow) on top of the content-rectangle indicate **checksummed regions**.
 	*	Currently **zoom** in/out/reset works by placing mouse pointer somewhere over NavBar area, holding (left) mouse button #1 depressed and pressing key (`+`), (`-`) or (`0`), respectively.
 	*	Tooltip shows ROM position (hex, byte size, decimal) as well as content type at mouse pointer. You should use this to find out the mapping between colour and content.
-	*	Since ScoobyRom deals with tables mostly, unlike *IDA* for example, it does not scan for other content types like code, empty space, misc data etc.
+	*	Since ScoobyRom deals with tables mostly, unlike *[IDA](http://www.hex-rays.com/products/ida/)* for example, it does not scan for other content types like code, empty space, misc data etc.
 	*	Vertical markers (red) show currently viewed table record and corresponding locations of axes and values. These markers only update using visualise-action.
 	*	Special markers (left + right) and coloured region (grey) appear when *tableSearch* is specified. Makes it easy to verify or improve table search range.

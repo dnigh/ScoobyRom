@@ -2,35 +2,25 @@
 
 ![](ScoobyRom/Images/AppIcon.png)
 
-Author: <http://subdiesel.wordpress.com/>
+*	Author: subdiesel, Subaru Diesel Crew <http://subdiesel.wordpress.com/>
 
-Project homepage on *GitHub*: <http://github.com/SubaruDieselCrew/ScoobyRom/>
+*	ScoobyRom Homepage: <http://subdiesel.wordpress.com/ecu-analysis/scoobyrom-software/>
+
+*	Source code repository and downloads: <http://github.com/SubaruDieselCrew/ScoobyRom/>
 
 # Quick Facts
 
 ## CONTENTS
 
-1.	License
-2.	Purpose
-3.	Further Details
+1.	[Purpose](#purpose)
+
+2.	[License](#license)
+
+3.	[Further Details](#details)
 
 ---
 
-## 1) License
-
-GPLv3. See text file [COPYING.txt](COPYING.txt) for license text.
-
-[http://fsf.org/](http://fsf.org/ "Free Software Foundation")
-
-You can also get license text in different formats and further details there.
-
-[http://www.gnu.org/licenses/gpl.html](http://www.gnu.org/licenses/gpl.html)
-
-[http://www.gnu.org/licenses/gpl-faq.html](http://www.gnu.org/licenses/gpl-faq.html)
-
----
-
-## 2) Purpose
+## <a name="purpose"></a> 1) Purpose
 
 *ScoobyRom* is a car control unit ([ECU](http://en.wikipedia.org/wiki/Engine_Control_Unit), [TCU](http://en.wikipedia.org/wiki/Transmission_Control_Unit)) firmware (ROM) **data visualisation viewer and metadata editor**.
 Currently it is very [*Denso*](http://en.wikipedia.org/wiki/Denso) specific.
@@ -80,7 +70,21 @@ b)	*TunerPro XDF* format
 
 ---
 
-## 3) Further Details
+## <a name="license"></a> 2) License
+
+GPLv3. See text file [COPYING.txt](COPYING.txt) for license text.
+
+[http://fsf.org/](http://fsf.org/ "Free Software Foundation")
+
+You can also get license text in different formats and further details there.
+
+[http://www.gnu.org/licenses/gpl.html](http://www.gnu.org/licenses/gpl.html)
+
+[http://www.gnu.org/licenses/gpl-faq.html](http://www.gnu.org/licenses/gpl-faq.html)
+
+---
+
+## <a name="details"></a> 3) Further Details
 
 See `README.md` and other documentation files (`*.md`) in project subfolders.
 
