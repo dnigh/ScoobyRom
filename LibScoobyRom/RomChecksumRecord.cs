@@ -27,7 +27,7 @@ namespace Subaru
 	{
 		int startAddress, endAddress, checksum;
 
-		public RomChecksumRecord (int startAddress, int endAddress, int checksum) : this(startAddress, endAddress)
+		public RomChecksumRecord (int startAddress, int endAddress, int checksum) : this (startAddress, endAddress)
 		{
 			this.Checksum = checksum;
 		}

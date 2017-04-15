@@ -19,6 +19,7 @@
  */
 
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Extensions;
@@ -27,6 +28,7 @@ namespace Subaru
 {
 	public class RomChecksumming
 	{
+		public const int SizeOfNativeStruct = 3 * sizeof(UInt32);
 		public const int ChecksumTableRecordCount = 17;
 		public const int ChecksumConstant = 0x5AA5A55A;
 
@@ -56,8 +58,10 @@ namespace Subaru
 				return 0x17FB80;
 			case RomType.SH72531:
 				return 0x13F500;
+			case RomType.SH72543R:
+				return 0x1FF800;
 			default:
-				return 0;
+				return -1;
 			}
 		}
 
@@ -89,7 +93,7 @@ namespace Subaru
 			int sum = 0;
 			if (!record.IsEmpty) {
 				stream.Seek (record.StartAddress, SeekOrigin.Begin);
-				for (int p = record.StartAddress; p < record.EndAddress; p += 4) {
+				for (int p = record.StartAddress; p < record.EndAddress; p += sizeof(Int32)) {
 					sum += stream.ReadInt32BigEndian ();
 				}
 			}

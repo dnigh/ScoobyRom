@@ -214,7 +214,7 @@ public partial class MainWindow : Gtk.Window
 		stopwatch.Stop ();
 
 		Application.Invoke (delegate {
-			if (t.Status == TaskStatus.Faulted) {
+			if (t != null && t.Status == TaskStatus.Faulted) {
 				Console.Error.WriteLine ("Exception processing ROM:");
 				Console.Error.WriteLine (t.Exception.ToString ());
 				openAction.Sensitive = true;
@@ -257,7 +257,7 @@ public partial class MainWindow : Gtk.Window
 			return;
 		}
 
-		var regions = new List<Util.Region> (1024);
+		var regions = new List<Util.Region> (data.List2D.Count * 3 + data.List3D.Count * 4 + 1);
 
 		navbarwidget.FirstPos = 0;
 		navbarwidget.LastPos = data.Rom.Size - 1;

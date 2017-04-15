@@ -1,6 +1,6 @@
 // Rom.cs: ROM class - read/analyze ROM file content.
 
-/* Copyright (C) 2011-2015 SubaruDieselCrew
+/* Copyright (C) 2011-2016 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *
@@ -23,7 +23,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using Tables;
 using Tables.Denso;
 
 namespace Subaru.File
@@ -31,6 +30,7 @@ namespace Subaru.File
 	public sealed class Rom : IDisposable
 	{
 		public const int KiB = 1024;
+		public const int MiB = KiB * KiB;
 
 		/// <summary>
 		/// Progress info while ROM is being analyzed.
@@ -45,6 +45,7 @@ namespace Subaru.File
 		int percentDoneLastReport;
 		DateTime? romDate;
 		int? reflashCount;
+		RomRaiderEditStamp.RomRaiderEditStampData? romRaiderEditStampData;
 
 		public string Path {
 			get { return this.path; }
@@ -80,6 +81,10 @@ namespace Subaru.File
 
 		public string ReflashCountStr {
 			get { return reflashCount.HasValue ? reflashCount.Value.ToString () : "-"; }
+		}
+
+		public string RomRaiderEditStampStr {
+			get { return romRaiderEditStampData.HasValue ? romRaiderEditStampData.Value.ToString () : "-"; }
 		}
 
 		public Rom (string path)
@@ -141,8 +146,7 @@ namespace Subaru.File
 			if (ProgressChanged == null)
 				return;
 
-			float percent = 100f * (((float)pos - (float)startPos)) / ((float)lastPos - (float)startPos);
-			int percentDone = (int)(percent);
+			int percentDone = (int)(100f * (((float)pos - (float)startPos)) / ((float)lastPos - (float)startPos));
 			if (percentDone >= percentDoneLastReport + 10) {
 				percentDoneLastReport = percentDone;
 				OnProgressChanged (percentDone);
@@ -227,9 +231,9 @@ namespace Subaru.File
 			Table.PosMin = 8 * KiB;
 			Table.PosMax = Size - 1;
 
-			// default capacities suitable for current SH7059 diesel ROMs
-			list2D = new List<Table2D> (1000);
-			list3D = new List<Table3D> (1200);
+			// default capacities suitable for current (MY2015 2MiB) diesel ROMs
+			list2D = new List<Table2D> (1500);
+			list3D = new List<Table3D> (1300);
 
 			OnProgressChanged (0);
 			this.percentDoneLastReport = 0;
@@ -351,6 +355,9 @@ namespace Subaru.File
 
 			// 0x4000 = 16 KiB
 			const int Pos_SH7058_Diesel = 0x4000;
+			// 0x8000 = 32 KiB
+			const int Pos_SH72543R_Diesel = 0x8000;
+
 			const int RomIDlongLength = 32;
 			const int CIDLength = 8;
 
@@ -358,6 +365,9 @@ namespace Subaru.File
 			case RomType.SH7058:
 			case RomType.SH7059:
 				pos = Pos_SH7058_Diesel;
+				break;
+			case RomType.SH72543R:
+				pos = Pos_SH72543R_Diesel;
 				break;
 			default:
 				Console.WriteLine ("Unknown RomType");
@@ -381,33 +391,37 @@ namespace Subaru.File
 			if (posDenso > 0) {
 				try {
 					stream.Position = posDenso - 3;
-					int year, month, day;
+					DateTime? date;
 
 					if (isDiesel) {
-						year = stream.ReadByte () + 2000;
-						month = stream.ReadByte ();
-						day = stream.ReadByte ();
+						date = Util.BinaryHelper.ParseDate (stream);
 					} else {
-						year = ParsePackedNaturalBCD ((byte)stream.ReadByte ()) + 2000;
-						month = ParsePackedNaturalBCD ((byte)stream.ReadByte ());
-						day = ParsePackedNaturalBCD ((byte)stream.ReadByte ());
+						date = Util.BinaryHelper.ParseDatePackedNaturalBCD (stream);
 					}
 
-					this.romDate = new DateTime (year, month, day);
+					this.romDate = date;
 					Console.WriteLine ("RomDate: {0}", RomDateStr);
 				} catch (Exception) {
-					Console.Error.WriteLine ("RomDate failed");
+					Console.Error.WriteLine ("Exception: RomDate failed");
 				}
 			}
 
 			if (posDenso > 0) {
 				try {
 					var reflashCounterObj = new ReflashCounter (romType, stream);
-					reflashCount = reflashCounterObj.Read ();
+					this.reflashCount = reflashCounterObj.Read ();
 					Console.WriteLine ("ReflashCount @ 0x{0:X} = {1}", reflashCounterObj.Position, ReflashCountStr);
 				} catch (Exception) {
-					Console.Error.WriteLine ("ReflashCount failed");
+					Console.Error.WriteLine ("Exception: ReflashCount failed");
 				}
+			}
+
+			try {
+				var obj = new RomRaiderEditStamp (romType, stream);
+				this.romRaiderEditStampData = obj.Read ();
+				Console.WriteLine ("RomRaiderEditStamp @ 0x{0:X} = {1}", obj.Position, romRaiderEditStampData);
+			} catch (Exception) {
+				Console.Error.WriteLine ("Exception: RomRaiderEditStamp failed");
 			}
 
 			byte[] searchBytes = new byte[] { 0xA2, 0x10, 0x14 };
@@ -428,24 +442,6 @@ namespace Subaru.File
 			}
 		}
 
-
-		/// <summary>
-		/// Parses a packed BCD byte.
-		/// "Natural BCD (NBCD) (Binary Coded Decimal)", also called "8421" encoding.
-		/// http://en.wikipedia.org/wiki/Binary-coded_decimal
-		/// Example: input hex 0x98 yields decimal 98.
-		/// </summary>
-		/// <returns>The parsed value.</returns>
-		/// <param name="hexValue">source value, must be in range 0x00..0x99</param>
-		public static byte ParsePackedNaturalBCD (byte hexValue)
-		{
-			byte nibbleLow = (byte)(hexValue & 0x0F);
-			byte nibbleHigh = (byte)((hexValue >> 4) & 0x0F);
-			if (nibbleLow > 9 || nibbleHigh > 9)
-				throw new ArgumentOutOfRangeException ("hexValue", "not a valid packed natural BCD byte");
-			//return int.Parse (hexValue.ToString ("X"));
-			return (byte)(10 * nibbleHigh + nibbleLow);
-		}
 
 		#region IDisposable implementation
 
@@ -472,12 +468,14 @@ namespace Subaru.File
 				switch (length) {
 				case 512 * KiB:
 					return RomType.SH7055;
-				case 1024 * KiB:
+				case 1 * MiB:
 					return RomType.SH7058;
 				case (1024 + 512) * KiB:
 					return RomType.SH7059;
 				case 1280 * KiB:
 					return RomType.SH72531;
+				case 2 * MiB:
+					return RomType.SH72543R;
 				default:
 					return RomType.Unknown;
 				}

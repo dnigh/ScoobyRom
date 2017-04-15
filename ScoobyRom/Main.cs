@@ -116,7 +116,7 @@ namespace ScoobyRom
 				appIcon = Gdk.Pixbuf.LoadFromResource ("Images.AppIcon.png");
 			} catch (System.ArgumentException) {
 				// i.e. resource not found
-				Console.WriteLine ("Exception: loading resources");
+				Console.Error.WriteLine ("Exception: loading resources");
 			}
 
 			// program arguments: if available, first argument is supposed to be ROM path

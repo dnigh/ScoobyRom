@@ -79,6 +79,7 @@ namespace ScoobyRom
 
 			labelRomDate.Text = data.Rom.RomDateStr;
 			labelReflashCount.Text = data.Rom.ReflashCountStr;
+			labelRomRaiderEditStamp.Text = data.Rom.RomRaiderEditStampStr;
 		}
 
 		void OnButtonRefreshClicked (object sender, System.EventArgs e)

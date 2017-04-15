@@ -65,7 +65,7 @@ a)	*RomRaider ECU definition* format
 b)	*TunerPro XDF* format
 
 "TunerPro is a free, donate-if-you-like-it tuning platform aimed at making tuning easier and cheaper for the hobbyist and professional alike. It uses a versatile and extensible calibration definition format (XDF) that is user-defineable and is quite powerful."
- 
+
 <http://tunerpro.net/>
 
 ---
@@ -93,5 +93,5 @@ Main documentation:
 *	[ScoobyRom/README.md](ScoobyRom/README.md) (click this on *GitHub* - it will render as HTML in web browser)
 
 Following formats are also included in binary download package (`.ZIP`) for convenience, automatically generated from above Markdown source:
- 
+
 *	ScoobyRom/README.html

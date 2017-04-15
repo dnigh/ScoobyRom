@@ -29,7 +29,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration ("")]
 [assembly: AssemblyCompany ("")]
 [assembly: AssemblyProduct ("ScoobyRom")]
-[assembly: AssemblyCopyright ("© 2011-2015 SubaruDieselCrew")]
+[assembly: AssemblyCopyright ("© 2011-2017 SubaruDieselCrew")]
 [assembly: AssemblyTrademark ("")]
 [assembly: AssemblyCulture ("")]
 
@@ -37,7 +37,7 @@ using System.Runtime.CompilerServices;
 // The form "{Major}.{Minor}.*" will automatically update the build and revision,
 // and "{Major}.{Minor}.{Build}.*" will update just the revision.
 
-[assembly: AssemblyVersion ("0.8.2.*")]
+[assembly: AssemblyVersion ("0.8.3.*")]
 
 [assembly: System.CLSCompliant (false)]
 

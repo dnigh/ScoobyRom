@@ -1,6 +1,6 @@
 // ChecksumWindow.cs: Gtk.Window displaying ROM checksums and CVN.
 
-/* Copyright (C) 2011-2015 SubaruDieselCrew
+/* Copyright (C) 2011-2017 SubaruDieselCrew
  *
  * This file is part of ScoobyRom.
  *
@@ -33,6 +33,7 @@ namespace ScoobyRom
 			Index,
 			Start,
 			End,
+			Size,
 			SumTable,
 			Icon,
 			SumCalc
@@ -41,7 +42,7 @@ namespace ScoobyRom
 		Data data;
 
 		ListStore store;
-		readonly Dictionary<TreeViewColumn, ColNr> columnsDict = new Dictionary<TreeViewColumn, ColNr> (5);
+		readonly Dictionary<TreeViewColumn, ColNr> columnsDict = new Dictionary<TreeViewColumn, ColNr> (7);
 		readonly Gdk.Pixbuf[] pixbufs = new Gdk.Pixbuf[2];
 
 		CellRendererText cellRendererText;
@@ -56,29 +57,27 @@ namespace ScoobyRom
 
 		void Init ()
 		{
-			// index, (start, end, tableSum), icon, calcSum
-			store = new ListStore (typeof(int), typeof(int), typeof(int), typeof(int), typeof(Gdk.Pixbuf), typeof(int));
+			// index, (start, end, size, tableSum), icon, calcSum
+			store = new ListStore (typeof(int), typeof(int), typeof(int), typeof(int), typeof(int), typeof(Gdk.Pixbuf), typeof(int));
 
 			treeviewCSums.RulesHint = true;
 			treeviewCSums.Model = store;
 
-			cellRendererText = new CellRendererText ();
-			Pango.FontDescription fontDesc = new Pango.FontDescription ();
+			var fontDesc = new Pango.FontDescription ();
 			fontDesc.Family = MainClass.MonospaceFont;
 
+			cellRendererText = new CellRendererText ();
 			cellRendererText.FontDesc = fontDesc;
 
 			cellRendererPixbuf = new CellRendererPixbuf ();
 
-			AddColumn (new TreeViewColumn ("#", cellRendererText, "text", ColNr.Index), ColNr.Index);
-
-			AddColumn (AddHexColumn ("Start", ColNr.Start), ColNr.Start);
-			AddColumn (AddHexColumn ("Last", ColNr.End), ColNr.End);
-			AddColumn (AddHexColumn ("Checksum", ColNr.SumTable), ColNr.SumTable);
-
+			AddTextColumn ("#", ColNr.Index);
+			AddTextColumn ("Start", ColNr.Start);
+			AddTextColumn ("Last", ColNr.End);
+			AddTextColumn ("Size (dec)", ColNr.Size);
+			AddTextColumn ("Checksum", ColNr.SumTable);
 			AddColumn (new TreeViewColumn (null, cellRendererPixbuf, "pixbuf", ColNr.Icon), ColNr.Icon);
-
-			AddColumn (AddHexColumn ("Calculated", ColNr.SumCalc), ColNr.SumCalc);
+			AddTextColumn ("Calculated", ColNr.SumCalc);
 
 			InitIcons ();
 		}
@@ -86,7 +85,7 @@ namespace ScoobyRom
 		void InitIcons ()
 		{
 			// could use this.RenderIcon(...) but those icons can be less appealing (grey check mark, red cross)
-			Gtk.Image image = new Gtk.Image ();
+			var image = new Gtk.Image ();
 			pixbufs [0] = image.RenderIcon (Gtk.Stock.No, IconSize.SmallToolbar, null);
 			pixbufs [1] = image.RenderIcon (Gtk.Stock.Yes, IconSize.SmallToolbar, null);
 			image.Destroy ();
@@ -107,11 +106,16 @@ namespace ScoobyRom
 			return column;
 		}
 
-		TreeViewColumn AddHexColumn (string name, ColNr colNr)
+		TreeViewColumn CreateTextColumn (string name, ColNr colNr)
 		{
-			TreeViewColumn col = new TreeViewColumn (name, cellRendererText, "text", (int)colNr);
-			col.SetCellDataFunc (cellRendererText, TreeCellDataFuncHex);
+			var col = new TreeViewColumn (name, cellRendererText, "text", (int)colNr);
+			col.SetCellDataFunc (cellRendererText, TreeCellDataFunc);
 			return col;
+		}
+
+		TreeViewColumn AddTextColumn (string name, ColNr colNr)
+		{
+			return AddColumn (CreateTextColumn (name, colNr), colNr);
 		}
 
 		public void SetData (Data data)
@@ -139,14 +143,14 @@ namespace ScoobyRom
 					var item = ilist [i];
 					int sum = rcs.CalcChecksumValue (item);
 					int iconIndex = item.Checksum == sum ? 1 : 0;
-					store.AppendValues (i, item.StartAddress, item.EndAddress, item.Checksum, pixbufs [iconIndex], sum);
+					store.AppendValues (i, item.StartAddress, item.EndAddress, item.BlockSize, item.Checksum, pixbufs [iconIndex], sum);
 				}
 
 				labelCVN8.Markup = "<tt>" + RomChecksumming.CVN8Str (rcs.CalcCVN8 ()) + "</tt>";
 				// pre-select for copy & paste
 				labelCVN8.SelectRegion (0, -1);
 			} catch (Exception ex) {
-				Console.Error.WriteLine (ex.ToString ());
+				Console.Error.WriteLine (ex);
 				labelCVN8.Markup = "<b>Checksumming error.</b>";
 			}
 		}
@@ -155,23 +159,34 @@ namespace ScoobyRom
 
 		// These should be fast as they are called a lot, even for measuring hidden columns.
 
-		void TreeCellDataFuncHex (TreeViewColumn treeViewColumn, CellRenderer renderer, TreeModel treeModel, TreeIter iter)
+		void TreeCellDataFunc (TreeViewColumn treeViewColumn, CellRenderer renderer, TreeModel treeModel, TreeIter iter)
 		{
 			// need col number to get value from store
 			ColNr colNr = columnsDict [treeViewColumn];
-			int nr = (int)store.GetValue (iter, (int)colNr);
 
 			string formatStr;
 			switch (colNr) {
 			case ColNr.SumTable:
 			case ColNr.SumCalc:
-				formatStr = "X8";
+				formatStr = "{0:X8}";
+				break;
+			case ColNr.Start:
+			case ColNr.End:
+				formatStr = "{0,6:X}";
+				break;
+			case ColNr.Size:
+				formatStr = "{0,9:#,###}";
+				break;
+			case ColNr.Index:
+				formatStr = "{0,2:0}";
 				break;
 			default:
-				formatStr = "X";
+				formatStr = "{0}";
 				break;
 			}
-			cellRendererText.Text = nr.ToString (formatStr);
+
+			int nr = (int)store.GetValue (iter, (int)colNr);
+			cellRendererText.Text = string.Format (formatStr, nr);
 		}
 
 		#endregion Tree Cell Data Functions

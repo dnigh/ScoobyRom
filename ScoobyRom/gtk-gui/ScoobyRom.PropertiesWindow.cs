@@ -60,9 +60,13 @@ namespace ScoobyRom
 		
 		private global::Gtk.Label labelRomDate;
 		
+		private global::Gtk.Label labelRomRaiderEditStamp;
+		
 		private global::Gtk.Label labelRowReflashCount;
 		
 		private global::Gtk.Label labelRowRomDate;
+		
+		private global::Gtk.Label labelRowRomRaiderEditStamp;
 		
 		private global::Gtk.Label GtkLabel2;
 		
@@ -323,7 +327,7 @@ namespace ScoobyRom
 			this.GtkAlignment2.Name = "GtkAlignment2";
 			this.GtkAlignment2.LeftPadding = ((uint)(12));
 			// Container child GtkAlignment2.Gtk.Container+ContainerChild
-			this.tableMisc = new global::Gtk.Table (((uint)(2)), ((uint)(2)), true);
+			this.tableMisc = new global::Gtk.Table (((uint)(3)), ((uint)(2)), true);
 			this.tableMisc.Name = "tableMisc";
 			this.tableMisc.RowSpacing = ((uint)(6));
 			this.tableMisc.ColumnSpacing = ((uint)(6));
@@ -354,17 +358,31 @@ namespace ScoobyRom
 			w23.XOptions = ((global::Gtk.AttachOptions)(4));
 			w23.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child tableMisc.Gtk.Table+TableChild
+			this.labelRomRaiderEditStamp = new global::Gtk.Label ();
+			this.labelRomRaiderEditStamp.Name = "labelRomRaiderEditStamp";
+			this.labelRomRaiderEditStamp.LabelProp = "-";
+			this.labelRomRaiderEditStamp.Selectable = true;
+			this.labelRomRaiderEditStamp.SingleLineMode = true;
+			this.tableMisc.Add (this.labelRomRaiderEditStamp);
+			global::Gtk.Table.TableChild w24 = ((global::Gtk.Table.TableChild)(this.tableMisc [this.labelRomRaiderEditStamp]));
+			w24.TopAttach = ((uint)(2));
+			w24.BottomAttach = ((uint)(3));
+			w24.LeftAttach = ((uint)(1));
+			w24.RightAttach = ((uint)(2));
+			w24.XOptions = ((global::Gtk.AttachOptions)(4));
+			w24.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableMisc.Gtk.Table+TableChild
 			this.labelRowReflashCount = new global::Gtk.Label ();
 			this.labelRowReflashCount.Name = "labelRowReflashCount";
 			this.labelRowReflashCount.LabelProp = "Reflash Count";
 			this.labelRowReflashCount.UseMarkup = true;
 			this.labelRowReflashCount.Wrap = true;
 			this.tableMisc.Add (this.labelRowReflashCount);
-			global::Gtk.Table.TableChild w24 = ((global::Gtk.Table.TableChild)(this.tableMisc [this.labelRowReflashCount]));
-			w24.TopAttach = ((uint)(1));
-			w24.BottomAttach = ((uint)(2));
-			w24.XOptions = ((global::Gtk.AttachOptions)(4));
-			w24.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w25 = ((global::Gtk.Table.TableChild)(this.tableMisc [this.labelRowReflashCount]));
+			w25.TopAttach = ((uint)(1));
+			w25.BottomAttach = ((uint)(2));
+			w25.XOptions = ((global::Gtk.AttachOptions)(4));
+			w25.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child tableMisc.Gtk.Table+TableChild
 			this.labelRowRomDate = new global::Gtk.Label ();
 			this.labelRowRomDate.Name = "labelRowRomDate";
@@ -372,9 +390,21 @@ namespace ScoobyRom
 			this.labelRowRomDate.UseMarkup = true;
 			this.labelRowRomDate.Wrap = true;
 			this.tableMisc.Add (this.labelRowRomDate);
-			global::Gtk.Table.TableChild w25 = ((global::Gtk.Table.TableChild)(this.tableMisc [this.labelRowRomDate]));
-			w25.XOptions = ((global::Gtk.AttachOptions)(4));
-			w25.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w26 = ((global::Gtk.Table.TableChild)(this.tableMisc [this.labelRowRomDate]));
+			w26.XOptions = ((global::Gtk.AttachOptions)(4));
+			w26.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableMisc.Gtk.Table+TableChild
+			this.labelRowRomRaiderEditStamp = new global::Gtk.Label ();
+			this.labelRowRomRaiderEditStamp.Name = "labelRowRomRaiderEditStamp";
+			this.labelRowRomRaiderEditStamp.LabelProp = "RomRaider Edit Stamp";
+			this.labelRowRomRaiderEditStamp.UseMarkup = true;
+			this.labelRowRomRaiderEditStamp.Wrap = true;
+			this.tableMisc.Add (this.labelRowRomRaiderEditStamp);
+			global::Gtk.Table.TableChild w27 = ((global::Gtk.Table.TableChild)(this.tableMisc [this.labelRowRomRaiderEditStamp]));
+			w27.TopAttach = ((uint)(2));
+			w27.BottomAttach = ((uint)(3));
+			w27.XOptions = ((global::Gtk.AttachOptions)(4));
+			w27.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.GtkAlignment2.Add (this.tableMisc);
 			this.frameMisc.Add (this.GtkAlignment2);
 			this.GtkLabel2 = new global::Gtk.Label ();
@@ -383,10 +413,10 @@ namespace ScoobyRom
 			this.GtkLabel2.UseMarkup = true;
 			this.frameMisc.LabelWidget = this.GtkLabel2;
 			this.vbox.Add (this.frameMisc);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox [this.frameMisc]));
-			w28.Position = 1;
-			w28.Expand = false;
-			w28.Fill = false;
+			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vbox [this.frameMisc]));
+			w30.Position = 1;
+			w30.Expand = false;
+			w30.Fill = false;
 			// Container child vbox.Gtk.Box+BoxChild
 			this.buttonRefresh = new global::Gtk.Button ();
 			this.buttonRefresh.CanFocus = true;
@@ -395,18 +425,18 @@ namespace ScoobyRom
 			this.buttonRefresh.UseUnderline = true;
 			this.buttonRefresh.Label = "gtk-refresh";
 			this.vbox.Add (this.buttonRefresh);
-			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vbox [this.buttonRefresh]));
-			w29.Position = 2;
-			w29.Expand = false;
-			w29.Fill = false;
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vbox [this.buttonRefresh]));
+			w31.Position = 2;
+			w31.Expand = false;
+			w31.Fill = false;
 			w1.Add (this.vbox);
 			this.scrolledwindow1.Add (w1);
 			this.Add (this.scrolledwindow1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 248;
-			this.DefaultHeight = 268;
+			this.DefaultWidth = 277;
+			this.DefaultHeight = 320;
 			this.Show ();
 			this.buttonRefresh.Clicked += new global::System.EventHandler (this.OnButtonRefreshClicked);
 		}

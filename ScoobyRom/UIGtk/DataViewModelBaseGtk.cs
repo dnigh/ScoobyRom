@@ -118,8 +118,9 @@ namespace ScoobyRom
 
 			#if !UseBackGroundTask
 
-			CreateAllIcons ();
-			iconsCached = true;
+			tokenSource = new CancellationTokenSource ();
+			var token = tokenSource.Token;
+			CreateAllIcons (token);
 
 			#else
 
@@ -127,10 +128,9 @@ namespace ScoobyRom
 				tokenSource.Cancel ();
 				// "It is not necessary to wait on tasks that have canceled."
 				// https://msdn.microsoft.com/en-us/library/dd537607%28v=vs.100%29.aspx
-				//task.Wait (200);
-				task = null;
+				// but wait to let previous task finish current icon
+				task.Wait (500);
 			}
-
 			tokenSource = new CancellationTokenSource ();
 			var token = tokenSource.Token;
 			task = Task.Factory.StartNew (() => CreateAllIcons (token), token);
@@ -153,7 +153,7 @@ namespace ScoobyRom
 				// update model reference in GUI Thread to make sure UI display is ok
 				// HACK Application.Invoke causes wrong iters ???
 				// IA__gtk_list_store_set_value: assertion 'VALID_ITER (iter, list_store)' failed
-				//Application.Invoke (delegate {
+				//Application.Invoke (delegate { store.SetValue (iter, iconColumnNr, pixbuf); });
 				store.SetValue (iter, iconColumnNr, pixbuf);
 				return false;
 			});

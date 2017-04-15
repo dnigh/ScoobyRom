@@ -100,7 +100,7 @@ a)	*RomRaider ECU definition* format
 b)	*TunerPro XDF* format
 
 "TunerPro is a free, donate-if-you-like-it tuning platform aimed at making tuning easier and cheaper for the hobbyist and professional alike. It uses a versatile and extensible calibration definition format (XDF) that is user-defineable and is quite powerful."
- 
+
 <http://tunerpro.net/>
 
 ---
@@ -233,7 +233,7 @@ Version: **.NET v4.0 or higher**
 	*	Arch Linux: [mono](http://www.archlinux.org/packages/?q=mono)
 
 
-### <a name="gtksharp"></a> 4.2) Gtk\# 
+### <a name="gtksharp"></a> 4.2) Gtk\#
 
 REQUIRED!
 
@@ -342,9 +342,9 @@ Tested example:
 *	Windows 8.1 x64
 
 	`gp501-win64-mingw.exe` (v5.0.1, 64 bit, 2015-07-14, 18 MB)
-	
+
 	Accepted default install path: `"C:\Program Files\gnuplot\"`
-	
+
 	`ScoobyRom.exe.config` entry (see below) -> `"C:\Program Files\gnuplot\bin\gnuplot.exe"`
 
 
@@ -426,7 +426,8 @@ Launch the binary (Windows: `gnuplot.exe`, Linux/Unix: `gnuplot`)
 
 General note regarding (XML) file line endings:
 
-Applies to both *ScoobyRom.exe.config*, *ScoobyRom XML* and also *gnuplot template* files (`.plt`).  
+Applies to both *ScoobyRom.exe.config*, *ScoobyRom XML* and also *gnuplot template* files (`.plt`).
+
 Newline type (CR/LF Windows, LF Unix) does not matter, as *ScoobyRom* and *gnuplot* can read both. Therefore you can easily share such files across operating systems.
 When new files are written, such as by action *Save* (`Ctrl+S`), these will be in current native format.
 
@@ -782,7 +783,7 @@ You can use it to temporarily select and sort items if you want to. Might have m
 
 	For example, if *Title* "Engine Speed" exists on a table, focus title column if not done already, type "`eng`" and it will probably jump to the first matching row.
 
-	Hex columns *Record, X/Y/ZPos*: you need to type in complete address in hex, i.e. "`8ddc4`" or "`0x8ddc4`". Supported hexadecimal prefixes are "`0x`" and "`$`".
+	Hex columns *Record, X/Y/ZPos*: you need to type in complete address in hex, i.e. "`8ddc4`" or "`0x8ddc4`" or "`$8ddc4`". Supported hexadecimal prefixes are "`0x`" and "`$`".
 
 *	Visualisation (`Ctrl+Space`): Either displays coloured table values (3D) or 2D values + line graph in bottom tab pane.
 Any visualisation (except icons) does not update on changed metadata (text, data type),
@@ -793,7 +794,7 @@ also triggers internal visualisation.
 *	Icons update immediately on table type change as this is a fast operation.
 By looking a the icon you can often tell already whether current data type is correct or not ("stripe patterns", bad values).
 
-*	Gray icons ("const") are displayed for tables containing only same values  (min = max).
+*	Gray icons ("const") are displayed for tables containing only same values (min = max).
 Often these are valid tables and are actually used in ROM firmware logic.
 
 *	gnuplot windows:
